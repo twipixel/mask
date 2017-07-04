@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MASK</title>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #191919;
+        }
+    </style>
+</head>
+<body>
+    <div id="content"></div>
+
+    <script>
+        (function () {
+            if (navigator.userAgent.indexOf('Electron') >= 0) {
+                require('babel-register');
+                window.PIXI = require('./vendor/pixi');
+                require('./index');
+            }
+            else {
+                document.write('<script src="./vendor.bundle.js"><' + '/script>');
+                document.write('<script src="./bundle.js"><' + '/script>');
+            }
+        })();
+    </script>
+
+</body>
+</html>
