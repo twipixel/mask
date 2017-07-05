@@ -117,6 +117,11 @@ module.exports = {
             host: 'localhost',
             port: 9000,
             server: {
+
+                /**
+                 * baseDir 을 dist로 잡으면 assets 폴더를 dist 안에 넣어야합니다.
+                 * 상대 경로 개념으로 ./../ 뒤로 빠져나올 수가 없습니다.
+                 */
                 baseDir: './'
             },
             startPath: 'dist/index.html',
