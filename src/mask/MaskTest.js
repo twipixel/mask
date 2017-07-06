@@ -19,9 +19,23 @@ export default class MaskMain extends PIXI.utils.EventEmitter
             maskImage.src = './../assets/img/image01.png';
 
             maskImage.onload = () => {
-                this._initialize(backgroundImage, maskImage);
+                this.initialize(backgroundImage, maskImage);
             }
         };
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    //
+    // 리사이즈 & 업데이트 & 초기화 함수
+    //
+    /////////////////////////////////////////////////////////////////////////////
+
+
+    update (ms)
+    {
+        if (this.updateFunction) {
+            this.updateFunction();
+        }
     }
 
 
@@ -31,7 +45,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     }
 
 
-    _initialize(backgroundImage, maskImage)
+    initialize(backgroundImage, maskImage)
     {
         this.maskImage = maskImage;
         this.backgroundImage = backgroundImage;
@@ -236,10 +250,6 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     }
 
 
-    /**
-     * 1.
-     * 2. 마스크를 이미지로 받는다. (image00.png 는 379 x 482)
-     */
     testImageMask()
     {
         const width = this.canvasWidth;
@@ -370,21 +380,6 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
             // 이전 상태 복원
             this.dimedContext.restore();
-        }
-    }
-
-
-    /////////////////////////////////////////////////////////////////////////////
-    //
-    // Update
-    //
-    /////////////////////////////////////////////////////////////////////////////
-
-
-    update (ms)
-    {
-        if (this.updateFunction) {
-            this.updateFunction();
         }
     }
 
