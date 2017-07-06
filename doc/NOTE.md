@@ -56,7 +56,7 @@
     const dimed = new PIXI.Sprite(PIXI.Texture.fromCanvas(this.dimedCanvas));
     ```
 
-- 마스크 객체 상태를 반영하여 Dimed 이미를 업데이트 합니다.
+- 마스크 객체 상태를 반영하여 Dimed 이미지를 업데이트 합니다.
 
   - ```javascript
     // clear canvas
