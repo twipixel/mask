@@ -594,17 +594,17 @@
 			this.Type.rotate = function(s) {
 				var a = svg.ToNumberArray(s);
 				this.angle = new svg.Property('angle', a[0]);
-				this.cx = a[1] || 0;
-				this.cy = a[2] || 0;
+				this.maskCenterX = a[1] || 0;
+				this.maskCenterY = a[2] || 0;
 				this.apply = function(ctx) {
-					ctx.translate(this.cx, this.cy);
+					ctx.translate(this.maskCenterX, this.maskCenterY);
 					ctx.rotate(this.angle.toRadians());
-					ctx.translate(-this.cx, -this.cy);
+					ctx.translate(-this.maskCenterX, -this.maskCenterY);
 				}
 				this.unapply = function(ctx) {
-					ctx.translate(this.cx, this.cy);
+					ctx.translate(this.maskCenterX, this.maskCenterY);
 					ctx.rotate(-1.0 * this.angle.toRadians());
-					ctx.translate(-this.cx, -this.cy);
+					ctx.translate(-this.maskCenterX, -this.maskCenterY);
 				}
 				this.applyToPoint = function(p) {
 					var a = this.angle.toRadians();

@@ -25,11 +25,17 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     }
 
 
-    resize() {}
+    resize()
+    {
+        // NOTHING
+    }
 
 
     _initialize(backgroundImage, maskImage)
     {
+        this.maskImage = maskImage;
+        this.backgroundImage = backgroundImage;
+
         //const sprite = PIXI.Sprite.fromImage('./../assets/img/image00.png');
 
         //this.testPixiShapeMask();
@@ -37,7 +43,8 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         //this.testBlendMode();
         //this.testDrawPolygon();
         //this.testDrawStar();
-        this.testCreateStar();
+        //this.testCreateStar();
+        this.testImageMask();
     }
 
 
@@ -185,15 +192,201 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         backgroundImage.height = this.canvasHeight;
         this.rootLayer.addChild(backgroundImage);
 
-        const polygonPoints = this.getStarPoints(0, 0, 40, 200, 180);
+        const polygonPoints = this.getStarPoints(0, 0, 18, 50, 40);
 
         const star = new PIXI.Sprite();
-        const starGraphics = this.getGraphicsByPolygonPoints(polygonPoints);
+        const starGraphics = this.getGraphicsByPolygonPoints(polygonPoints, 0x000000, 0.5);
         star.addChild(starGraphics);
-
         this.rootLayer.addChild(star);
+
+
+        star.points = [];
+        const total = polygonPoints.length;
+
+        for(var i = 0; i < total; i+=2) {
+            const point = this.getPoint(1);
+            point.x = polygonPoints[i];
+            point.y = polygonPoints[i + 1];
+            star.addChild(point);
+            star.points.push(point);
+        }
+
+        star.x = 200;
+        star.y = 200;
+        star.scale.x = 2;
+        star.scale.y = 2;
+
+        const scaledPoints = [];
+        const pointsTotal = star.points.length;
+
+        for(var i = 0; i < pointsTotal; i++) {
+            const starPoint = star.points[i];
+            let point = new PIXI.Point(starPoint.x, starPoint.y);
+            point = star.toGlobal(point);
+            scaledPoints.push(point.x - star.x);
+            scaledPoints.push(point.y - star.y);
+        }
+
+        const newStar = new PIXI.Sprite();
+        const newScaledStarGraphics = this.getGraphicsByPolygonPoints(scaledPoints, 0xFF3300, 0.4);
+        newScaledStarGraphics.x = 0;
+        newScaledStarGraphics.y = 0;
+        newStar.addChild(newScaledStarGraphics);
+        newStar.cacheAsBitmap = true;
     }
 
+
+    /**
+     * 1.
+     * 2. 마스크를 이미지로 받는다. (image00.png 는 379 x 482)
+     */
+    testImageMask()
+    {
+        const width = this.canvasWidth;
+        const height = this.canvasHeight;
+
+        this.mask = PIXI.Sprite.fromImage('./../assets/img/image01.png');
+        this.mask.anchor.set(0.5, 0.5);
+
+        const w = this.maskImage.width,
+            hw = w / 2,
+            h = this.maskImage.height,
+            hh = h / 2;
+
+        this.maskCenterX = hw;
+        this.maskCenterY = hh;
+
+        this.maskGraphics = new PIXI.Graphics();
+        this.maskGraphics.beginFill(0xFF3300);
+        this.maskGraphics.lineStyle(0xFF3300);
+        this.maskGraphics.drawCircle(0, 0, 5);
+        this.mask.addChild(this.maskGraphics);
+
+        const background = PIXI.Sprite.fromImage('./../assets/img/background.jpeg');
+        background.width = width;
+        background.height = height;
+
+        this.rootLayer.addChild(background);
+        this.rootLayer.addChild(this.mask);
+
+        this.backgroundCanvas = document.createElement('canvas');
+        this.backgroundCanvas.width = width;
+        this.backgroundCanvas.height = height;
+
+        const backgroundContext = this.backgroundCanvas.getContext('2d');
+        backgroundContext.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        backgroundContext.fillRect(0, 0, width, height);
+
+
+        this.dimedCanvas = document.createElement('canvas');
+        this.dimedCanvas.width = width;
+        this.dimedCanvas.height = height;
+
+        this.dimedContext = this.dimedCanvas.getContext('2d');
+        // 이미지 smoothed 설정
+        const useSmoothed = false;
+        this.dimedContext.mozImageSmoothingEnabled = useSmoothed;
+        this.dimedContext.webkitImageSmoothingEnabled = useSmoothed;
+        this.dimedContext.msImageSmoothingEnabled = useSmoothed;
+        this.dimedContext.imageSmoothingEnabled = useSmoothed;
+
+        const dimed = new PIXI.Sprite(PIXI.Texture.fromCanvas(this.dimedCanvas));
+        this.rootLayer.addChild(dimed);
+
+
+        const targetPoint = new PIXI.Graphics();
+        targetPoint.beginFill(0xFF3300);
+        targetPoint.drawCircle(0, 0, 5);
+        targetPoint.x = 200 - 2.5;
+        targetPoint.y = 200 - 2.5;
+        this.rootLayer.addChild(targetPoint);
+
+
+        const centerPoint = new PIXI.Graphics();
+        centerPoint.beginFill(0xFF3300);
+        centerPoint.drawCircle(0, 0, 5);
+        centerPoint.x = width / 2 - 2.5;
+        centerPoint.y = height / 2 - 2.5;
+        this.rootLayer.addChild(centerPoint);
+
+
+        this.mask.x = centerPoint.x;
+        this.mask.y = centerPoint.y;
+        this.mask.scale.x = 2;
+        this.mask.scale.y = 2;
+        //this.mask.alpha = 0.2;
+        this.mask.visible = false;
+
+        //console.log('cx[', this.cx, this.cy, ']');
+
+        //var tween = Be.tween(this.mask, {x: 200, y: 200}, {x: this.mask.x, y: this.mask.y}, 5, Quad.easeOut);
+        //tween.play();
+
+        //var scaleWidth = this.maskImage.width * 3;
+        //var scaleHeight = this.maskImage.height * 3;
+        //var scale = Be.to(this.mask, {width: scaleWidth, height: scaleHeight}, 5, Quad.easeIn);
+        //scale.play();
+
+        this.updateFunction = this.imageMaskUpdateFunction.bind(this);
+    }
+
+
+    imageMaskUpdateFunction()
+    {
+        if (this.dimedContext) {
+
+            // clear canvas
+            this.dimedCanvas.width = this.canvasWidth;
+
+            // 상태 저장
+            this.dimedContext.save();
+
+            // 배경 이미지 그리기
+            this.dimedContext.drawImage(this.backgroundCanvas, 0, 0);
+
+            //this.dimedContext.globalCompositeOperation = 'source-atop';
+            //this.dimedContext.globalCompositeOperation = 'source-in';
+            //this.dimedContext.globalCompositeOperation = 'source-out';
+            //this.dimedContext.globalCompositeOperation = 'source-over';
+            //this.dimedContext.globalCompositeOperation = 'destination-atop';
+            //this.dimedContext.globalCompositeOperation = 'destination-in';
+            this.dimedContext.globalCompositeOperation = 'destination-out';
+            //this.dimedContext.globalCompositeOperation = 'destination-over';
+            //this.dimedContext.globalCompositeOperation = 'lighter';
+            //this.dimedContext.globalCompositeOperation = 'copy';
+            //this.dimedContext.globalCompositeOperation = 'xor';
+
+            // x, y 좌표로 이동
+            this.dimedContext.translate(this.mask.x, this.mask.y);
+
+            // 마스크 이미지 중심 좌표 만큼 뒤로 이동 (스케일값도 반영)
+            this.dimedContext.translate(-this.maskCenterX * this.mask.scale.x, -this.maskCenterY * this.mask.scale.y);
+
+            // 스케일
+            this.dimedContext.scale(this.mask.scale.x, this.mask.scale.y);
+
+            // 그리기
+            this.dimedContext.drawImage(this.maskImage, 0, 0);
+
+            // 이전 상태 복원
+            this.dimedContext.restore();
+        }
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////////
+    //
+    // Update
+    //
+    /////////////////////////////////////////////////////////////////////////////
+
+
+    update (ms)
+    {
+        if (this.updateFunction) {
+            this.updateFunction();
+        }
+    }
 
 
     /////////////////////////////////////////////////////////////////////////////
@@ -270,10 +463,10 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     }
 
 
-    getGraphicsByPolygonPoints(polygonPoints)
+    getGraphicsByPolygonPoints(polygonPoints, color = 0x000000, alpha = 0.5)
     {
         const graphics = new PIXI.Graphics();
-        graphics.beginFill('0x000000', 0.5);
+        graphics.beginFill(color, alpha);
         graphics.moveTo(polygonPoints[0], polygonPoints[1]);
 
         for(var i = 0; i < polygonPoints.length; i += 2) {
@@ -281,6 +474,17 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         }
 
         graphics.endFill();
+        return graphics;
+    }
+
+
+    getPoint(radius, alpha = 1)
+    {
+        const graphics = new PIXI.Graphics();
+        graphics.beginFill('0xFF3300', alpha);
+        graphics.drawCircle(0, 0, radius);
+        graphics.endFill();
+        graphics.drawRoundedRect();
         return graphics;
     }
 

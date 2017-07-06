@@ -46,6 +46,7 @@ function updateLoop (ms) {
 
 function update(ms) {
     renderer.render(stage);
+    maskMain.update(ms);
 }
 
 
