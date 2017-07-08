@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Example</title>
+
+    <style>
+        body {
+            background: #dddddd;
+        }
+
+        #canvas {
+            background: #ffffff;
+            border: thin inset #aaaaaa;
+        }
+    </style>
+</head>
+
+<body>
+<canvas id='canvas' width="800" height="600">
+    Canvas not supported test
+</canvas>
+<script>
+    function windowToCanvas(x, y) {
+        var bbox = canvas.getBoundingClientRect();
+
+        return { x : x - bbox.left, y : y - bbox.top }
+    }
+    function Point(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    function Line(sPt, ePt) {
+        this.sPt = sPt;
+        this.ePt = ePt;
+    }
+
+    Line.prototype = {
+        draw: function() {
+            context.save();
+
+            context.beginPath();
+            context.moveTo(this.sPt.x, this.sPt.y);
+            context.lineTo(this.ePt.x, this.ePt.y);
+            context.stroke();
+
+            context.restore();
+        }
+    };
+
+    function Rect(lt, rt, lb, rb) {
+        this.lt = lt;
+        this.rt = rt;
+        this.lb = lb;
+        this.rb = rb;
+
+        this.width = rt.x - lt.x;
+        this.height = rb.y - lt.y;
+
+        this.points = [this.lt, this.rt, this.lb, this.rb];
+        this.lines = [new Line(this.lt, this.rt), new Line(this.rt, this.rb), new Line(this.rb, this.lb), new Line(this.lb, this.lt)];
+    }
+
+    Rect.prototype = {
+        draw: function() {
+            for(var i = 0; i < this.lines.length; i++) {
+                this.lines[i].draw();
+            }
+        },
+        translate : function ( tx, ty ) {
+            for(var i = 0; i < this.points.length; i++) {
+                var pt = this.points[i];
+
+                pt.x += tx;
+                pt.y += ty;
+            }
+        },
+        scale : function ( sx, sy ) {
+            for(var i = 0; i < this.points.length; i++) {
+                var pt = this.points[i];
+
+                pt.x *= sx;
+                pt.y *= sy;
+            }
+        },
+        rotate : function ( r ) {
+            var cos = Math.cos(r);
+            var sin = Math.sin(r);
+
+            for(var i = 0; i < this.points.length; i++) {
+                var pt = this.points[i];
+
+                var x = pt.x;
+                var y = pt.y;
+
+                pt.x = cos * x - sin * y;
+                pt.y = sin * x + cos * y;
+            }
+        },
+
+        getLeftPoint: function() {
+            var pt = this.points[0];
+
+            for(var i = 1; i < this.points.length; i++) {
+                if(pt.x > this.points[i].x)
+                    pt = this.points[i];
+            }
+
+            return pt;
+        },
+        getTopPoint: function() {
+            var pt = this.points[0];
+
+            for(var i = 1; i < this.points.length; i++) {
+                if(pt.y > this.points[i].y)
+                    pt = this.points[i];
+            }
+
+            return pt;
+        },
+        getRightPoint: function()  {
+            var pt = this.points[0];
+
+            for(var i = 1; i < this.points.length; i++) {
+                if(pt.x < this.points[i].x)
+                    pt = this.points[i];
+            }
+
+            return pt;
+        },
+        getBottomPoint: function() {
+            var pt = this.points[0];
+
+            for(var i = 1; i < this.points.length; i++) {
+                if(pt.y < this.points[i].y)
+                    pt = this.points[i];
+            }
+
+            return pt;
+        }
+    };
+
+    var canvas = document.getElementById("canvas");
+    var context = canvas.getContext("2d");
+
+    var displayList = [];
+
+    var image = new Rect(new Point(0, 0), new Point(800, 0), new Point(0, 600), new Point(800,600));
+    displayList.push(image);
+
+    image.translate(canvas.width / 2 - 200, canvas.height / 2 - 200);
+
+    var r = 350 * Math.PI / 180;
+    image.rotate(r);
+
+    var view = new Rect(new Point(0, 0), new Point(200, 0), new Point(0, 300), new Point(200,300));
+    displayList.push(view);
+
+    view.translate(canvas.width / 2 - 200, canvas.height / 2 - 150);
+
+    var isDown = false;
+
+    canvas.onmousedown = function(e) {
+        isDown = true;
+
+    };
+
+    var prevLoc = null;
+
+    canvas.onmousemove = function(e) {
+        var loc = windowToCanvas(e.clientX, e.clientY);
+        if(isDown) {
+
+            if(prevLoc == null) {
+                prevLoc = { x: loc.x, y: loc.y };
+            }
+            var tx = loc.x - prevLoc.x;
+            var ty = loc.y - prevLoc.y;
+
+            image.translate(tx, ty);
+
+            prevLoc.x = loc.x;
+            prevLoc.y = loc.y;
+        }
+    };
+    canvas.onmouseup = function(e) {
+        isDown = false;
+        prevLoc = null;
+    };
+
+    requestAnimationFrame(loop);
+    function loop() {
+
+        image.rotate(-r);
+        view.rotate(-r);
+
+        var lt = new Point(view.getLeftPoint().x, view.getTopPoint().y);
+        var rt = new Point(view.getRightPoint().x, view.getTopPoint().y);
+        var lb = new Point(view.getLeftPoint().x, view.getBottomPoint().y);
+        var rb = new Point(view.getRightPoint().x, view.getBottomPoint().y);
+
+        var dummy = new Rect(lt, rt, lb, rb);
+
+        hitTestRect(image, dummy);
+
+        image.rotate(r);
+        view.rotate(r);
+
+        render();
+        requestAnimationFrame(loop);
+    }
+
+    function hitTestRect(pRect, cRect) {
+        var pLeft = pRect.getLeftPoint();
+        var pRight = pRect.getRightPoint();
+        var pTop = pRect.getTopPoint();
+        var pBottom = pRect.getBottomPoint();
+
+        var cLeft = cRect.getLeftPoint();
+        var cRight = cRect.getRightPoint();
+        var cTop = cRect.getTopPoint();
+        var cBottom = cRect.getBottomPoint();
+
+        if(pLeft.x > cLeft.x) {
+            pRect.translate(cLeft.x - pLeft.x, 0);
+        }
+        if(pRight.x < cRight.x) {
+            pRect.translate(cRight.x - pRight.x, 0);
+        }
+        if(pTop.y > cTop.y) {
+            pRect.translate(0, cTop.y - pTop.y);
+        }
+        if(pBottom.y < cBottom.y) {
+            pRect.translate(0, cBottom.y - pBottom.y);
+        }
+    }
+
+    function render() {
+        context.clearRect(0,0, canvas.width, canvas.height);
+
+        for(var i = 0; i < displayList.length; i++) {
+            displayList[i].draw();
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-import MaskTest from './mask/MaskTest';
+import MaskTest from './mask/test/MaskTest';
 
 var canvas, renderer, stage, maskMain, rootLayer, maskLayer;
 
