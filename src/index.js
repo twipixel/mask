@@ -1,4 +1,5 @@
 import MaskTest from './mask/test/MaskTest';
+import MaskPrototype from './mask/test/MaskPrototype';
 
 var canvas, renderer, stage, maskMain, rootLayer, maskLayer;
 
@@ -31,7 +32,8 @@ function initailize() {
     stage.addChild(maskLayer);
     stage.addChild(rootLayer);
 
-    maskMain = new MaskTest(renderer, rootLayer, maskLayer);
+    //maskMain = new MaskTest(renderer, rootLayer, maskLayer);
+    maskMain = new MaskPrototype(renderer, rootLayer, maskLayer);
 
     updateLoop();
     resizeWindow();

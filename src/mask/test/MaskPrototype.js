@@ -1,4 +1,8 @@
-export default class MaskPrototype extends PIXI.utils.EventEmitte
+import Bitmap from './../display/Bitmap';
+import ScreenManager from './../manager/ScreenManager';
+
+
+export default class MaskPrototype extends PIXI.utils.EventEmitter
 {
     constructor(renderer, rootLayer, maskLayer)
     {
@@ -35,16 +39,36 @@ export default class MaskPrototype extends PIXI.utils.EventEmitte
 
     initialize()
     {
-        //
+        const canvas = this.renderer.view;
+        const viewport = new PIXI.Rectangle(0, 0, this.canvasWidth, this.canvasHeight);
+        ScreenManager.instance.initialize(canvas, viewport);
+        this.createBitmapContainer();
     }
 
 
     /////////////////////////////////////////////////////////////////////////////
     //
-    // 구현
+    // 테스트
     //
     /////////////////////////////////////////////////////////////////////////////
 
+
+    createBitmapContainer()
+    {
+        const background = new Bitmap('./../assets/img/background0.png');
+        background.on(Bitmap.READY, () => {
+            console.log('ready!');
+
+            background.width = this.canvasWidth;
+            background.height = this.canvasHeight;
+
+            console.log('background[', background.width, background.height, ']', 'canvas[', this.canvasWidth, this.canvasHeight, ']');
+            this.maskLayer.addChild(background);
+        });
+
+        const mask = new Bitmap('./../assets/img/mask0.png');
+        this.maskLayer.addChild(mask);
+    }
 
 
     /////////////////////////////////////////////////////////////////////////////
