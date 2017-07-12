@@ -1,5 +1,7 @@
+import Size from './../utils/Size';
+import Mask from './../display/Mask';
 import Bitmap from './../display/Bitmap';
-import ScreenManager from './../manager/ScreenManager';
+import BackgroundImage from './../display/BackgroundImage';
 
 
 export default class MaskPrototype extends PIXI.utils.EventEmitter
@@ -25,24 +27,27 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
 
     resize()
     {
-        // NOTHING
+        console.log('resize');
+        if (Size.isAvailable && this.backgroundImage) {
+            const viewport = this.viewport = Size.windowRetinaAppliedSize;
+            Size.initialize(this.backgroundImage.originalImageSize, viewport);
+            this.backgroundImage.resize();
+            this.backgroundImage.x = Size.initializedBackgroundImageSize.x;
+            this.backgroundImage.y = Size.initializedBackgroundImageSize.y;
+        }
     }
 
 
     update (ms)
     {
-        if (this.updateFunction) {
-            this.updateFunction();
-        }
+        //
     }
 
 
     initialize()
     {
-        const canvas = this.renderer.view;
-        const viewport = new PIXI.Rectangle(0, 0, this.canvasWidth, this.canvasHeight);
-        ScreenManager.instance.initialize(canvas, viewport);
-        this.createBitmapContainer();
+        //this.testBitmap();
+        this.testCreate();
     }
 
 
@@ -53,21 +58,72 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
     /////////////////////////////////////////////////////////////////////////////
 
 
-    createBitmapContainer()
+    testBitmap()
     {
-        const background = new Bitmap('./../assets/img/background0.png');
-        background.on(Bitmap.READY, () => {
-            console.log('ready!');
+        const backgroundImage = this.backgroundImage = new Bitmap('./../assets/img/background0.png');
+        backgroundImage.on(Bitmap.READY, () => {
 
-            background.width = this.canvasWidth;
-            background.height = this.canvasHeight;
+            const viewport = Size.windowRetinaAppliedSize;
+            Size.initialize(backgroundImage, viewport);
 
-            console.log('background[', background.width, background.height, ']', 'canvas[', this.canvasWidth, this.canvasHeight, ']');
-            this.maskLayer.addChild(background);
+            const imageSize = Size.initializedBackgroundImageSize;
+            backgroundImage.x = imageSize.x;
+            backgroundImage.y = imageSize.y;
+            backgroundImage.width = imageSize.width;
+            backgroundImage.height = imageSize.height;
+
+            this.maskLayer.addChild(backgroundImage);
         });
 
-        const mask = new Bitmap('./../assets/img/mask0.png');
+        const mask = this.mask = new Bitmap('./../assets/img/mask0.png');
         this.maskLayer.addChild(mask);
+    }
+
+
+    testCreate()
+    {
+        const viewport = this.viewport = Size.windowRetinaAppliedSize;
+
+        const backgroundImage = this.backgroundImage =
+            new BackgroundImage('./../assets/img/background0.png', viewport);
+
+        backgroundImage.on(Bitmap.READY, this.onBackgroundImageReady.bind(this));
+        this.maskLayer.addChild(backgroundImage);
+    }
+
+
+    onBackgroundImageReady()
+    {
+        // Size 객체 초기화, 배경 이미지 사이즈, 위치 설정
+        Size.initialize(this.backgroundImage, this.viewport);
+
+        const imageSize = Size.initializedBackgroundImageSize;
+        this.backgroundImage.bitmapWidth = imageSize.width;
+        this.backgroundImage.bitmapHeight = imageSize.height;
+        this.backgroundImage.x = imageSize.x;
+        this.backgroundImage.y = imageSize.y;
+
+        const mask = this.mask = new Mask('./../assets/img/mask0.png');
+        this.maskLayer.addChild(mask);
+        mask.on(Bitmap.READY, this.onMaskImageRady.bind(this));
+    }
+
+
+    onMaskImageRady()
+    {
+        const maskDefaultSize = new PIXI.Rectangle(0, 0, 200, 285);
+        this.mask.bitmapWidth = maskDefaultSize.width;
+        this.mask.bitmapHeight = maskDefaultSize.height;
+        this.mask.x = Size.windowRetinaAppliedWidth / 2 - maskDefaultSize.width / 2;
+        this.mask.y = Size.windowRetinaAppliedHeight / 2 - maskDefaultSize.height / 2;
+
+        this.start();
+    }
+
+
+    start()
+    {
+
     }
 
 
@@ -87,13 +143,5 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
 
 
 
-    get canvasWidth()
-    {
-        return window.innerWidth * window.devicePixelRatio;
-    }
 
-    get canvasHeight()
-    {
-        return window.innerHeight * window.devicePixelRatio;
-    }
 }

@@ -4,7 +4,7 @@ import MaskPrototype from './mask/test/MaskPrototype';
 var canvas, renderer, stage, maskMain, rootLayer, maskLayer;
 
 window.onload = initailize.bind(this);
-
+window.onresize = resizeWindow.bind(this);
 
 function initailize() {
     canvas = document.getElementById('canvas');
