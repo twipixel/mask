@@ -1,7 +1,10 @@
 import Size from './../utils/Size';
+import Calc from './../utils/Calculator';
 import Mask from './../display/Mask';
 import Bitmap from './../display/Bitmap';
+import DimmedMask from './../display/DimmedMask';
 import BackgroundImage from './../display/BackgroundImage';
+
 
 
 export default class MaskPrototype extends PIXI.utils.EventEmitter
@@ -27,9 +30,8 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
 
     resize()
     {
-        console.log('resize');
         if (Size.isAvailable && this.backgroundImage) {
-            const viewport = this.viewport = Size.windowRetinaAppliedSize;
+            const viewport = this.viewport = Size.windowSize;
             Size.initialize(this.backgroundImage.originalImageSize, viewport);
             this.backgroundImage.resize();
             this.backgroundImage.x = Size.initializedBackgroundImageSize.x;
@@ -40,7 +42,9 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
 
     update (ms)
     {
-        //
+        if (this.dimmedMask) {
+            this.dimmedMask.update(ms);
+        }
     }
 
 
@@ -63,7 +67,7 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
         const backgroundImage = this.backgroundImage = new Bitmap('./../assets/img/background0.png');
         backgroundImage.on(Bitmap.READY, () => {
 
-            const viewport = Size.windowRetinaAppliedSize;
+            const viewport = Size.windowSize;
             Size.initialize(backgroundImage, viewport);
 
             const imageSize = Size.initializedBackgroundImageSize;
@@ -82,13 +86,12 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
 
     testCreate()
     {
-        const viewport = this.viewport = Size.windowRetinaAppliedSize;
+        const viewport = this.viewport = Size.windowSize;
 
         const backgroundImage = this.backgroundImage =
             new BackgroundImage('./../assets/img/background0.png', viewport);
 
         backgroundImage.on(Bitmap.READY, this.onBackgroundImageReady.bind(this));
-        this.maskLayer.addChild(backgroundImage);
     }
 
 
@@ -100,11 +103,14 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
         const imageSize = Size.initializedBackgroundImageSize;
         this.backgroundImage.bitmapWidth = imageSize.width;
         this.backgroundImage.bitmapHeight = imageSize.height;
-        this.backgroundImage.x = imageSize.x;
-        this.backgroundImage.y = imageSize.y;
+        this.backgroundImage.bitmapRotation = Calc.toRadians(20);
+        this.backgroundImage.x = Size.windowCenterX;
+        this.backgroundImage.y = Size.windowCenterY;
+        //this.backgroundImage.visible = false;
+        this.backgroundImage.alpha = 0.7;
+        this.maskLayer.addChild(this.backgroundImage);
 
         const mask = this.mask = new Mask('./../assets/img/mask0.png');
-        this.maskLayer.addChild(mask);
         mask.on(Bitmap.READY, this.onMaskImageRady.bind(this));
     }
 
@@ -114,8 +120,10 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
         const maskDefaultSize = new PIXI.Rectangle(0, 0, 200, 285);
         this.mask.bitmapWidth = maskDefaultSize.width;
         this.mask.bitmapHeight = maskDefaultSize.height;
-        this.mask.x = Size.windowRetinaAppliedWidth / 2 - maskDefaultSize.width / 2;
-        this.mask.y = Size.windowRetinaAppliedHeight / 2 - maskDefaultSize.height / 2;
+        this.mask.x = Size.windowCenterX - 200;
+        this.mask.y = Size.windowCenterY - 100;
+        this.mask.visible = false;
+        this.maskLayer.addChild(this.mask);
 
         this.start();
     }
@@ -123,7 +131,8 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
 
     start()
     {
-
+        const dimmedMask = this.dimmedMask = new DimmedMask(this.viewport, this.backgroundImage, this.mask);
+        this.maskLayer.addChild(dimmedMask);
     }
 
 

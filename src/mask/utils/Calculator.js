@@ -1,8 +1,42 @@
 export default class Calc
 {
+    static get DEG_TO_RAD() {
+        if (this._DEG_TO_RAD)
+            return this._DEG_TO_RAD;
+
+        this._DEG_TO_RAD = Math.PI / 180;
+        return this._DEG_TO_RAD;
+    }
+
+    static get RAD_TO_DEG() {
+        if (this._RAD_TO_DEG)
+            return this._RAD_TO_DEG;
+
+        this._RAD_TO_DEG = 180 / Math.PI;
+        return this._RAD_TO_DEG;
+    }
+
+    static get DEG180_TO_RAD() {
+        if (this._DEG180_TO_RAD)
+            return this._DEG180_TO_RAD;
+
+        this._DEG180_TO_RAD = 180 * Math.PI / 180;
+        return this._DEG180_TO_RAD;
+    }
+
+
     constructor()
     {
 
+    }
+
+
+    static toRadians(degree) {
+        return degree * this.DEG_TO_RAD;
+    }
+
+    static toDegrees(radians) {
+        return radians * this.RAD_TO_DEG;
     }
 
 
@@ -37,7 +71,17 @@ export default class Calc
      */
     static getSizeFitInBounds(backgroundImage, viewport)
     {
-        const scale = Calc.getScale(backgroundImage, viewport);
+        const scale = this.getScale(backgroundImage, viewport);
         return new PIXI.Rectangle(0, 0, scale.min * backgroundImage.width, scale.min * backgroundImage.height);
     };
+
+
+    /**
+     * anchor가 중앙인 객체 좌표를 anchor가 0,0인 좌표로 변환합니다.
+     * @param shape {PIXI.Point|*}
+     */
+    static convertCenterPointToLeftTopPoint(shape)
+    {
+        return new PIXI.Point(shape.x - shape.width / 2, shape.y - shape.height / 2);
+    }
 }

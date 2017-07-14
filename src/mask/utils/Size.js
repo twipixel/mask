@@ -17,19 +17,29 @@ export default class Size
         return (this.isInitialized) ? this.isInitialized : false;
     }
 
-    static get windowRetinaAppliedWidth()
+    static get windowWidth()
     {
         return window.innerWidth * window.devicePixelRatio;
     }
 
-    static get windowRetinaAppliedHeight()
+    static get windowHeight()
     {
         return window.innerHeight * window.devicePixelRatio;
     }
 
-    static get windowRetinaAppliedSize()
+    static get windowSize()
     {
-        return new PIXI.Rectangle(0, 0, Size.windowRetinaAppliedWidth, Size.windowRetinaAppliedHeight);
+        return new PIXI.Rectangle(0, 0, Size.windowWidth, Size.windowHeight);
+    }
+
+    static get windowCenterX()
+    {
+        return this.windowWidth / 2;
+    }
+
+    static get windowCenterY()
+    {
+        return this.windowHeight / 2;
     }
 
 

@@ -30,6 +30,13 @@ export default class Bitmap extends PIXI.Container {
             this._originalImageWidth = this._image.width;
             this._originalImageHeight = this._image.height;
             this._originalImageSize = new PIXI.Rectangle(0, 0, this.originalImageWidth, this.originalImageHeight);
+
+            this.registrationPoint = new PIXI.Graphics();
+            this.registrationPoint.beginFill(0xFF3300, 1);
+            this.registrationPoint.drawCircle(0, 0, 5);
+            this.registrationPoint.endFill();
+            this.addChild(this.registrationPoint);
+
             this.emit(Bitmap.READY);
         }, 10);
     }
