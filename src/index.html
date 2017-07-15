@@ -26,17 +26,19 @@
 </head>
 <body>
     <canvas id="canvas"></canvas>
-    <script type="text/javascript" src="./vendor/be.min.js"></script>
-    <script type="text/javascript" src="./vendor/animation.js"></script>
 
     <script>
         (function () {
             if (navigator.userAgent.indexOf('Electron') >= 0) {
                 require('babel-register');
                 window.PIXI = require('./vendor/pixi');
+                document.write('<script src="./vendor/be.min.js"><' + '/script>');
+                document.write('<script src="./vendor/animation.js"><' + '/script>');
                 require('./index');
             }
             else {
+                document.write('<script src="./../src/vendor/be.min.js"><' + '/script>');
+                document.write('<script src="./../src/vendor/animation.js"><' + '/script>');
                 document.write('<script src="./vendor.bundle.js"><' + '/script>');
                 document.write('<script src="./bundle.js"><' + '/script>');
             }

@@ -89,7 +89,8 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
         const viewport = this.viewport = Size.windowSize;
 
         const backgroundImage = this.backgroundImage =
-            new BackgroundImage('./../assets/img/background0.png', viewport);
+            new BackgroundImage('./../assets/img/background0.jpg', viewport);
+            //new BackgroundImage('./../assets/img/background1.jpg', viewport);
 
         backgroundImage.on(Bitmap.READY, this.onBackgroundImageReady.bind(this));
     }
@@ -103,11 +104,18 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
         const imageSize = Size.initializedBackgroundImageSize;
         this.backgroundImage.bitmapWidth = imageSize.width;
         this.backgroundImage.bitmapHeight = imageSize.height;
-        this.backgroundImage.bitmapRotation = Calc.toRadians(20);
+
+        this.backgroundImage.bitmapRotation = Calc.toRadians(10);
         this.backgroundImage.x = Size.windowCenterX;
         this.backgroundImage.y = Size.windowCenterY;
+
+        /*this.backgroundImage.x = 600;
+        this.backgroundImage.y = 900;
+        this.backgroundImage.bitmapRotation = -Calc.toRadians(30);*/
+
+        this.backgroundImage.alpha = 0.3;
         //this.backgroundImage.visible = false;
-        this.backgroundImage.alpha = 0.7;
+
         this.maskLayer.addChild(this.backgroundImage);
 
         const mask = this.mask = new Mask('./../assets/img/mask0.png');
@@ -122,7 +130,8 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
         this.mask.bitmapHeight = maskDefaultSize.height;
         this.mask.x = Size.windowCenterX - 200;
         this.mask.y = Size.windowCenterY - 100;
-        this.mask.visible = false;
+        //this.mask.alpha = 0.7;
+        //this.mask.visible = false;
         this.maskLayer.addChild(this.mask);
 
         this.start();
@@ -132,6 +141,8 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
     start()
     {
         const dimmedMask = this.dimmedMask = new DimmedMask(this.viewport, this.backgroundImage, this.mask);
+        dimmedMask.alpha = 0.3;
+        dimmedMask.visible = true;
         this.maskLayer.addChild(dimmedMask);
     }
 

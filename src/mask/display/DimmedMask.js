@@ -2,18 +2,18 @@ import Size from './../utils/Size';
 import Calc from './../utils/Calculator';
 
 
-export default class DimmedMask extends PIXI.Container
-{
+export default class DimmedMask extends PIXI.Container {
     /**
      *
      * @param viewport {PIXI.Rectangle|*}
      * @param backgroundImage {BackgroundImage}
      * @param maskImage {Mask}
      */
-    constructor(viewport, backgroundImage, maskImage)
-    {
+    constructor(viewport, backgroundImage, maskImage) {
         super();
 
+        this.dimmedAlpha = 0.8;
+        this.dimmedColor = 0x000000;
         this.viewport = viewport;
         this.backgroundImage = backgroundImage;
         this.maskImage = maskImage;
@@ -23,10 +23,7 @@ export default class DimmedMask extends PIXI.Container
     }
 
 
-    initialize()
-    {
-        this.alpha = 0.7;
-
+    initialize() {
         this.canvas = document.createElement('canvas');
         this.canvas.width = this.viewport.width;
         this.canvas.height = this.viewport.height;
@@ -41,39 +38,147 @@ export default class DimmedMask extends PIXI.Container
 
         this.dimmed = new PIXI.Sprite(PIXI.Texture.fromCanvas(this.canvas));
         this.addChild(this.dimmed);
+
+        this.rotationPivot = new PIXI.Point(0, 0);
     }
 
 
-    addEvent()
-    {
+    addEvent() {
 
     }
 
 
-    update(ms)
-    {
+    update(ms) {
+        this.clearCanvas();
+        this.drawViewportRectangle();
+        //this.drawBackground();
+        this.drawDimmedBackground();
+        this.drawMask();
+    }
+
+
+    clearCanvas() {
         // clear canvas
         this.canvas.width = this.viewport.width;
+    }
 
+
+    drawViewportRectangle()
+    {
+        // 이전 상태 저장
+        this.ctx.save();
+
+        // 디버그 viewport 영역 그리기
+        this.ctx.lineWidth = 5;
+        this.ctx.strokeStyle = 'green';
+        this.ctx.beginPath();
+        this.ctx.lineTo(this.viewport.width, 0);
+        this.ctx.lineTo(this.viewport.width, this.viewport.height);
+        this.ctx.lineTo(0, this.viewport.height);
+        this.ctx.lineTo(0, 0);
+        this.ctx.closePath();
+        this.ctx.stroke();
+
+        // 이전 상태 복원
+        this.ctx.restore();
+    }
+
+
+    /**
+     * 배경 이미지 자체를 그리기
+     */
+    drawBackground()
+    {
         // 이전 상태 저장
         this.ctx.save();
 
         // 회전
         this.ctx.rotate(this.backgroundImage.rotation);
 
-        console.log('pivotOffset[', this.backgroundImage.pivotOffset.x, this.backgroundImage.pivotOffset.y, ']');
+        // 이미지를 가운데 회전하기 위해 가운데 중심점으로 이동
+        this.ctx.translate(-this.backgroundImage.bitmapHalfWidth, -this.backgroundImage.bitmapHalfHeight);
 
-        //원래 위치로 이동
-        //this.ctx.translate(this.backgroundImage.x, this.backgroundImage.y);
-        this.ctx.translate(
-            this.backgroundImage.x - this.backgroundImage.pivotOffset.x + -(this.backgroundImage.bitmapWidth / 2),
-            this.backgroundImage.y - this.backgroundImage.pivotOffset.y + -(this.backgroundImage.bitmapHeight / 2));
+        // 이미지를 좌상단을 0, 0으로 위치 시키기
+        const offset = this.backgroundImage.bitmapAndContainerRegistrationPointDistance;
+        this.ctx.translate(offset.x, offset.y);
+
+        // 배경이미지의 좌상단 좌표 가져오기
+        const leftTop = this.backgroundImage.leftTopPoint;
+
+        // context의 회전한 만큼 좌상단도 회전시키기
+        const rotationLeftTop = Calc.getRotationPoint(this.rotationPivot, leftTop, -Calc.toDegrees(this.backgroundImage.bitmapRotation));
+
+        this.ctx.translate(rotationLeftTop.x, rotationLeftTop.y);
 
         this.ctx.drawImage(this.backgroundImage.bitmap.imageElement,
-            0, 0, this.backgroundImage.bitmap.width, this.backgroundImage.bitmap.height);
+            0, 0, this.backgroundImage.bitmapWidth, this.backgroundImage.bitmapHeight);
+
+        // 디버그 이동 해야할 라인 그리기
+        this.ctx.lineWidth = 5;
+        this.ctx.strokeStyle = 'red';
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, 0);
+        this.ctx.lineTo(leftTop.x, 0);
+        this.ctx.lineTo(leftTop.x, leftTop.y);
+        this.ctx.moveTo(0, 0);
+        this.ctx.lineTo(rotationLeftTop.x, 0);
+        this.ctx.lineTo(rotationLeftTop.x, rotationLeftTop.y);
+        this.ctx.stroke();
+
+        // 이전 상태 복원
+        this.ctx.restore();
+    }
 
 
-        this.ctx.translate(0, 0);
+    /**
+     * 배경 이미지 형태만 따와서 딤드 배경 채우기
+     */
+    drawDimmedBackground()
+    {
+        // 이전 상태 저장
+        this.ctx.save();
+
+        // 회전
+        this.ctx.rotate(this.backgroundImage.rotation);
+
+        // 이미지를 가운데 회전하기 위해 가운데 중심점으로 이동
+        this.ctx.translate(-this.backgroundImage.bitmapHalfWidth, -this.backgroundImage.bitmapHalfHeight);
+
+        // 이미지를 좌상단을 0, 0으로 위치 시키기
+        const offset = this.backgroundImage.bitmapAndContainerRegistrationPointDistance;
+        this.ctx.translate(offset.x, offset.y);
+
+        // 배경이미지의 좌상단 좌표 가져오기
+        const leftTop = this.backgroundImage.leftTopPoint;
+
+        // context의 회전한 만큼 좌상단도 회전시키기
+        const rotationLeftTop = Calc.getRotationPoint(this.rotationPivot, leftTop, -Calc.toDegrees(this.backgroundImage.bitmapRotation));
+
+        this.ctx.translate(rotationLeftTop.x, rotationLeftTop.y);
+
+        this.ctx.globalAlpha = this.dimmedAlpha;
+        this.ctx.fillStyle = this.dimmedColor;
+        this.ctx.fillRect(0, 0, this.backgroundImage.bitmapWidth, this.backgroundImage.bitmapHeight);
+
+        // 이전 상태 복원
+        this.ctx.restore();
+    }
+
+
+    drawMask()
+    {
+        // 이전 상태 저장
+        this.ctx.save();
+
+        this.ctx.globalCompositeOperation = 'destination-out';
+
+        // 배경이미지의 좌상단 좌표 가져오기
+        const leftTop = this.maskImage.leftTopPoint;
+
+        this.ctx.translate(leftTop.x, leftTop.y);
+
+        this.ctx.drawImage(this.maskImage.bitmap.imageElement,
+            0, 0, this.maskImage.bitmapWidth, this.maskImage.bitmapHeight);
 
         // 이전 상태 복원
         this.ctx.restore();

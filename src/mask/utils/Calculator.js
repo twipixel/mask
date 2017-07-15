@@ -84,4 +84,23 @@ export default class Calc
     {
         return new PIXI.Point(shape.x - shape.width / 2, shape.y - shape.height / 2);
     }
+
+
+    /**
+     * 회전하는 좌표 구하기
+     * @param pivot 사각형의 중심점
+     * @param point 계산하고 싶은 포인트
+     * @param angle 회전각 degrees
+     * @returns {{x: (number|*), y: (number|*)}}
+     */
+    static getRotationPoint(pivot, point, angle) {
+        const diffX = point.x - pivot.x;
+        const diffY = point.y - pivot.y;
+        const dist = Math.sqrt(diffX * diffX + diffY * diffY);
+        const ca = Math.atan2(diffY, diffX) * 180 / Math.PI;
+        const na = ((ca + angle) % 360) * Math.PI / 180;
+        const x = (pivot.x + dist * Math.cos(na) + 0.5) | 0;
+        const y = (pivot.y + dist * Math.sin(na) + 0.5) | 0;
+        return {x: x, y: y};
+    }
 }

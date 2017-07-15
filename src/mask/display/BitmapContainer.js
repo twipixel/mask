@@ -21,6 +21,8 @@ export default class BitmapContainer extends PIXI.Container
         this.bitmap = new Bitmap(this.url);
         this.addChild(this.bitmap);
 
+        this._bitmapHalfWidth = 0;
+        this._bitmapHalfHeight = 0;
         this.pivotOffset = new PIXI.Point(0, 0);
     }
 
@@ -39,23 +41,34 @@ export default class BitmapContainer extends PIXI.Container
 
 
     /**
+     * 비트맵을 옮겨서 가운데가 중심점입니다.
+     */
+    addRegistrationPoint()
+    {
+        this.registrationPoint = new PIXI.Graphics();
+        this.registrationPoint.beginFill(0x4CAF50, 1);
+        this.registrationPoint.drawCircle(0, 0, 5);
+        this.registrationPoint.endFill();
+        this.addChild(this.registrationPoint);
+    }
+
+
+    /**
      * 이미지가 준비되면 중앙정렬을 위해 준비되었다고 알려준다.
      */
     onReadyBitmap()
     {
         // 가운데 정렬
-        this.bitmap.x = -(this.bitmap.width / 2);
-        this.bitmap.y = -(this.bitmap.height / 2);
+        this.bitmap.x = -(this.bitmapHalfWidth);
+        this.bitmap.y = -(this.bitmapHalfHeight);
         this.emit(Bitmap.READY);
-
-        console.log('bitmapRegistrationPoint', this.bitmapRegistrationPoint);
 
         if (this.onReady) {
             this.onReady();
         }
 
+        this.addRegistrationPoint();
         this.drawBounds();
-        this.drawRegistrationPoint();
     }
 
 
@@ -69,7 +82,8 @@ export default class BitmapContainer extends PIXI.Container
     set bitmapWidth(value)
     {
         this.bitmap.width = value;
-        this.bitmap.x = this.bitmapLeftTopX;
+        this._bitmapHalfWidth = this.bitmap.width / 2;
+        this.bitmap.x = -this.bitmapHalfWidth;
         this.prevBitmapRegistrationPoint = this.bitmapRegistrationPoint;
     }
 
@@ -79,10 +93,17 @@ export default class BitmapContainer extends PIXI.Container
     }
 
 
+    get bitmapHalfWidth()
+    {
+        return this._bitmapHalfWidth;
+    }
+
+
     set bitmapHeight(value)
     {
         this.bitmap.height = value;
-        this.bitmap.y = this.bitmapLeftTopY;
+        this._bitmapHalfHeight = this.bitmap.height / 2;
+        this.bitmap.y = -this.bitmapHalfHeight;
         this.prevBitmapRegistrationPoint = this.bitmapRegistrationPoint;
     }
 
@@ -92,17 +113,19 @@ export default class BitmapContainer extends PIXI.Container
     }
 
 
+    get bitmapHalfHeight()
+    {
+        return this._bitmapHalfHeight;
+    }
+
+
     set bitmapRotation(radians)
     {
-        console.log('!!!!! bitmapRotation(', Calc.toDegrees(radians), ')');
-
         this.rotation = radians;
 
         const current = this.bitmapRegistrationPoint;
         const prev = this.prevBitmapRegistrationPoint;
         this.pivotOffset = new PIXI.Point(current.x - prev.x, current.y - prev.y);
-
-        console.log('current[', current.x, current.y, ']', 'prev[', prev.x, prev.y, ']', 'offset[', this.pivotOffset.x, this.pivotOffset.y, ']');
     }
 
 
@@ -112,9 +135,30 @@ export default class BitmapContainer extends PIXI.Container
     }
 
 
+    get leftTopPoint()
+    {
+        return this.toGlobal(this.bitmapRegistrationPoint);
+    }
+
+
     get bitmapRegistrationPoint()
     {
         return this.toLocal(this.bitmap.registrationPoint, this.bitmap);
+    }
+
+
+    get bitmapAndContainerRegistrationPointDistance()
+    {
+        if (!this.registrationPoint) {
+            return new PIXI.Point(0, 0);
+        }
+
+        const bitmapRegistrationPoint = this.bitmapRegistrationPoint;
+
+        return new PIXI.Point(
+            this.registrationPoint.x - bitmapRegistrationPoint.x,
+            this.registrationPoint.y - bitmapRegistrationPoint.y,
+        );
     }
 
 
@@ -142,13 +186,13 @@ export default class BitmapContainer extends PIXI.Container
 
     get bitmapLeftTopX()
     {
-        return -(this.bitmap.width / 2);
+        return -this.bitmapHalfWidth;
     }
 
 
     get bitmapLeftTopY()
     {
-        return -(this.bitmap.height / 2);
+        return -this.bitmapHalfHeight;
     }
 
 
@@ -189,12 +233,4 @@ export default class BitmapContainer extends PIXI.Container
     }
 
 
-    drawRegistrationPoint()
-    {
-        this.registrationPoint = new PIXI.Graphics();
-        this.registrationPoint.beginFill(0xFF3300, 1);
-        this.registrationPoint.drawCircle(0, 0, 5);
-        this.registrationPoint.endFill();
-        this.addChild(this.registrationPoint);
-    }
 }
