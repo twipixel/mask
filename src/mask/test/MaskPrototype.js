@@ -113,7 +113,7 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
         this.backgroundImage.y = 900;
         this.backgroundImage.bitmapRotation = -Calc.toRadians(30);*/
 
-        this.backgroundImage.alpha = 0.3;
+        //this.backgroundImage.alpha = 0.3;
         //this.backgroundImage.visible = false;
 
         this.maskLayer.addChild(this.backgroundImage);
@@ -130,7 +130,7 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
         this.mask.bitmapHeight = maskDefaultSize.height;
         this.mask.x = Size.windowCenterX - 200;
         this.mask.y = Size.windowCenterY - 100;
-        //this.mask.alpha = 0.7;
+        this.mask.alpha = 0.001;
         //this.mask.visible = false;
         this.maskLayer.addChild(this.mask);
 
@@ -141,7 +141,7 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
     start()
     {
         const dimmedMask = this.dimmedMask = new DimmedMask(this.viewport, this.backgroundImage, this.mask);
-        dimmedMask.alpha = 0.3;
+        dimmedMask.alpha = 0.82;
         dimmedMask.visible = true;
         this.maskLayer.addChild(dimmedMask);
     }

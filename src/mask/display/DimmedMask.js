@@ -12,7 +12,7 @@ export default class DimmedMask extends PIXI.Container {
     constructor(viewport, backgroundImage, maskImage) {
         super();
 
-        this.dimmedAlpha = 0.8;
+        this.dimmedAlpha = 1;
         this.dimmedColor = 0x000000;
         this.viewport = viewport;
         this.backgroundImage = backgroundImage;
