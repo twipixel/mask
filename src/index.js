@@ -1,7 +1,7 @@
 import MaskTest from './mask/test/MaskTest';
-import MaskPrototype from './mask/test/MaskPrototype';
+import MaskMain from './mask/MaskMain';
 
-var canvas, renderer, stage, maskMain, rootLayer, maskLayer;
+var canvas, renderer, stage, maskMain, stageLayer, maskLayer;
 
 window.onload = initailize.bind(this);
 window.onresize = resizeWindow.bind(this);
@@ -22,7 +22,12 @@ function initailize() {
     //renderer.roundPixels = true;
 
     stage = new PIXI.Container(0xE6E9EC);
-    rootLayer = new PIXI.Container(0xE6E9EC);
+    stageLayer = new PIXI.Container(0xE6E9EC);
+    /**
+     * PhotoEditor.root 와 구조를 맞추기 위헤서 생성
+     * @type {PIXI.Container|*}
+     */
+    stageLayer.root = new PIXI.Container(0xE6E9EC);
     maskLayer = new PIXI.Container(0xE6E9EC);
 
     // 컨테이너에 scale과 rotation 이 있을 때를 고려해서 만들었습니다
@@ -30,10 +35,13 @@ function initailize() {
     //maskLayer.rotation = Calc.toRadians(40);
 
     stage.addChild(maskLayer);
-    stage.addChild(rootLayer);
+    stage.addChild(stageLayer);
 
-    //maskMain = new MaskTest(renderer, rootLayer, maskLayer);
-    maskMain = new MaskPrototype(renderer, rootLayer, maskLayer);
+    console.log('----------------------------------------------------------------------');
+    console.log('MaskMain(', renderer, stageLayer, maskLayer, ')');
+    console.log('----------------------------------------------------------------------');
+    //maskMain = new MaskTest(renderer, stageLayer, maskLayer);
+    maskMain = new MaskMain(renderer, stageLayer, maskLayer);
 
     updateLoop();
     resizeWindow();

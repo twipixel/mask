@@ -1,21 +1,25 @@
-import Size from './../utils/Size';
-import Calc from './../utils/Calculator';
-import Mask from './../display/Mask';
-import Bitmap from './../display/Bitmap';
-import DimmedMask from './../display/DimmedMask';
-import BackgroundImage from './../display/BackgroundImage';
+import Size from './utils/Size';
+import Calc from './utils/Calculator';
+import Mask from './display/Mask';
+import Bitmap from './display/Bitmap';
+import DimmedMask from './display/DimmedMask';
+import BackgroundImage from './display/BackgroundImage';
+import TransformTool from './transform/TransformTool';
 
 
 
-export default class MaskPrototype extends PIXI.utils.EventEmitter
+export default class MaskMain extends PIXI.utils.EventEmitter
 {
-    constructor(renderer, rootLayer, maskLayer)
+    constructor(renderer, stageLayer, maskLayer, options = {useSnap: true, snapAngle: 5})
     {
+        console.log('constructor(', renderer, stageLayer, maskLayer, options, ')');
+
         super();
 
         this.renderer = renderer;
-        this.rootLayer = rootLayer;
+        this.stageLayer = stageLayer;
         this.maskLayer = maskLayer;
+        this.options = options;
 
         this.initialize();
     }
@@ -26,6 +30,17 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
     // 리사이즈 & 업데이트 & 초기화 함수
     //
     /////////////////////////////////////////////////////////////////////////////
+
+
+    initialize()
+    {
+        this.maskLayer.updateTransform();
+
+        //this.testBitmap();
+        this.testCreate();
+
+        this.transformTool = new TransformTool(this.stageLayer, this.maskLayer, this.options);
+    }
 
 
     resize()
@@ -45,13 +60,6 @@ export default class MaskPrototype extends PIXI.utils.EventEmitter
         if (this.dimmedMask) {
             this.dimmedMask.update(ms);
         }
-    }
-
-
-    initialize()
-    {
-        //this.testBitmap();
-        this.testCreate();
     }
 
 

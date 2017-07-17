@@ -24,13 +24,6 @@ export default class Calc
         return this._DEG180_TO_RAD;
     }
 
-
-    constructor()
-    {
-
-    }
-
-
     static toRadians(degree) {
         return degree * this.DEG_TO_RAD;
     }
