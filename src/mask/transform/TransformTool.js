@@ -315,6 +315,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
     releaseTarget() {
         if(this.target === null) return;
+        if(this.target === null) return;
         this.hide();
         this.removeTextureUpdateEvent();
         this.target = null;
@@ -322,16 +323,16 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
 
     addTextureUpdateEvent() {
-        this.target._targetTextureUpdateListener = this.onTextureUpdate.bind(this);
+        //this.target._targetTextureUpdateListener = this.onTextureUpdate.bind(this);
         //this.target.on(VectorContainer.TEXTURE_UPDATE, this.target._targetTextureUpdateListener);
     }
 
 
     removeTextureUpdateEvent() {
-        if (this.target !== null && this.target._targetTextureUpdateListener !== null) {
+        //if (this.target !== null && this.target._targetTextureUpdateListener !== null) {
             //this.target.off(VectorContainer.TEXTURE_UPDATE, this.target._targetTextureUpdateListener);
-            this.target._targetTextureUpdateListener = null;
-        }
+            //this.target._targetTextureUpdateListener = null;
+        //}
     }
 
 
@@ -348,16 +349,23 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
         var scaleSignX = this.target.scaleSignX;
         var scaleSignY = this.target.scaleSignY;
         var localBounds = this.target.getLocalBounds();
+
         var w = localBounds.width * scaleSignX;
         var h = localBounds.height * scaleSignY;
+
+        var hw = w / 2;
+        var hh = h / 2;
+        var x = -hw;
+        var y = -hh;
+
         var deleteButtonOffsetY = this.deleteButtonOffsetY * scaleSignY;
         //var rotationLineLength = this.rotationLineLength * scaleSignY;
 
-        this.c.tl.localPoint = new PIXI.Point(0, 0);
-        this.c.tr.localPoint = new PIXI.Point(w, 0);
+        this.c.tl.localPoint = new PIXI.Point(x, y);
+        this.c.tr.localPoint = new PIXI.Point(hw, y);
         this.c.tc.localPoint = PointUtil.interpolate(this.c.tr.localPoint, this.c.tl.localPoint, .5);
-        this.c.bl.localPoint = new PIXI.Point(0, h);
-        this.c.br.localPoint = new PIXI.Point(w, h);
+        this.c.bl.localPoint = new PIXI.Point(x, hh);
+        this.c.br.localPoint = new PIXI.Point(hw, hh);
         this.c.bc.localPoint = PointUtil.interpolate(this.c.br.localPoint, this.c.bl.localPoint, .5);
         this.c.ml.localPoint = PointUtil.interpolate(this.c.bl.localPoint, this.c.tl.localPoint, .5);
         this.c.mr.localPoint = PointUtil.interpolate(this.c.br.localPoint, this.c.tr.localPoint, .5);
@@ -431,10 +439,12 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
         var op_scalex = scaleX > 0 ? 1 : -1;
         var op_scaley = scaleY > 0 ? 1 : -1;
 
-        if (abs_scalex > abs_scaley)
+        if (abs_scalex > abs_scaley) {
             scaleY = abs_scalex * op_scaley;
-        else
+        }
+        else {
             scaleX = abs_scaley * op_scalex;
+        }
 
         this.target.scale = {x: scaleX, y: scaleY};
     }
@@ -634,8 +644,8 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
         var scaleX = 1, scaleY = 1;
 
         if(this.stageLayer) {
-            scaleX = this.stageLayer.croppedScaleX;
-            scaleY = this.stageLayer.croppedScaleY;
+            scaleX = this.stageLayer.croppedScaleX || 1;
+            scaleY = this.stageLayer.croppedScaleY || 1;
         }
 
         var noScaleOffsetX = offsetX / (this.diffScaleX * scaleX);
@@ -805,6 +815,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
 
     onControlMoveStart(e) {
+        console.log('onControlMoveStart');
         if(!this.target) return;
         this.downCnt++;
         this.startMousePoint = {x: e.currentMousePoint.x, y: e.currentMousePoint.y};
@@ -816,6 +827,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
 
     onControlMove(e) {
+        console.log('onControlMove');
         if(!this.target) return;
         this.doTransform(e);
         this.draw();
@@ -824,6 +836,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
 
     onControlMoveEnd(e) {
+        console.log('onControlMoveEnd');
 
         if(!this.target) return;
 

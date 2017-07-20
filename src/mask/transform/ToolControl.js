@@ -53,7 +53,7 @@ export default class ToolControl extends PIXI.Sprite
         this.currentRadian = 0;
         this.currentRotation = 0;
 
-        this.drawAlpha = 0.0;
+        this.drawAlpha = 0.1;
         this.buttonMode = true;
         this.interactive = true;
         this.defaultCursor = 'inherit';
@@ -316,16 +316,12 @@ export default class ToolControl extends PIXI.Sprite
 
     onMouseMove(e)
     {
-
         var globalPoint = Mouse.global;
         this.currentMousePoint = globalPoint;
         this.targetCurrentMousePoint = this.targetLayer.toLocal(globalPoint);
 
         this.prevMousePoint = this.prevMousePoint || this.currentMousePoint;
         this.targetPrevMousePoint = this.targetPrevMousePoint || this.targetCurrentMousePoint;
-
-        this.targetCurrentMousePoint = this.hitTest(
-            this.targetCurrentMousePoint, this._lastPoint || ToolControl.imageRect.center );
 
         this.changeMovement = {
             x: this.currentMousePoint.x - this.prevMousePoint.x,
@@ -678,8 +674,8 @@ export default class ToolControl extends PIXI.Sprite
 
         var targetFlipScaleX = this.target.scale.x;
         var targetFlipScaleY = this.target.scale.y;
-        var croppedScaleX = this.photoEditor.croppedScaleX;
-        var croppedScaleY = this.photoEditor.croppedScaleY;
+        var croppedScaleX = this.photoEditor.croppedScaleX || 1;
+        var croppedScaleY = this.photoEditor.croppedScaleY || 1;
         var isFlip = (targetFlipScaleX * targetFlipScaleY * croppedScaleX * croppedScaleY) < 1;
 
         if(isFlip) {

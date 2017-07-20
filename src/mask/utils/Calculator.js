@@ -32,6 +32,12 @@ export default class Calc
         return radians * this.RAD_TO_DEG;
     }
 
+    static getRotation(centerPoint, mousePoint) {
+        var dx = mousePoint.x - centerPoint.x;
+        var dy = mousePoint.y - centerPoint.y;
+        var radians = Math.atan2(dy, dx);
+        return Calc.toDegrees(radians);
+    }
 
     /**
      * viewport와 backgroundImage비율을 구합니다.
@@ -95,5 +101,34 @@ export default class Calc
         const x = (pivot.x + dist * Math.cos(na) + 0.5) | 0;
         const y = (pivot.y + dist * Math.sin(na) + 0.5) | 0;
         return {x: x, y: y};
+    }
+
+
+    static deltaTransformPoint(matrix, point) {
+        var dx = point.x * matrix.a + point.y * matrix.c + 0;
+        var dy = point.x * matrix.b + point.y * matrix.d + 0;
+        return {x: dx, y: dy};
+    }
+
+    static getScaleX(matrix) {
+        return Math.sqrt(matrix.a * matrix.a + matrix.b * matrix.b);
+    }
+
+    static getScaleY(matrix) {
+        return Math.sqrt(matrix.c * matrix.c + matrix.d * matrix.d);
+    }
+
+    static getSkewX(matrix) {
+        var px = Calc.deltaTransformPoint(matrix, {x:0, y:1});
+        return ((180 / Math.PI) * Math.atan2(px.y, px.x) - 90);
+    }
+
+    static getSkewY(matrix) {
+        var py = Calc.deltaTransformPoint(matrix, {x:1, y:0});
+        return ((180 / Math.PI) * Math.atan2(py.y, py.x));
+    }
+
+    static snapTo(num, snap) {
+        return Math.round(num / snap) * snap;
     }
 }

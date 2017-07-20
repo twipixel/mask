@@ -11,13 +11,15 @@ export default class BitmapContainer extends PIXI.Container
 
         this.url = url;
 
-        this.initialize();
-        this.addEvent();
+        this._initialize();
+        this._addEvent();
     }
 
 
-    initialize()
+    _initialize()
     {
+        console.log('   2. BitmapContainer initialize');
+
         this.bitmap = new Bitmap(this.url);
         this.addChild(this.bitmap);
 
@@ -27,7 +29,7 @@ export default class BitmapContainer extends PIXI.Container
     }
 
 
-    addEvent()
+    _addEvent()
     {
         this.bitmap.on(Bitmap.READY, this.onReadyBitmap.bind(this));
     }

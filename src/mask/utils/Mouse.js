@@ -1,5 +1,15 @@
 export default class Mouse
 {
+    static get DESKTOP_MOUSE()
+    {
+        return this.renderer.plugins.interaction.mouse;
+    }
+
+    static get MOBILE_MOUSE()
+    {
+        return this.renderer.plugins.interaction.pointer;
+    }
+
     /**
      * PIXI.Application.renderer
      * 랜더러에서 interactio 객체를 참조할 수 있어서 사용하려면 렌더러를 셋팅해야 합니다.
@@ -19,7 +29,7 @@ export default class Mouse
      *
      * 만약 설정하지 않으면 기본 PC만 대응하도록 mouse 객체를 설정합니다.
      *
-     * PC : Mouse.renderer.plugins.interaction.mouse
+     * Desktop : Mouse.renderer.plugins.interaction.mouse
      * Mobile : Mouse.renderer.plugins.interaction.pointer
      * @param value
      */
@@ -28,20 +38,20 @@ export default class Mouse
     }
     static get mouse() {
         if (!this._mouse) {
-            this._mouse = this.renderer.plugins.interaction.mouse;
+            this._mouse = this.DESKTOP_MOUSE;
         }
         return this._mouse;
     }
 
 
     static get global() {
-        return this._mouse.global;
+        return this.mouse.global;
     }
     static get globalX() {
-        return this._mouse.global.x;
+        return this.mouse.global.x;
     }
     static get globalY() {
-        return this._mouse.global.y;
+        return this.mouse.global.y;
     }
 
 

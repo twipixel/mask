@@ -1,6 +1,7 @@
 import Size from './utils/Size';
 import Calc from './utils/Calculator';
 import Mask from './display/Mask';
+import Mouse from './utils/Mouse';
 import Bitmap from './display/Bitmap';
 import DimmedMask from './display/DimmedMask';
 import BackgroundImage from './display/BackgroundImage';
@@ -15,6 +16,8 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         console.log('constructor(', renderer, stageLayer, maskLayer, options, ')');
 
         super();
+
+        Mouse.renderer = renderer;
 
         this.renderer = renderer;
         this.stageLayer = stageLayer;
@@ -138,7 +141,8 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.mask.bitmapHeight = maskDefaultSize.height;
         this.mask.x = Size.windowCenterX - 200;
         this.mask.y = Size.windowCenterY - 100;
-        this.mask.alpha = 0.001;
+        //this.mask.alpha = 0.001;
+        this.mask.alpha = 0.4;
         //this.mask.visible = false;
         this.maskLayer.addChild(this.mask);
 
@@ -148,10 +152,34 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
     start()
     {
+        console.log('start');
+
+        this.maskMouseDownListener = this.onMaskDown.bind(this);
+        this.mask.mousedown = this.maskMouseDownListener;
+        this.mask.touchstart = this.maskMouseDownListener;
+
         const dimmedMask = this.dimmedMask = new DimmedMask(this.viewport, this.backgroundImage, this.mask);
-        dimmedMask.alpha = 0.82;
+        //dimmedMask.alpha = 0.82;
+        dimmedMask.alpha = 0.32;
         dimmedMask.visible = true;
         this.maskLayer.addChild(dimmedMask);
+
+        this.maskLayer.swapChildren(this.mask, this.dimmedMask);
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////////
+    //
+    // Event Functions
+    //
+    /////////////////////////////////////////////////////////////////////////////
+
+
+    onMaskDown(e)
+    {
+        const target = e.target;
+        console.log('target', target);
+        this.transformTool.setTarget(e);
     }
 
 
