@@ -430,8 +430,8 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
         var w = wh.x * 2;
         var h = wh.y * 2;
-        var scaleX = (1 + (vector.x / w)) * this.targetFlipScale.x;
-        var scaleY = (1 + (vector.y / h)) * this.targetFlipScale.y;
+        var scaleX = (this.targetScaleX + (vector.x / w)) * this.targetFlipScale.x;
+        var scaleY = (this.targetScaleY + (vector.y / h)) * this.targetFlipScale.y;
 
         var abs_scalex = Math.abs(scaleX);
         var abs_scaley = Math.abs(scaleY);
@@ -454,8 +454,8 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
         var currentControl = e.target;
         var currentMousePoint = e.currentMousePoint;
 
-        var scaleX = 1;
-        var scaleY = 1;
+        var scaleX = this.targetScaleX;
+        var scaleY = this.targetScaleY;
 
         var currentPoint = this.invertTransform.apply(currentMousePoint);
         var startPoint = this.invertTransform.apply(this.startMousePoint);
@@ -468,13 +468,14 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
         var w = wh.x * 2;
         var h = wh.y * 2;
 
-        if (isScaleHorizontal)
-            scaleX = 1 + (vector.x / w);
-        else
-            scaleY = 1 + (vector.y / h);
-
-        scaleX *= this.targetFlipScale.x;
-        scaleY *= this.targetFlipScale.y;
+        if (isScaleHorizontal) {
+            scaleX += (vector.x / w);
+            scaleY = scaleX;
+        }
+        else {
+            scaleY += (vector.y / h);
+            scaleX = scaleY;
+        }
 
         this.target.scale = {x: scaleX, y: scaleY};
     }
@@ -627,7 +628,11 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
     setPivotByControl(control) {
 
-        this.pivot = this.getPivot(control);
+        /*this.pivot = this.getPivot(control);
+        this.target.setPivot(this.pivot.localPoint);
+        this.adjustPosition();*/
+
+        this.pivot = this.c.mc;
         this.target.setPivot(this.pivot.localPoint);
         this.adjustPosition();
     }
@@ -641,7 +646,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
         var offsetX = this.lt.x - this.prevLtX;
         var offsetY = this.lt.y - this.prevLtY;
 
-        var scaleX = 1, scaleY = 1;
+        var scaleX = this.target.scale.x, scaleY = this.target.scale.y;
 
         if(this.stageLayer) {
             scaleX = this.stageLayer.croppedScaleX || 1;
@@ -817,6 +822,10 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
     onControlMoveStart(e) {
         console.log('onControlMoveStart');
         if(!this.target) return;
+
+        this.targetScaleX = this.target.scale.x;
+        this.targetScaleY = this.target.scale.y;
+
         this.downCnt++;
         this.startMousePoint = {x: e.currentMousePoint.x, y: e.currentMousePoint.y};
         this.selectedControl = e.target;
@@ -877,8 +886,9 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
     }
 
     get deleteButtonPosition() {
-        if (!this.c)
+        if (!this.c) {
             return new PIXI.Point(0, 0);
+        }
 
         var transform = this.target.worldTransform.clone();
         var tl = transform.apply(this.c.tl.localPoint);

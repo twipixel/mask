@@ -231,6 +231,7 @@ export default class ToolControl extends PIXI.Sprite
 
     onMouseDown(e)
     {
+        console.log('onMouseDown');
         e.stopPropagation();
         this._isMouseDown = true;
 

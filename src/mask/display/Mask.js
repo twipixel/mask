@@ -51,6 +51,6 @@ export default class Mask extends BitmapContainer
      * @param e
      */
     onTransformComplete(e) {
-        console.log('onTransformComplete');
+        console.log('onTransformComplete', this.scale);
     }
 }

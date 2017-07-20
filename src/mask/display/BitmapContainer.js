@@ -21,6 +21,8 @@ export default class BitmapContainer extends PIXI.Container
         console.log('   2. BitmapContainer initialize');
 
         this.bitmap = new Bitmap(this.url);
+        //this.bitmap.anchor.x = 0.5;
+        //this.bitmap.anchor.y = 0.5;
         this.addChild(this.bitmap);
 
         this._bitmapHalfWidth = 0;

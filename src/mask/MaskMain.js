@@ -125,7 +125,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.backgroundImage.bitmapRotation = -Calc.toRadians(30);*/
 
         //this.backgroundImage.alpha = 0.3;
-        //this.backgroundImage.visible = false;
+        this.backgroundImage.visible = false;
 
         this.maskLayer.addChild(this.backgroundImage);
 
@@ -141,8 +141,8 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.mask.bitmapHeight = maskDefaultSize.height;
         this.mask.x = Size.windowCenterX - 200;
         this.mask.y = Size.windowCenterY - 100;
-        //this.mask.alpha = 0.001;
-        this.mask.alpha = 0.4;
+        //this.mask.alpha = 0.0;
+        //this.mask.alpha = 0.1;
         //this.mask.visible = false;
         this.maskLayer.addChild(this.mask);
 
@@ -159,8 +159,8 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.mask.touchstart = this.maskMouseDownListener;
 
         const dimmedMask = this.dimmedMask = new DimmedMask(this.viewport, this.backgroundImage, this.mask);
-        //dimmedMask.alpha = 0.82;
-        dimmedMask.alpha = 0.32;
+        dimmedMask.alpha = 0.82;
+        //dimmedMask.alpha = 0.32;
         dimmedMask.visible = true;
         this.maskLayer.addChild(dimmedMask);
 

@@ -177,8 +177,12 @@ export default class DimmedMask extends PIXI.Container {
 
         this.ctx.translate(leftTop.x, leftTop.y);
 
+        /**
+         * WHY? maskImage.width, maskImage.height 하면 안될까?
+         */
         this.ctx.drawImage(this.maskImage.bitmap.imageElement,
-            0, 0, this.maskImage.bitmapWidth, this.maskImage.bitmapHeight);
+            //0, 0, this.maskImage.width, this.maskImage.height);
+            0, 0, this.maskImage.scale.x * this.maskImage.bitmapWidth, this.maskImage.scale.y * this.maskImage.bitmapHeight);
 
         // 이전 상태 복원
         this.ctx.restore();
