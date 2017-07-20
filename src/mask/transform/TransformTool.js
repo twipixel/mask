@@ -7,8 +7,9 @@ import RotationControlType from './RotationControlType';
 import {map, each} from "../utils/lambda";
 
 
-const _collection = {
+const dragRange = 10;
 
+const collection = {
     tl: null,
     tr: null,
     tc: null,
@@ -29,11 +30,8 @@ const _collection = {
     rbr: null
 };
 
-const _dragRange = 10;
-
 
 export default class TransformTool extends PIXI.utils.EventEmitter {
-
     static get DELETE() {
         return 'delete';
     }
@@ -46,26 +44,26 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
         return 'transformComplete';
     }
 
-    static get SELECT(){
+    static get SELECT() {
         return 'select';
     }
 
-    static get DESELECT(){
+    static get DESELECT() {
         return 'deselect';
     }
 
-    static get REQ_INPUT(){
+    static get REQ_INPUT() {
         return 'requestInput';
     }
 
-    static get DBCLICK(){
+    static get DBCLICK() {
         return 'dbClick';
     }
 
     /**
      * 사용자가 ToolControls 객체를 사용해 위치, 크기, 회전 등을 조절하고 난 후 마우스를 'UP'했을 때 발생하는 이벤트
      */
-    static get CONTROL_UP(){
+    static get CONTROL_UP() {
         return "controlUp";
     }
 
@@ -77,7 +75,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
      * @param targetLayer == PhotoEditor._stickerLayer
      * @param options
      */
-    constructor(stageLayer, targetLayer, options = {useSnap:true, snapAngle:5, deleteButtonOffsetY: 0}) {
+    constructor(stageLayer, targetLayer, options = {useSnap: true, snapAngle: 5, deleteButtonOffsetY: 0}) {
         super();
         this.stageLayer = stageLayer;
         this.targetLayer = targetLayer;
@@ -91,9 +89,6 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
         this.initialize();
         this.addEvent();
-
-        this._px = 0;
-        this._py = 0;
     };
 
 
@@ -127,22 +122,23 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
             new PIXI.Sprite.fromImage('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAAXNSR0IArs4c6QAAA5hJREFUSA2lVklMU1EUtb/fTlIpihgIG2TYOCxYsGFDYsIGMYoTCVaKGKNpQly4YeOCuHehG5Yk6IKEhaKGUBT6EZtQJRJgQUgaSJgqQylQZvo9p/aZ30mmm9z8++5775x777vv5etOHE90Sbar8T4p3nGIcYRgeXnZhj3EodInFOZfOQ4JESSj0Vi1trZ2D/ZJqEwfNIboqCQCRNra2tKbzebnU1NT1QA3QkkWQ3QYkn/AURA9vvL6+rrkdrv9BoOhfmxsjEQm+qFcH5GDkGjBCcxIDVBGbQKJPD4+LhcXF+enp6c7RkdHWTrOcW1k734kgiASdXSzGV9LQ0NDtqIoVy0Wy+VwOCyhXNkgupCZmWn3+Xy3NSQwUwsJGAQjt0DT8/Lyznu93mp0VNvKyspAf39/V0tLi6u8vHwI82xdNTc3d2Z+fl5ZWlq6j3FM2TCOES3BKcycaW1tLQXw+5GRke7KykqvLMs78EeAtd+CgoKJYDCoBAKBm/CLksGMlXiCs4ODg3Zs9Dgcjm9YqppMplBtba3S1dX1aWJiwtXU1NRNPwkA3jc7O8tyabsslgEjkjBN1j4DBA8WFxf7CYCx6nQ6e5CRsr29/Rr+O6urqy+am5s/FxYW+piB3++/hXVsDJaaWAkisuCi0+3t7aWov4cEaNHNzs7OjwB/Nzc3dwnzkWbY2Nio93g8H0DWGy3RfzMgo8jCAuBziLjDbrd/h191uVwkeNXR0cEmEFHqdnd3H6qq6t3c3LwOP4nFHMzkQhJGYh0aGqoeHh52wVbRrl9B8DZKwDVUig4EDug12hrlXIKIBYyENzaDbVpRUfED92ANpVAmJycvwp8QJQjSEtCSOLQEPIu0xsbGIhziANu0rq6uLxQKvYFfe5gikyRwiS5GRuEm2iyVEZfrCkoVRL3lmpqaEFqyD/4D1RvrEoStegJgdyVJcu7t7UmwJTwThra2tgDn8vPzzTk5Oc92dnacer1e1el0Ybhf4vuF8wcVZqFHSR7hKXCzXa1W6ypadgt+FY/ess1mC5SUlAyjXZVoFx2qXAwkQoKvEW/Ok5mZGXdWVtZvEgglMS8aWvoGfCzbkUh4HpFbPj097QRRryAiAZ+K6E3e96IBJ6UwMnHwFgA+xWH3lJWV/WIGsPkWabsrJdB+E4KIGRlxTx6jEX4uLCxUYXysDOKJBRHrLuOMivA9cusKcILGSzIf1yT8T8VvTDX+A7nQiRk9jngZAAAAAElFTkSuQmCC'),
         ];
 
-        for(var i=0; i<this.rotationCursorList.length; i++) {
-            var cursor = this.rotationCursorList[i];
+        for (var i = 0; i < this.rotationCursorList.length; i++) {
+            const cursor = this.rotationCursorList[i];
             cursor.visible = false;
-            cursor.anchor = {x:0.5, y:0.5};
+            cursor.anchor = {x: 0.5, y: 0.5};
             this.stageLayer.addChild(cursor);
         }
 
-        var controlOptions = {
+        const controlOptions = {
             photoEditor: this.stageLayer
         };
 
-        var rotationOptions = {
+        const rotationOptions = {
             photoEditor: this.stageLayer,
             rotationCursorList: this.rotationCursorList
         };
-        var deleteButtonOptions = {
+
+        const deleteButtonOptions = {
             photoEditor: this.stageLayer
         };
 
@@ -222,38 +218,41 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
                     break;
             }
         }
+
+        this.mouseDownX = 0;
+        this.mouseDownY = 0;
     };
 
 
     addEvent() {
 
         this.stageLayer.on(TransformTool.SET_TARGET, this.onSetTarget.bind(this));
-        this.stageLayer.root.on( "mousedown", this.onMouseDown, this );
-        this.stageLayer.root.on( 'mouseup', this.onMouseUp, this );
+        this.stageLayer.root.on("mousedown", this.onMouseDown, this);
+        this.stageLayer.root.on('mouseup', this.onMouseUp, this);
 
         this.downCnt = 0;
     }
 
-    onMouseDown(e){
+    onMouseDown(e) {
 
-        if( e.data.originalEvent.target != this.stageLayer.renderer.view ) return;
+        if (e.data.originalEvent.target != this.stageLayer.renderer.view) return;
 
-        this._px = e.data.global.x;
-        this._py = e.data.global.y;
+        this.mouseDownX = e.data.global.x;
+        this.mouseDownY = e.data.global.y;
     }
 
-    onMouseUp(e){
+    onMouseUp(e) {
 
-        if( e.data.originalEvent.target != this.stageLayer.renderer.view ) return;
+        if (e.data.originalEvent.target != this.stageLayer.renderer.view) return;
 
         this.downCnt--;
 
-        if ( this.downCnt < 0 && this.target ){
+        if (this.downCnt < 0 && this.target) {
 
-            let dx = e.data.global.x - this._px,
-                dy = e.data.global.y - this._py;
+            let dx = e.data.global.x - this.mouseDownX,
+                dy = e.data.global.y - this.mouseDownY;
 
-            if( dx * dx + dy * dy <= _dragRange * _dragRange ){
+            if (dx * dx + dy * dy <= dragRange * dragRange) {
 
                 this.target.emit(TransformTool.DESELECT);
                 this.target.visible = true;
@@ -271,7 +270,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
         this.g.visible = true;
 
-        each( this.controls, e => e.visible = true );
+        each(this.controls, e => e.visible = true);
     }
 
 
@@ -280,12 +279,12 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
         this.g.visible = false;
 
-        each( this.controls, e => e.visible = false );
-        each( this.rotationCursorList, e => e.visible = false );
+        each(this.controls, e => e.visible = false);
+        each(this.rotationCursorList, e => e.visible = false);
     }
 
 
-    activeTarget(target){
+    activeTarget(target) {
         this.target = target;
         this.removeTextureUpdateEvent();
         this.addTextureUpdateEvent();
@@ -298,7 +297,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
 
     drawCenter() {
-        if(this.target === null) return;
+        if (this.target === null) return;
         this.stageLayer.updateTransform();
         this.c.mc.drawCenter(Calc.toRadians(this.c.mc.angle), this.width, this.height);
     }
@@ -314,8 +313,8 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
 
     releaseTarget() {
-        if(this.target === null) return;
-        if(this.target === null) return;
+        if (this.target === null) return;
+        if (this.target === null) return;
         this.hide();
         this.removeTextureUpdateEvent();
         this.target = null;
@@ -330,14 +329,14 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
     removeTextureUpdateEvent() {
         //if (this.target !== null && this.target._targetTextureUpdateListener !== null) {
-            //this.target.off(VectorContainer.TEXTURE_UPDATE, this.target._targetTextureUpdateListener);
-            //this.target._targetTextureUpdateListener = null;
+        //this.target.off(VectorContainer.TEXTURE_UPDATE, this.target._targetTextureUpdateListener);
+        //this.target._targetTextureUpdateListener = null;
         //}
     }
 
 
     update() {
-        if(this.target === null) return;
+        if (this.target === null) return;
         this.setControls();
         this.updateTransform();
         this.draw();
@@ -405,12 +404,12 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
         // 여기서 target.scale 을 바로 넣는 것은
         // target 을 변환하고 나면 scale 을 1로 변환해버립니다.
         // 그래서 반전 상태가 아니면 1, 반전 상태 라면 -1이 됩니다.
-        this.targetFlipScale = {x:this.target.scale.x, y:this.target.scale.y};
+        this.targetFlipScale = {x: this.target.scale.x, y: this.target.scale.y};
     }
 
 
     updatePrevTargetLt() {
-        if(this.target === null) return;
+        if (this.target === null) return;
         this.prevLtX = this.lt.x;
         this.prevLtY = this.lt.y;
     }
@@ -555,7 +554,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
         g.clear();
         g.lineStyle(0.5, 0xFFFFFF);
 
-        this.drawRect( g, globalPoints );
+        this.drawRect(g, globalPoints);
 
         for (var prop in this.controls) {
             var p = globalPoints[prop];
@@ -572,9 +571,9 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
      * 2. target의 worldTransform을 통해 global 좌표를 계산한다.
      * @return {[type]} [description]
      */
-    updateGraphics(){
+    updateGraphics() {
 
-        if( !this.target ) return;
+        if (!this.target) return;
 
         this.stageLayer.updateTransform();
 
@@ -582,7 +581,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
         let locals = this.c,
             transform = this.target.worldTransform,
-            globals = map( _collection, (e, key)=> transform.apply( locals[key].localPoint ) );
+            globals = map(collection, (e, key)=> transform.apply(locals[key].localPoint));
 
         globals.de =
             globals.rde = this.deleteButtonPosition;
@@ -590,9 +589,9 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
         this.g.clear();
         this.g.lineStyle(0.5, 0xFFFFFF);
 
-        this.drawRect( this.g, globals );
+        this.drawRect(this.g, globals);
 
-        each( this.controls, (e, key)=>{
+        each(this.controls, (e, key)=> {
 
             e.x = globals[key].x;
             e.y = globals[key].y;
@@ -608,7 +607,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
      * @param  {[type]} points [description]
      * @return {[type]}        [description]
      */
-    drawRect( g, points ){
+    drawRect(g, points) {
 
         g.moveTo(points.tl.x, points.tl.y);
         g.lineTo(points.tr.x, points.tr.y);
@@ -629,8 +628,8 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
     setPivotByControl(control) {
 
         /*this.pivot = this.getPivot(control);
-        this.target.setPivot(this.pivot.localPoint);
-        this.adjustPosition();*/
+         this.target.setPivot(this.pivot.localPoint);
+         this.adjustPosition();*/
 
         this.pivot = this.c.mc;
         this.target.setPivot(this.pivot.localPoint);
@@ -648,7 +647,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
         var scaleX = this.target.scale.x, scaleY = this.target.scale.y;
 
-        if(this.stageLayer) {
+        if (this.stageLayer) {
             scaleX = this.stageLayer.croppedScaleX || 1;
             scaleY = this.stageLayer.croppedScaleY || 1;
         }
@@ -703,7 +702,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
         this.target.interactive = false;
         this.target.defaultCursor = 'inherit';
 
-        for(var prop in this.c) {
+        for (var prop in this.c) {
             var c = this.c[prop];
             c.buttonMode = false;
             c.interactive = false;
@@ -713,7 +712,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
         this.stageLayer.buttonMode = true;
         this.stageLayer.interactive = true;
 
-        if(cursorStyle !== '') this.stageLayer.defaultCursor = cursorStyle;
+        if (cursorStyle !== '') this.stageLayer.defaultCursor = cursorStyle;
         else this.stageLayer.defaultCursor = Mouse.currentCursorStyle;
     };
 
@@ -725,7 +724,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
         this.target.interactive = true;
         this.target.defaultCursor = 'inherit';
 
-        for(var prop in this.c) {
+        for (var prop in this.c) {
             var c = this.c[prop];
             c.buttonMode = true;
             c.interactive = true;
@@ -738,32 +737,32 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
         this.selectedControl.onMouseOver();
     };
 
-    emitControlUp( modified ){
+    emitControlUp(modified) {
 
-        if( !modified ) return;
+        if (!modified) return;
 
         this.emit(
             TransformTool.CONTROL_UP,
-            { type: TransformTool.CONTROL_UP }
+            {type: TransformTool.CONTROL_UP}
         );
     }
 
 
     onSetTarget(target) {
-        if(this.target !== target) this.releaseTarget();
+        if (this.target !== target) this.releaseTarget();
     }
 
 
     onDelete(e) {
-        if(!this.target) return;
+        if (!this.target) return;
         this.target.emit(TransformTool.DELETE, this.target);
 
-        this.emit( TransformTool.CONTROL_UP, { type: TransformTool.CONTROL_UP } );
+        this.emit(TransformTool.CONTROL_UP, {type: TransformTool.CONTROL_UP});
     }
 
 
     onRotateStart(e) {
-        if(!this.target) return;
+        if (!this.target) return;
         this.downCnt++;
         this.target._rotation = this.target.rotation;
         this.selectedControl = e.target;
@@ -773,26 +772,26 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
 
     onRotate(e) {
-        if(!this.target) return;
+        if (!this.target) return;
 
         var useCrop = false;
         var isImageRotated = false;
         var photoEditor = this.stageLayer;
 
         // 자르기 메뉴를 사용하지는 체크
-        if(photoEditor.crop) {
+        if (photoEditor.crop) {
             useCrop = true;
             isImageRotated = photoEditor.crop.isImageRotated;
         }
 
         // 자르기 메뉴를 사용하지 않는 경우는 스냅기능 모두 허용
         // 자르기 메뉴를 사용할 경우 스테이지가 회전되었을 때는 스냅기능을 사용하지 않습니다. (추후 기능 추가)
-        if(this.useSnap == true && isImageRotated == false) {
+        if (this.useSnap == true && isImageRotated == false) {
             var rotation = this.target._rotation + e.changeRadian;
             var angle = Calc.toDegrees(rotation);
             var absAngle = Math.round(Math.abs(angle) % 90);
 
-            if(absAngle < this._startSnapAngle || absAngle > this._endSnapAngle) {
+            if (absAngle < this._startSnapAngle || absAngle > this._endSnapAngle) {
                 this.target.rotation = Calc.toRadians(Calc.snapTo(angle, 90));
             } else {
                 this.target.rotation = rotation;
@@ -810,18 +809,18 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
 
     onRotateEnd(e) {
-        if(!this.target) return;
+        if (!this.target) return;
         this.update();
         this.drawCenter();
         this.disableCurrentStyleCursor();
 
-        this.emitControlUp( e.modified );
+        this.emitControlUp(e.modified);
     }
 
 
     onControlMoveStart(e) {
         console.log('onControlMoveStart');
-        if(!this.target) return;
+        if (!this.target) return;
 
         this.targetScaleX = this.target.scale.x;
         this.targetScaleY = this.target.scale.y;
@@ -837,7 +836,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
 
     onControlMove(e) {
         console.log('onControlMove');
-        if(!this.target) return;
+        if (!this.target) return;
         this.doTransform(e);
         this.draw();
         this.updatePrevTargetLt();
@@ -847,17 +846,17 @@ export default class TransformTool extends PIXI.utils.EventEmitter {
     onControlMoveEnd(e) {
         console.log('onControlMoveEnd');
 
-        if(!this.target) return;
+        if (!this.target) return;
 
-        this.target.emit( TransformTool.TRANSFORM_COMPLETE, e );
+        this.target.emit(TransformTool.TRANSFORM_COMPLETE, e);
         this.disableCurrentStyleCursor();
 
-        this.emitControlUp( e.modified );
+        this.emitControlUp(e.modified);
     }
 
 
-    onControlDBClick(e){
-        if(!this.target) return;
+    onControlDBClick(e) {
+        if (!this.target) return;
         this.target.emit(TransformTool.DBCLICK, {target: this.target});
     }
 
