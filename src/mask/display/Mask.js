@@ -21,6 +21,7 @@ export default class Mask extends BitmapContainer
 
     initialize()
     {
+        this.name = 'Mask';
         this.buttonMode = true;
         this.interactive = true;
 
@@ -34,8 +35,8 @@ export default class Mask extends BitmapContainer
         this.childScaleX = 1;
         this.childScaleY = 1;
 
-        this.transformCompleteListener = this.onTransformComplete.bind(this);
-        this.on(TransformTool.TRANSFORM_COMPLETE, this.transformCompleteListener);
+        //this.transformCompleteListener = this.onTransformComplete.bind(this);
+        //this.on(TransformTool.TRANSFORM_COMPLETE, this.transformCompleteListener);
     }
 
 

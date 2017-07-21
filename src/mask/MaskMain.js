@@ -137,6 +137,9 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
         const mask = this.mask = new Mask('./../assets/img/mask0.png');
         mask.on(Bitmap.READY, this.onMaskImageRady.bind(this));
+
+        this._maskTransformCompleteListener = this.onMaskTransformComplete.bind(this);
+        this.mask.on(TransformTool.TRANSFORM_COMPLETE, this._maskTransformCompleteListener);
     }
 
 
@@ -181,11 +184,22 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     /////////////////////////////////////////////////////////////////////////////
 
 
-    onMaskDown(e)
+    onMaskDown(event)
     {
-        const target = e.target;
+        const target = event.target;
         console.log('target', target);
-        this.transformTool.setTarget(e);
+        this.transformTool.setTarget(event);
+    }
+
+
+    onMaskTransformComplete(event)
+    {
+        console.log('!!!!!!!! onMaskTransformComplete');
+        const target = this.mask;
+
+        this.transformTool.setPivotByControl(new PIXI.Point(0, 0));
+        this.transformTool.update();
+        this.transformTool.drawCenter();
     }
 
 

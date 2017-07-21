@@ -226,7 +226,6 @@ export default class ToolControl extends PIXI.Sprite
 
     onMouseDown(event)
     {
-        console.log('onMouseDown');
         event.stopPropagation();
 
         this._isMouseDown = true;
@@ -611,11 +610,11 @@ export default class ToolControl extends PIXI.Sprite
             return cursorIndex;
         }
 
-        var targetFlipScaleX = this.target.scale.x;
-        var targetFlipScaleY = this.target.scale.y;
-        var croppedScaleX = this.photoEditor.croppedScaleX || 1;
-        var croppedScaleY = this.photoEditor.croppedScaleY || 1;
-        var isFlip = (targetFlipScaleX * targetFlipScaleY * croppedScaleX * croppedScaleY) < 1;
+        const targetFlipScaleX = this.target.scale.x;
+        const targetFlipScaleY = this.target.scale.y;
+        const croppedScaleX = this.photoEditor.croppedScaleX;
+        const croppedScaleY = this.photoEditor.croppedScaleY;
+        const isFlip = (targetFlipScaleX * targetFlipScaleY * croppedScaleX * croppedScaleY) < 1;
 
         if (isFlip) {
             switch (cursorIndex) {

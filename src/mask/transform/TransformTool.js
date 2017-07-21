@@ -247,6 +247,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
 
     activeTarget(target)
     {
+        console.log('target!', target);
         this.target = target;
         this.removeTextureUpdateEvent();
         this.addTextureUpdateEvent();
@@ -274,6 +275,10 @@ export default class TransformTool extends PIXI.utils.EventEmitter
 
         const pixiSprite = event.target;
         pixiSprite.emit(TransformTool.SET_TARGET, pixiSprite);
+
+        console.log('----------------------------------------------------------------------');
+        console.log('pixiSprite', pixiSprite.name, typeof pixiSprite);
+        console.log('----------------------------------------------------------------------');
         this.activeTarget(pixiSprite);
         this.c.mc.emit('mousedown', event);
         this.enableCurrentStyleCursor('move');
@@ -384,7 +389,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         // 여기서 target.scale 을 바로 넣는 것은
         // target 을 변환하고 나면 scale 을 1로 변환해버립니다.
         // 그래서 반전 상태가 아니면 1, 반전 상태 라면 -1이 됩니다.
-        this.targetFlipScale = new PIXI.Point(this.target.scale.x, this.target.scale.y);
+        this.targetFlipScale = new PIXI.Point(1, 1);
     }
 
 
