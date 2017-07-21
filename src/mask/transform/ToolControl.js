@@ -4,7 +4,8 @@ import ToolControlType from './ToolControlType';
 import RotationControlType from './RotationControlType';
 
 
-export default class ToolControl extends PIXI.Sprite {
+export default class ToolControl extends PIXI.Sprite
+{
     static get DELETE() {return 'delete';}
     static get MOVE_START() {return 'moveStart';}
     static get MOVE() {return 'move';}
@@ -13,16 +14,14 @@ export default class ToolControl extends PIXI.Sprite {
     static get ROTATE() {return 'rotate';}
     static get ROTATE_END() {return 'rotateEnd';}
     static get CHANGE_ROTATION_CURSOR() {return 'changeRotationCursor';}
-    static get DBCLICK() {return 'dbClick';}
-    static get DBCLICK_TIME() {return 400;}
 
 
-    constructor(type, options = {}, rotationControlType = RotationControlType.NONE) {
+    constructor(type, options = {}, rotationControlType = RotationControlType.NONE)
+    {
         super();
         this.type = type;
         this.options = options;
         this.photoEditor = options.photoEditor;
-
         this.rotationControlType = rotationControlType;
         this.rotationCursorList = options.rotationCursorList;
 
@@ -33,24 +32,23 @@ export default class ToolControl extends PIXI.Sprite {
     }
 
 
-    initialize() {
+    initialize()
+    {
         this.currentRadian = 0;
         this.currentRotation = 0;
-
         this.drawAlpha = 0.1;
         this.buttonMode = true;
         this.interactive = true;
         this.defaultCursor = 'inherit';
         this._isMouseDown = false;
         this._localPoint = new PIXI.Point();
-        this._pressedPos = {x: 0, y: 0};
-
         this.g = this.graphics = new PIXI.Graphics();
         this.addChild(this.graphics);
     }
 
 
-    render() {
+    render()
+    {
         switch (this.type) {
             case ToolControlType.TOP_LEFT:
             case ToolControlType.TOP_CENTER:
@@ -62,15 +60,12 @@ export default class ToolControl extends PIXI.Sprite {
             case ToolControlType.BOTTOM_RIGHT:
                 this.drawControl();
                 break;
-
             case ToolControlType.MIDDLE_CENTER:
                 this.drawControl();
                 break;
-
             case ToolControlType.ROTATION:
                 this.drawRotation();
                 break;
-
             case ToolControlType.DELETE:
                 this.drawDeleteButton();
                 break;
@@ -78,7 +73,8 @@ export default class ToolControl extends PIXI.Sprite {
     }
 
 
-    drawControl() {
+    drawControl()
+    {
         const innerRectSize = 3;
         const innerRectHalf = innerRectSize / 2;
         const outerRectSize = 5;
@@ -124,9 +120,10 @@ export default class ToolControl extends PIXI.Sprite {
      * @param width
      * @param height
      */
-    drawCenter(rotation, width, height) {
-        var sx = this.target.scale.x;
-        var sy = this.target.scale.y;
+    drawCenter(rotation, width, height)
+    {
+        const sx = this.target.scale.x;
+        const sy = this.target.scale.y;
         this.rotation = rotation;
         this.g.clear();
         this.g.beginFill(0xFF33FF, this.drawAlpha);
@@ -135,9 +132,10 @@ export default class ToolControl extends PIXI.Sprite {
     }
 
 
-    drawRotation() {
-        var buttonRectSize = 22;
-        var buttonRectHalf = buttonRectSize / 2;
+    drawRotation()
+    {
+        const buttonRectSize = 22;
+        const buttonRectHalf = buttonRectSize / 2;
         this.g.clear();
         this.g.beginFill(0xFF3300, this.drawAlpha);
         this.g.drawRect(-buttonRectHalf, -buttonRectHalf, buttonRectSize, buttonRectSize);
@@ -145,90 +143,103 @@ export default class ToolControl extends PIXI.Sprite {
     }
 
 
-    drawDeleteButton() {
+    drawDeleteButton()
+    {
         this.deleteTexture = PIXI.Texture.fromImage('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAB2UlEQVRIie2VTUsqYRTHj2M4MhHUIKLDCC58QxHdulHEnWsXfYco0kUUVHKDXqgJLtw2fYC+haDixpUgA8KIgsj4Hm1qTCf03EW3W9xL40yCtPC/eRbnPOd3Dvyf8+gA4AYWpJU/5/0CWCZiAZC/WsKWsK/DotEoPZlMjg0Gg25WIURMzwXLZrMPLpfrajQaHVutVoMSiCTJk7lgAAD1ev05Fov9arVaB6FQaP1jLBKJ0IiYttlsF7Is49wwgNcJE4nEbaFQ2Ha73dQbKJfLbdM0fSqK4lhNHR287kZV64plWbLZbO47nc7LWq22ZzabzwaDwYuauwBgWpmd8y5RFMcEQfxAxHQymbzTAAIAjdYPh8MbiJj2+/3XHMdtqnGpZpjRaCTsdrsxn8/v+Hw+rlKpPAWDwZ/D4fDQ4/GsEoS6nvUAEAeAoVJSPB43F4vFXYvFct5oNEaICP1+X65Wq7VMJrPF83xVEIQnREVDUjMNQlEUIUnSEcMw551OR/43HggE1kqlUtLr9XKCICg1rfyfsSxLSpJ05HA4Lnu93n8gAIByufyo1+tPeJ7fTaVSTqV6mqyvJIZhyG63O55Op5+laLO+ktrt9syH/X22/hL2LWFvbjQtAvYb9NC0/9Sr3AYAAAAASUVORK5CYII=');
         this.deleteOverTexture = PIXI.Texture.fromImage('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAABCElEQVRIie3UvWrDMBDA8VNtD8EfIojYwlPA0Rrw4HcIef9XyRAh9O/SlgaaWC4htGDBLcdJP4HupEQEedF6exW0Yiv2jzDnnIQQJMuy2YMgbVx5FMYYYozUdX23BiDLsofnfMRsAc45Yozs9/ub/OFwAEBrnQKlYSLCOI5479ntdjfQZrNJhdIxEUFrTYwRYwwAZVkugZZh39/odDot3rcIG4YBAGst1+s1tSmWYXmes91uAei6DqUU1lq897Rti1LqedjxeASgqqqb/DRNeO8ZxzEVfFxQFAXA3Tnr+54QwleX/hrTWgNgjJm9+eVy4Xw+P78bf4qmaWYvpD7FV6y/8+uv2Iq9A1yTczX16ka0AAAAAElFTkSuQmCC');
         this.texture = this.deleteTexture;
     }
 
 
-    hideAllRotationCursor() {
-        if (this.type !== ToolControlType.ROTATION) return;
+    hideAllRotationCursor()
+    {
+        if (this.type !== ToolControlType.ROTATION) {
+            return;
+        }
 
         const n = this.rotationCursorList.length;
+
         for (var i = 0; i < n; i++) {
             this.rotationCursorList[i].visible = false;
         }
     }
 
 
-    addCursorEvent() {
+    /**
+     * 포토에디터에서 사용한다면
+     * 회전에 자르기 반전 방향을 적용합니다.
+     * @param rotation
+     * @returns {*}
+     */
+    getFlipRotation(rotation)
+    {
+        if (this.photoEditor) {
+            const scaleX = this.photoEditor.croppedScaleX;
+            const scaleY = this.photoEditor.croppedScaleY;
+
+            if (scaleX == -1 && scaleY == 1) {
+                rotation *= -1;
+            }
+            else if (scaleX == 1 && scaleY == -1) {
+                rotation *= -1;
+            }
+        }
+        return rotation;
+    }
+
+
+    addCursorEvent()
+    {
         this.mouseover = this.onMouseOver.bind(this);
         this.mouseout = this.onMouseOut.bind(this);
         this.mousemove = this.onMouseOverMove.bind(this);
     };
 
 
-    addMouseDownEvent() {
+    addMouseDownEvent()
+    {
         this._mouseDownListener = this.onMouseDown.bind(this);
         this.on('mousedown', this._mouseDownListener);
     };
 
 
-    removeMouseDownEvent() {
+    removeMouseDownEvent()
+    {
         this.off('mousedown', this._mouseDownListener);
     };
 
 
-    addMouseMoveEvent() {
+    addMouseMoveEvent()
+    {
         this._mouseMoveListener = this.onMouseMove.bind(this);
         this._mouseUpListener = this.onMouseUp.bind(this);
-
         window.document.addEventListener('mousemove', this._mouseMoveListener);
     };
 
 
-    removeMouseMoveEvent() {
+    removeMouseMoveEvent()
+    {
         window.document.removeEventListener('mousemove', this._mouseMoveListener);
         window.document.removeEventListener('mouseup', this._mouseUpListener);
     };
 
 
-    onMouseDown(e) {
-        e.stopPropagation();
+    onMouseDown(event)
+    {
+        console.log('onMouseDown');
+        event.stopPropagation();
+
         this._isMouseDown = true;
 
-        // 마우스를 DOWN한 위치와 UP 했을 때 위치를 비교하여 편집이 있었는지 
-        // 여부를 판단하기 위해 down position을 저장한다. 
-        this._pressedPos.x = e.data.global.x;
-        this._pressedPos.y = e.data.global.y;
+        const globalPoint = Mouse.global;
 
-        var globalPoint = {x: e.data.global.x, y: e.data.global.y};
-
+        this.mouseDownPoint = globalPoint.clone();
         this.prevMousePoint = this.currentMousePoint = globalPoint;
         this.targetPrevMousePoint = this.targetCurrentMousePoint = this.targetLayer.toLocal(globalPoint);
 
-        var time = new Date().getTime();
-
-        if (this.startTime && this.type == ToolControlType.MIDDLE_CENTER && this.downTarget && this.downTarget == this.target) {
-            if (time - this.startTime < ToolControl.DBCLICK_TIME) {
-                this.emit(ToolControl.DBCLICK);
-                this.startTime = null;
-                this.downTarget = null;
-                return;
-            }
-        }
-        this.startTime = time;
-        this.downTarget = this.target;
-
         if (this.type === ToolControlType.ROTATION) {
-            this.prevRotation = this.currentRotation = Calc.getRotation(this.centerPoint.globalPoint, {
-                x: e.data.global.x,
-                y: e.data.global.y
-            });
-
+            this.prevRotation = this.currentRotation = Calc.getRotation(this.centerPoint.globalPoint, globalPoint);
             this.prevRotation = this.currentRotation = this.getFlipRotation(this.currentRotation);
-
             this.currentRadian = Calc.toRadians(this.currentRotation);
 
             this.emit(ToolControl.ROTATE_START, {
@@ -250,35 +261,13 @@ export default class ToolControl extends PIXI.Sprite {
 
         this.addMouseMoveEvent();
         window.document.addEventListener('mouseup', this._mouseUpListener);
-        // this.removeMouseDownEvent();
-
         this.prevMousePoint = this.targetPrevMousePoint = null;
     };
 
 
-    /**
-     * 회전에 자르기 반전 방향을 적용합니다.
-     * @param rotation
-     * @returns {*}
-     */
-    getFlipRotation(rotation) {
-        if (this.photoEditor) {
-            var scaleX = this.photoEditor.croppedScaleX;
-            var scaleY = this.photoEditor.croppedScaleY;
-
-            if (scaleX == -1 && scaleY == 1) {
-                rotation *= -1;
-            }
-            else if (scaleX == 1 && scaleY == -1) {
-                rotation *= -1;
-            }
-        }
-        return rotation;
-    }
-
-
-    onMouseMove(e) {
-        var globalPoint = Mouse.global;
+    onMouseMove(event)
+    {
+        const globalPoint = Mouse.global;
         this.currentMousePoint = globalPoint;
         this.targetCurrentMousePoint = this.targetLayer.toLocal(globalPoint);
 
@@ -298,7 +287,7 @@ export default class ToolControl extends PIXI.Sprite {
         this.moveRotationCursor();
 
         if (this.type === ToolControlType.ROTATION) {
-            this.currentRotation = Calc.getRotation(this.centerPoint.globalPoint, Mouse.global);
+            this.currentRotation = Calc.getRotation(this.centerPoint.globalPoint, globalPoint);
             this.currentRotation = this.getFlipRotation(this.currentRotation);
             this.changeRotation = this.currentRotation - this.prevRotation;
             this.absChangeRotation = (this.changeRotation < 0) ? this.changeRotation * -1 : this.changeRotation;
@@ -323,7 +312,7 @@ export default class ToolControl extends PIXI.Sprite {
                 currentMousePoint: this.currentMousePoint,
                 targetPrevMousePoint: this.targetPrevMousePoint,
                 targetChangeMovement: this.targetChangeMovement,
-                targetCurrentMousePoint: this.targetCurrentMousePoint,
+                targetCurrentMousePoint: this.targetCurrentMousePoint
             });
         }
 
@@ -333,13 +322,13 @@ export default class ToolControl extends PIXI.Sprite {
     };
 
 
-    onMouseUp(e) {
-
+    onMouseUp(event)
+    {
         this._isMouseDown = false;
 
-        var globalPoint = Mouse.global;
-        let modified = this.currentMousePoint.x != this._pressedPos.x &&
-            this.currentMousePoint.y != this._pressedPos.y;
+        const globalPoint = Mouse.global;
+        const modified = this.currentMousePoint.x != this.mouseDownPoint.x &&
+            this.currentMousePoint.y != this.mouseDownPoint.y;
 
         this.currentMousePoint = globalPoint;
         this.targetCurrentMousePoint = this.targetLayer.toLocal(globalPoint);
@@ -393,14 +382,17 @@ export default class ToolControl extends PIXI.Sprite {
             });
         }
 
-        // this.addMouseDownEvent();
         this.removeMouseMoveEvent();
     };
 
 
     onMouseOver() {
         this.defaultCursor = this.getCursor();
-        if (this.type === ToolControlType.DELETE) this.texture = this.deleteOverTexture;
+
+        if (this.type === ToolControlType.DELETE) {
+            this.texture = this.deleteOverTexture;
+        }
+
         if (this.type === ToolControlType.ROTATION) {
             this.rotationCursor = this.rotationCursorList[this.cursorIndex];
             this.moveRotationCursor();
@@ -410,7 +402,9 @@ export default class ToolControl extends PIXI.Sprite {
 
 
     onMouseOut() {
-        if (this.type === ToolControlType.DELETE) this.texture = this.deleteTexture;
+        if (this.type === ToolControlType.DELETE) {
+            this.texture = this.deleteTexture;
+        }
 
         if (Mouse.defaultCursor !== 'none') {
             this.rotationCursor = null;
@@ -420,14 +414,18 @@ export default class ToolControl extends PIXI.Sprite {
 
 
     onMouseOverMove() {
-        if (this.type === ToolControlType.ROTATION) this.moveRotationCursor();
+        if (this.type === ToolControlType.ROTATION) {
+            this.moveRotationCursor();
+        }
     }
 
 
     moveRotationCursor() {
-        if (!this.rotationCursor || this.rotationCursor === null) return;
+        if (!this.rotationCursor || this.rotationCursor === null) {
+            return;
+        }
 
-        var cursor = this.rotationCursorList[this.cursorIndex];
+        const cursor = this.rotationCursorList[this.cursorIndex];
 
         if (this.rotationCursor !== cursor) {
             this.rotationCursor.visible = false;
@@ -486,7 +484,7 @@ export default class ToolControl extends PIXI.Sprite {
      * @returns {*}
      */
     get angle() {
-        var matrix = this.target.worldTransform.clone();
+        const matrix = this.target.worldTransform.clone();
         var angle = Calc.getSkewX(matrix);
         angle = (angle < 0) ? angle + 360 : angle;
         return angle;
@@ -516,7 +514,7 @@ export default class ToolControl extends PIXI.Sprite {
 
 
     getAngleIndex() {
-        var angle = this.angle;
+        const angle = this.angle;
 
         if (angle > 337.5 && angle <= 22.5) {
             return 0;
@@ -607,8 +605,11 @@ export default class ToolControl extends PIXI.Sprite {
     }
 
 
-    getFlipCursor(cursorIndex) {
-        if (!this.photoEditor) return cursorIndex;
+    getFlipCursor(cursorIndex)
+    {
+        if (!this.photoEditor) {
+            return cursorIndex;
+        }
 
         var targetFlipScaleX = this.target.scale.x;
         var targetFlipScaleY = this.target.scale.y;
@@ -642,10 +643,12 @@ export default class ToolControl extends PIXI.Sprite {
 
 
     getCursorIndex() {
-        if (this.type === ToolControlType.ROTATION) return this.getRotationCursorIndex();
+        if (this.type === ToolControlType.ROTATION) {
+            return this.getRotationCursorIndex();
+        }
 
-        var scaleSignX = (this.target) ? this.target.scaleSignX : 1;
-        var scaleSignY = (this.target) ? this.target.scaleSignY : 1;
+        const scaleSignX = (this.target) ? this.target.scaleSignX : 1;
+        const scaleSignY = (this.target) ? this.target.scaleSignY : 1;
 
         if (scaleSignX === 1 && scaleSignY === 1) {
             switch (this.type) {
@@ -751,8 +754,8 @@ export default class ToolControl extends PIXI.Sprite {
 
 
     getRotationCursorIndex() {
-        var scaleSignX = (this.target) ? this.target.scaleSignX : 1;
-        var scaleSignY = (this.target) ? this.target.scaleSignY : 1;
+        const scaleSignX = (this.target) ? this.target.scaleSignX : 1;
+        const scaleSignY = (this.target) ? this.target.scaleSignY : 1;
 
         if (scaleSignX === 1 && scaleSignY === 1) {
             switch (this.rotationControlType) {

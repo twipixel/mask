@@ -63,6 +63,12 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         if (this.dimmedMask) {
             this.dimmedMask.update(ms);
         }
+
+        /*if (this.transformTool) {
+            this.transformTool.updateGraphics();
+            this.transformTool.drawCenter();
+            this.transformTool.updatePrevTargetLt();
+        }*/
     }
 
 

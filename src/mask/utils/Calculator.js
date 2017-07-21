@@ -33,9 +33,9 @@ export default class Calc
     }
 
     static getRotation(centerPoint, mousePoint) {
-        var dx = mousePoint.x - centerPoint.x;
-        var dy = mousePoint.y - centerPoint.y;
-        var radians = Math.atan2(dy, dx);
+        const dx = mousePoint.x - centerPoint.x;
+        const dy = mousePoint.y - centerPoint.y;
+        const radians = Math.atan2(dy, dx);
         return Calc.toDegrees(radians);
     }
 
@@ -105,8 +105,8 @@ export default class Calc
 
 
     static deltaTransformPoint(matrix, point) {
-        var dx = point.x * matrix.a + point.y * matrix.c + 0;
-        var dy = point.x * matrix.b + point.y * matrix.d + 0;
+        const dx = point.x * matrix.a + point.y * matrix.c + 0;
+        const dy = point.x * matrix.b + point.y * matrix.d + 0;
         return {x: dx, y: dy};
     }
 
@@ -119,12 +119,12 @@ export default class Calc
     }
 
     static getSkewX(matrix) {
-        var px = Calc.deltaTransformPoint(matrix, {x:0, y:1});
+        const px = Calc.deltaTransformPoint(matrix, {x:0, y:1});
         return ((180 / Math.PI) * Math.atan2(px.y, px.x) - 90);
     }
 
     static getSkewY(matrix) {
-        var py = Calc.deltaTransformPoint(matrix, {x:1, y:0});
+        const py = Calc.deltaTransformPoint(matrix, {x:1, y:0});
         return ((180 / Math.PI) * Math.atan2(py.y, py.x));
     }
 
