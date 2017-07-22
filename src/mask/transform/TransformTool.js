@@ -4,7 +4,7 @@ import PointUtil from './../utils/PointUtil';
 import ToolControl from './ToolControl';
 import ToolControlType from './ToolControlType';
 import RotationControlType from './RotationControlType';
-import {map, each} from "../utils/lambda";
+import {map, each} from './../utils/lambda';
 
 
 const dragRange = 10;
@@ -183,7 +183,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     {
         this.downCnt = 0;
         this.stageLayer.on(TransformTool.SET_TARGET, this.onSetTarget.bind(this));
-        this.stageLayer.root.on("mousedown", this.onMouseDown, this);
+        this.stageLayer.root.on('mousedown', this.onMouseDown, this);
         this.stageLayer.root.on('mouseup', this.onMouseUp, this);
     }
 
@@ -234,7 +234,8 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     }
 
 
-    hide() {
+    hide()
+    {
         if (!this.controls || this.g.visible === false) {
             return;
         }
@@ -247,7 +248,6 @@ export default class TransformTool extends PIXI.utils.EventEmitter
 
     activeTarget(target)
     {
-        console.log('target!', target);
         this.target = target;
         this.removeTextureUpdateEvent();
         this.addTextureUpdateEvent();
@@ -265,20 +265,14 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         }
 
         this.stageLayer.updateTransform();
-        this.c.mc.drawCenter(Calc.toRadians(this.c.mc.angle), this.width, this.height);
+        this.c.mc.drawCenter(Calc.toRadians(this.c.mc.angle), this.target.width, this.target.height);
     }
 
 
     setTarget(event)
     {
-        console.log('setTarget', event);
-
         const pixiSprite = event.target;
         pixiSprite.emit(TransformTool.SET_TARGET, pixiSprite);
-
-        console.log('----------------------------------------------------------------------');
-        console.log('pixiSprite', pixiSprite.name, typeof pixiSprite);
-        console.log('----------------------------------------------------------------------');
         this.activeTarget(pixiSprite);
         this.c.mc.emit('mousedown', event);
         this.enableCurrentStyleCursor('move');
@@ -551,6 +545,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         }
     }
 
+
     /**
      * 트랜스폼 툴의 선과 컨트롤 객체 위치를 업데이트한다.
      * 1. target이 있는 경우에만 업데이트한다.
@@ -582,6 +577,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             e.visible = true;
         });
     }
+
 
     /**
      * 주어진 graphics 객체를 사용하여 사각형을 그린다.
@@ -969,4 +965,24 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         return this._snapAngle;
     }
 
+
+    /**
+     * 센터를 제외한 컨트롤에 마우스가 오버되었는지 여부
+     */
+    get isOverControl()
+    {
+        for (var prop in this.c) {
+            const control = this.c[prop];
+
+            if (control !== this.c.mc) {
+                const isHit = control.hitTestWithGlobalPoint(Mouse.global);
+
+                if (isHit === true) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

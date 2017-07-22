@@ -41,6 +41,7 @@ export default class ToolControl extends PIXI.Sprite
         this.interactive = true;
         this.defaultCursor = 'inherit';
         this._isMouseDown = false;
+        this.hasMouseMoveEvent = false;
         this._localPoint = new PIXI.Point();
         this.g = this.graphics = new PIXI.Graphics();
         this.addChild(this.graphics);
@@ -122,12 +123,10 @@ export default class ToolControl extends PIXI.Sprite
      */
     drawCenter(rotation, width, height)
     {
-        const sx = this.target.scale.x;
-        const sy = this.target.scale.y;
         this.rotation = rotation;
         this.g.clear();
         this.g.beginFill(0xFF33FF, this.drawAlpha);
-        this.g.drawRect(-(width / 2) * sx, -(height / 2) * sy, width * sx, height * sy);
+        this.g.drawRect(-(width / 2), -(height / 2), width, height);
         this.g.endFill();
     }
 
@@ -211,6 +210,11 @@ export default class ToolControl extends PIXI.Sprite
 
     addMouseMoveEvent()
     {
+        if (this.hasMouseMoveEvent === true) {
+            return;
+        }
+
+        this.hasMouseMoveEvent = true;
         this._mouseMoveListener = this.onMouseMove.bind(this);
         this._mouseUpListener = this.onMouseUp.bind(this);
         window.document.addEventListener('mousemove', this._mouseMoveListener);
@@ -219,6 +223,7 @@ export default class ToolControl extends PIXI.Sprite
 
     removeMouseMoveEvent()
     {
+        this.hasMouseMoveEvent = false;
         window.document.removeEventListener('mousemove', this._mouseMoveListener);
         window.document.removeEventListener('mouseup', this._mouseUpListener);
     };
@@ -861,6 +866,20 @@ export default class ToolControl extends PIXI.Sprite
                     return 7;
             }
         }
+    }
+
+
+    hitTestWithGlobalPoint(globalPoint)
+    {
+        const local = this.toLocal(globalPoint);
+        const localBounds = this.g.getLocalBounds();
+
+        if (local.x >= localBounds.x && local.x <= localBounds.x + localBounds.width &&
+            local.y >= localBounds.y && local.y <= localBounds.y + localBounds.height ) {
+            return true;
+        }
+
+        return false;
     }
 }
 

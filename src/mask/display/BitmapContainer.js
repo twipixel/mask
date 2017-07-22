@@ -18,8 +18,6 @@ export default class BitmapContainer extends PIXI.Container
 
     _initialize()
     {
-        console.log('   2. BitmapContainer initialize');
-
         this.bitmap = new Bitmap(this.url);
         //this.bitmap.anchor.x = 0.5;
         //this.bitmap.anchor.y = 0.5;
@@ -54,6 +52,20 @@ export default class BitmapContainer extends PIXI.Container
         this.registrationPoint.drawCircle(0, 0, 5);
         this.registrationPoint.endFill();
         this.addChild(this.registrationPoint);
+    }
+
+
+    hitTestWithGlobalPoint(globalPoint)
+    {
+        const local = this.toLocal(globalPoint);
+        const localBounds = this.getLocalBounds();
+
+        if (local.x >= localBounds.x && local.x <= localBounds.x + localBounds.width &&
+            local.y >= localBounds.y && local.y <= localBounds.y + localBounds.height ) {
+            return true;
+        }
+
+        return false;
     }
 
 

@@ -6,19 +6,16 @@ import Bitmap from './display/Bitmap';
 import DimmedMask from './display/DimmedMask';
 import BackgroundImage from './display/BackgroundImage';
 import TransformTool from './transform/TransformTool';
-
+import {clone} from './utils/util';
 
 
 export default class MaskMain extends PIXI.utils.EventEmitter
 {
     constructor(renderer, stageLayer, maskLayer, options = {useSnap: true, snapAngle: 5})
     {
-        console.log('constructor(', renderer, stageLayer, maskLayer, options, ')');
-
         super();
 
         Mouse.renderer = renderer;
-
         this.renderer = renderer;
         this.stageLayer = stageLayer;
         this.maskLayer = maskLayer;
@@ -131,7 +128,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.backgroundImage.bitmapRotation = -Calc.toRadians(30);*/
 
         //this.backgroundImage.alpha = 0.3;
-        this.backgroundImage.visible = false;
+        //this.backgroundImage.visible = false;
 
         this.maskLayer.addChild(this.backgroundImage);
 
@@ -140,6 +137,9 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
         this._maskTransformCompleteListener = this.onMaskTransformComplete.bind(this);
         this.mask.on(TransformTool.TRANSFORM_COMPLETE, this._maskTransformCompleteListener);
+
+        this._backgroundImageTransformCompleteListener = this.onBackgroundImageTransformComplete.bind(this);
+        this.backgroundImage.on(TransformTool.TRANSFORM_COMPLETE, this._backgroundImageTransformCompleteListener);
     }
 
 
@@ -161,19 +161,21 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
     start()
     {
-        console.log('start');
+        //this._maskMouseDownListener = this.onMaskDown.bind(this);
+        //this.mask.mousedown = this._maskMouseDownListener;
 
-        this.maskMouseDownListener = this.onMaskDown.bind(this);
-        this.mask.mousedown = this.maskMouseDownListener;
-        this.mask.touchstart = this.maskMouseDownListener;
+        //this._backgroundImageMouseDownListener = this.onBackgroundImageMouseDown.bind(this);
+        //this.backgroundImage.mousedown = this._backgroundImageMouseDownListener;
+
+        window.document.addEventListener('mousedown', this.onStageDown.bind(this));
 
         const dimmedMask = this.dimmedMask = new DimmedMask(this.viewport, this.backgroundImage, this.mask);
         dimmedMask.alpha = 0.82;
         //dimmedMask.alpha = 0.32;
         dimmedMask.visible = true;
-        this.maskLayer.addChild(dimmedMask);
+        //this.maskLayer.addChild(dimmedMask);
 
-        this.maskLayer.swapChildren(this.mask, this.dimmedMask);
+        //this.maskLayer.swapChildren(this.mask, this.dimmedMask);
     }
 
 
@@ -184,19 +186,62 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     /////////////////////////////////////////////////////////////////////////////
 
 
+    onStageDown(event)
+    {
+        //control 이 클릭 되었으면 리턴
+        const isOverControl = this.transformTool.isOverControl;
+        if (isOverControl === true) {
+            return;
+        }
+
+
+        const global = Mouse.global;
+        const currentTarget = this.transformTool.target;
+        const isHitMask = this.mask.hitTestWithGlobalPoint(global);
+        const isHitBackgroundImage = this.backgroundImage.hitTestWithGlobalPoint(global);
+        const cloneEvent = clone(event);
+
+
+
+        if (isHitMask) {
+            event.stopPropagation();
+            cloneEvent.target = this.mask;
+            cloneEvent.stopPropagation = function(){};
+            this.onMaskDown(cloneEvent);
+        }
+        else {
+            if (isHitBackgroundImage) {
+                event.stopPropagation();
+                cloneEvent.target = this.backgroundImage;
+                cloneEvent.stopPropagation = function(){};
+                this.onBackgroundImageMouseDown(cloneEvent);
+            }
+        }
+    }
+
+
     onMaskDown(event)
     {
-        const target = event.target;
-        console.log('target', target);
         this.transformTool.setTarget(event);
     }
 
 
     onMaskTransformComplete(event)
     {
-        console.log('!!!!!!!! onMaskTransformComplete');
-        const target = this.mask;
+        this.transformTool.setPivotByControl(new PIXI.Point(0, 0));
+        this.transformTool.update();
+        this.transformTool.drawCenter();
+    }
 
+
+    onBackgroundImageMouseDown(event)
+    {
+        this.transformTool.setTarget(event);
+    }
+
+
+    onBackgroundImageTransformComplete(event)
+    {
         this.transformTool.setPivotByControl(new PIXI.Point(0, 0));
         this.transformTool.update();
         this.transformTool.drawCenter();

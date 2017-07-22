@@ -13,8 +13,6 @@ export default class Mask extends BitmapContainer
 
     onReady()
     {
-        //console.log('onReady(', this, ')');
-
         this.initialize();
     }
 
@@ -40,7 +38,8 @@ export default class Mask extends BitmapContainer
     }
 
 
-    setPivot(localPoint) {
+    setPivot(localPoint)
+    {
         this.pivot = localPoint;
     }
 
@@ -51,7 +50,8 @@ export default class Mask extends BitmapContainer
      * 이동하고 회전하는 경우 updateTransform 이 안되어 이상 동작합니다.
      * @param event
      */
-    onTransformComplete(event) {
-        console.log('onTransformComplete', this.scale);
+    onTransformComplete(event)
+    {
+        //console.log('onTransformComplete', this.scale);
     }
 }
