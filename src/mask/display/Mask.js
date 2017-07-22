@@ -26,10 +26,7 @@ export default class Mask extends BitmapContainer
         this.scaleSignX = 1;
         this.scaleSignY = 1;
 
-        // restore 시 복원할 scaleSignX,Y 값
-        this._restoreScaleSignX = -1;
-        this._restoreScaleSignY = -1;
-
+        // 스티커에서 VectorContainer 안에 image 의 스케일을 의미
         this.childScaleX = 1;
         this.childScaleY = 1;
 
