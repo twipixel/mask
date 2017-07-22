@@ -59,15 +59,11 @@ export default class Size
      */
     static initialize(backgroundImage, viewport)
     {
-        console.log('initialize(', backgroundImage, viewport, ')');
         //  순서가 중요, backgroundImage먼저, viewport가 그 다음
         this.backgroundImage = backgroundImage;
         this.viewport = viewport;
 
         this.isInitialized = true;
-        console.log('ScreenManager.instance.initialize()');
-        console.log('viewport', this.viewport);
-        console.log('backgroundImage', this.backgroundImage);
     }
 
 

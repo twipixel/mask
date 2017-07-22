@@ -93,7 +93,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
             this.maskLayer.addChild(backgroundImage);
         });
 
-        const mask = this.mask = new Bitmap('./../assets/img/mask0.png');
+        const mask = this.mask = new Bitmap('./../assets/img/mask1.png');
         this.maskLayer.addChild(mask);
     }
 
@@ -103,7 +103,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         const viewport = this.viewport = Size.windowSize;
 
         const backgroundImage = this.backgroundImage =
-            new BackgroundImage('./../assets/img/background0.jpg', viewport);
+            new BackgroundImage('./../assets/img/background0.png', viewport);
             //new BackgroundImage('./../assets/img/background1.jpg', viewport);
 
         backgroundImage.on(Bitmap.READY, this.onBackgroundImageReady.bind(this));
@@ -145,14 +145,14 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
     onMaskImageRady()
     {
-        const maskDefaultSize = new PIXI.Rectangle(0, 0, 200, 285);
+        const maskDefaultSize = new PIXI.Rectangle(0, 0, 174, 188);
         this.mask.bitmapWidth = maskDefaultSize.width;
         this.mask.bitmapHeight = maskDefaultSize.height;
         this.mask.x = Size.windowCenterX - 200;
         this.mask.y = Size.windowCenterY - 100;
         //this.mask.alpha = 0.0;
         //this.mask.alpha = 0.1;
-        //this.mask.visible = false;
+        this.mask.visible = false;
         this.maskLayer.addChild(this.mask);
 
         this.start();
@@ -173,7 +173,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         dimmedMask.alpha = 0.82;
         //dimmedMask.alpha = 0.32;
         dimmedMask.visible = true;
-        //this.maskLayer.addChild(dimmedMask);
+        this.maskLayer.addChild(dimmedMask);
 
         //this.maskLayer.swapChildren(this.mask, this.dimmedMask);
     }
@@ -190,28 +190,27 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     {
         //control 이 클릭 되었으면 리턴
         const isOverControl = this.transformTool.isOverControl;
+
         if (isOverControl === true) {
             return;
         }
 
-
         const global = Mouse.global;
-        const currentTarget = this.transformTool.target;
         const isHitMask = this.mask.hitTestWithGlobalPoint(global);
-        const isHitBackgroundImage = this.backgroundImage.hitTestWithGlobalPoint(global);
-        const cloneEvent = clone(event);
-
-
 
         if (isHitMask) {
             event.stopPropagation();
+            const cloneEvent = clone(event);
             cloneEvent.target = this.mask;
             cloneEvent.stopPropagation = function(){};
             this.onMaskDown(cloneEvent);
         }
         else {
+            const isHitBackgroundImage = this.backgroundImage.hitTestWithGlobalPoint(global);
+
             if (isHitBackgroundImage) {
                 event.stopPropagation();
+                const cloneEvent = clone(event);
                 cloneEvent.target = this.backgroundImage;
                 cloneEvent.stopPropagation = function(){};
                 this.onBackgroundImageMouseDown(cloneEvent);

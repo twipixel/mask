@@ -141,11 +141,20 @@ export default class DimmedMask extends PIXI.Container {
         // 회전
         this.ctx.rotate(this.backgroundImage.rotation);
 
+        const sx = this.backgroundImage.scale.x;
+        const sy = this.backgroundImage.scale.y;
+        const w = this.backgroundImage.bitmapWidth * sx;
+        const h = this.backgroundImage.bitmapHeight * sy;
+        const hw = this.backgroundImage.bitmapHalfWidth * sx;
+        const hh = this.backgroundImage.bitmapHalfHeight * sy;
+
         // 이미지를 가운데 회전하기 위해 가운데 중심점으로 이동
-        this.ctx.translate(-this.backgroundImage.bitmapHalfWidth, -this.backgroundImage.bitmapHalfHeight);
+        this.ctx.translate(-hw, -hh);
 
         // 이미지를 좌상단을 0, 0으로 위치 시키기
         const offset = this.backgroundImage.bitmapAndContainerRegistrationPointDistance;
+        offset.x = offset.x * sx;
+        offset.y = offset.y * sy;
         this.ctx.translate(offset.x, offset.y);
 
         // 배경이미지의 좌상단 좌표 가져오기
@@ -158,7 +167,7 @@ export default class DimmedMask extends PIXI.Container {
 
         this.ctx.globalAlpha = this.dimmedAlpha;
         this.ctx.fillStyle = this.dimmedColor;
-        this.ctx.fillRect(0, 0, this.backgroundImage.bitmapWidth, this.backgroundImage.bitmapHeight);
+        this.ctx.fillRect(0, 0, w, h);
 
         // 이전 상태 복원
         this.ctx.restore();

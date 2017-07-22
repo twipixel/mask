@@ -36,7 +36,7 @@ export default class ToolControl extends PIXI.Sprite
     {
         this.currentRadian = 0;
         this.currentRotation = 0;
-        this.drawAlpha = 0.1;
+        this.drawAlpha = 0.0;
         this.buttonMode = true;
         this.interactive = true;
         this.defaultCursor = 'inherit';
