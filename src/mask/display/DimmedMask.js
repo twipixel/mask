@@ -56,21 +56,7 @@ export default class DimmedMask extends PIXI.Container
 
     resize()
     {
-        return;
 
-        const width = Size.windowWidth;
-        const height = Size.windowHeight;
-
-        /**
-         * 캔버스 사이즈와 디스플레이 사이즈 설정
-         * 레티나 그래픽 지원 코드
-         */
-        this.canvas.width = width;
-        this.canvas.height = height;
-        this.canvas.style.width = width + 'px';
-        this.canvas.style.height = height + 'px';
-
-        console.log('window[', width, height, '], canvas[', this.canvas.width, this.canvas.height, ']');
     }
 
 
