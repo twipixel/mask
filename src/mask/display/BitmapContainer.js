@@ -43,8 +43,10 @@ export default class BitmapContainer extends PIXI.Container
 
     resize()
     {
-        this.bitmapWidth = Size.initializedBackgroundImageSize.width;
-        this.bitmapHeight = Size.initializedBackgroundImageSize.height;
+        const w = Size.initializedBackgroundImageSize.width;
+        const y = Size.initializedBackgroundImageSize.height;
+        //this.scale.x = this.width / w;
+        //this.scale.y = this.height / h;
     }
 
 

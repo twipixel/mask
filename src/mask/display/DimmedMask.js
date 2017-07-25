@@ -7,17 +7,15 @@ export default class DimmedMask extends PIXI.Container
     /**
      *
      * Mask와 BackgroundImage를 받아 딤드화면을 생성합니다.
-     * @param viewport {PIXI.Rectangle|*}
      * @param backgroundImage {BackgroundImage}
      * @param maskImage {Mask}
      */
-    constructor(viewport, backgroundImage, maskImage)
+    constructor(backgroundImage, maskImage)
     {
         super();
 
         this.dimmedAlpha = 1;
         this.dimmedColor = 0x000000;
-        this.viewport = viewport;
         this.backgroundImage = backgroundImage;
         this.maskImage = maskImage;
 
@@ -29,9 +27,10 @@ export default class DimmedMask extends PIXI.Container
     initialize()
     {
         this.canvas = document.createElement('canvas');
-        this.canvas.width = this.viewport.width;
-        this.canvas.height = this.viewport.height;
+        this.canvas.width = Size.canvasLimitWidth;
+        this.canvas.height = Size.canvasLimitHeight;
         this.ctx = this.context = this.canvas.getContext('2d');
+        document.body.appendChild(this.canvas);
 
         // 이미지 smoothed 설정
         const useSmoothed = false;
@@ -45,7 +44,7 @@ export default class DimmedMask extends PIXI.Container
 
         this.rotationPivot = new PIXI.Point(0, 0);
 
-        this.resize(this.viewport);
+        this.resize();
     }
 
 
@@ -55,18 +54,29 @@ export default class DimmedMask extends PIXI.Container
     }
 
 
-    resize(viewport)
+    resize()
     {
-        console.log('viewport[', viewport.width, viewport.height, ']');
-        this.canvas.width = viewport.width;
-        this.canvas.height = viewport.height;
+        return;
+
+        const width = Size.windowWidth;
+        const height = Size.windowHeight;
+
+        /**
+         * 캔버스 사이즈와 디스플레이 사이즈 설정
+         * 레티나 그래픽 지원 코드
+         */
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.canvas.style.width = width + 'px';
+        this.canvas.style.height = height + 'px';
+
+        console.log('window[', width, height, '], canvas[', this.canvas.width, this.canvas.height, ']');
     }
 
 
     update(ms)
     {
         this.clearCanvas();
-        this.drawViewportRectangle();
         //this.drawBackground();
         this.drawDimmedBackground();
         this.drawMask();
@@ -76,28 +86,8 @@ export default class DimmedMask extends PIXI.Container
     clearCanvas()
     {
         // clear canvas
-        this.canvas.width = this.viewport.width;
-    }
-
-
-    drawViewportRectangle()
-    {
-        // 이전 상태 저장
-        this.ctx.save();
-
-        // 디버그 viewport 영역 그리기
-        this.ctx.lineWidth = 5;
-        this.ctx.strokeStyle = 'green';
-        this.ctx.beginPath();
-        this.ctx.lineTo(this.viewport.width, 0);
-        this.ctx.lineTo(this.viewport.width, this.viewport.height);
-        this.ctx.lineTo(0, this.viewport.height);
-        this.ctx.lineTo(0, 0);
-        this.ctx.closePath();
-        this.ctx.stroke();
-
-        // 이전 상태 복원
-        this.ctx.restore();
+        this.canvas.width = this.canvas.width;
+        this.canvas.height = this.canvas.height;
     }
 
 

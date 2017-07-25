@@ -61,15 +61,15 @@ function update(ms) {
 
 
 function resizeWindow() {
-    var width = window.innerWidth;
-    var height = window.innerHeight;
+    const width = window.innerWidth * window.devicePixelRatio;
+    const height = window.innerHeight * window.devicePixelRatio;
 
     /**
      * 캔버스 사이즈와 디스플레이 사이즈 설정
      * 레티나 그래픽 지원 코드
      */
-    canvas.width = width * window.devicePixelRatio;
-    canvas.height = height * window.devicePixelRatio;
+    canvas.width = width;
+    canvas.height = height;
     canvas.style.width = width + 'px';
     canvas.style.height = height + 'px';
 

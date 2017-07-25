@@ -48,7 +48,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         if (Size.isAvailable) {
 
             const viewport = this.viewport = Size.windowSize;
-            Size.initialize(this.backgroundImage.originalImageSize, viewport);
+            Size.initialize(this.backgroundImage, viewport);
 
             if (this.backgroundImage) {
                 this.backgroundImage.resize();
@@ -57,7 +57,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
             }
 
             if (this.dimmedMask) {
-                this.dimmedMask.resize(viewport);
+                this.dimmedMask.resize();
             }
         }
     }
@@ -177,7 +177,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
         window.document.addEventListener('mousedown', this.onStageDown.bind(this));
 
-        const dimmedMask = this.dimmedMask = new DimmedMask(this.viewport, this.backgroundImage, this.mask);
+        const dimmedMask = this.dimmedMask = new DimmedMask(this.backgroundImage, this.mask);
         dimmedMask.alpha = 0.82;
         //dimmedMask.alpha = 0.32;
         dimmedMask.visible = true;

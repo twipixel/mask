@@ -110,6 +110,7 @@ export default class Calc
         return {x: dx, y: dy};
     }
 
+
     static getScaleX(matrix) {
         return Math.sqrt(matrix.a * matrix.a + matrix.b * matrix.b);
     }
