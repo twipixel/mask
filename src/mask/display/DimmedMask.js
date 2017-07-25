@@ -2,14 +2,17 @@ import Size from './../utils/Size';
 import Calc from './../utils/Calculator';
 
 
-export default class DimmedMask extends PIXI.Container {
+export default class DimmedMask extends PIXI.Container
+{
     /**
      *
+     * Mask와 BackgroundImage를 받아 딤드화면을 생성합니다.
      * @param viewport {PIXI.Rectangle|*}
      * @param backgroundImage {BackgroundImage}
      * @param maskImage {Mask}
      */
-    constructor(viewport, backgroundImage, maskImage) {
+    constructor(viewport, backgroundImage, maskImage)
+    {
         super();
 
         this.dimmedAlpha = 1;
@@ -23,7 +26,8 @@ export default class DimmedMask extends PIXI.Container {
     }
 
 
-    initialize() {
+    initialize()
+    {
         this.canvas = document.createElement('canvas');
         this.canvas.width = this.viewport.width;
         this.canvas.height = this.viewport.height;
@@ -40,15 +44,27 @@ export default class DimmedMask extends PIXI.Container {
         this.addChild(this.dimmed);
 
         this.rotationPivot = new PIXI.Point(0, 0);
+
+        this.resize(this.viewport);
     }
 
 
-    addEvent() {
-
+    addEvent()
+    {
+        //
     }
 
 
-    update(ms) {
+    resize(viewport)
+    {
+        console.log('viewport[', viewport.width, viewport.height, ']');
+        this.canvas.width = viewport.width;
+        this.canvas.height = viewport.height;
+    }
+
+
+    update(ms)
+    {
         this.clearCanvas();
         this.drawViewportRectangle();
         //this.drawBackground();
@@ -57,7 +73,8 @@ export default class DimmedMask extends PIXI.Container {
     }
 
 
-    clearCanvas() {
+    clearCanvas()
+    {
         // clear canvas
         this.canvas.width = this.viewport.width;
     }
@@ -99,11 +116,11 @@ export default class DimmedMask extends PIXI.Container {
         this.ctx.translate(-this.backgroundImage.bitmapHalfWidth, -this.backgroundImage.bitmapHalfHeight);
 
         // 이미지를 좌상단을 0, 0으로 위치 시키기
-        const offset = this.backgroundImage.bitmapAndContainerRegistrationPointDistance;
+        const offset = this.backgroundImage.distanceBetweenLtAndCenter;
         this.ctx.translate(offset.x, offset.y);
 
         // 배경이미지의 좌상단 좌표 가져오기
-        const leftTop = this.backgroundImage.leftTopPoint;
+        const leftTop = this.backgroundImage.lt;
 
         // context의 회전한 만큼 좌상단도 회전시키기
         const rotationLeftTop = Calc.getRotationPoint(this.rotationPivot, leftTop, -Calc.toDegrees(this.backgroundImage.bitmapRotation));
@@ -152,13 +169,13 @@ export default class DimmedMask extends PIXI.Container {
         this.ctx.translate(-hw, -hh);
 
         // 이미지를 좌상단을 0, 0으로 위치 시키기
-        const offset = this.backgroundImage.bitmapAndContainerRegistrationPointDistance;
+        const offset = this.backgroundImage.distanceBetweenLtAndCenter;
         offset.x = offset.x * sx;
         offset.y = offset.y * sy;
         this.ctx.translate(offset.x, offset.y);
 
         // 배경이미지의 좌상단 좌표 가져오기
-        const leftTop = this.backgroundImage.leftTopPoint;
+        const leftTop = this.backgroundImage.lt;
 
         // context의 회전한 만큼 좌상단도 회전시키기
         const rotationLeftTop = Calc.getRotationPoint(this.rotationPivot, leftTop, -Calc.toDegrees(this.backgroundImage.bitmapRotation));
@@ -182,7 +199,7 @@ export default class DimmedMask extends PIXI.Container {
         this.ctx.globalCompositeOperation = 'destination-out';
 
         // 배경이미지의 좌상단 좌표 가져오기
-        const leftTop = this.maskImage.leftTopPoint;
+        const leftTop = this.maskImage.lt;
 
         this.ctx.translate(leftTop.x, leftTop.y);
 

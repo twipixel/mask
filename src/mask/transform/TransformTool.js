@@ -246,6 +246,11 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     }
 
 
+    /**
+     * Mask에서는 Target이
+     * Mask 또는 BackgroundImage가 타겟이 됩니다.
+     * @param target {Mask || BackgroundImage}
+     */
     activeTarget(target)
     {
         this.target = target;
@@ -895,7 +900,6 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         const transform = this.target.worldTransform.clone();
         const tl = transform.apply(this.c.tl.localPoint);
         const ml = transform.apply(this.c.ml.localPoint);
-        //return PointUtil.getAddedInterpolate(tl, ml, this.deleteButtonOffsetY);
         return PointUtil.add(PointUtil.getAddedInterpolate(tl, ml, this.deleteButtonOffsetY), new PIXI.Point(-this.deleteButtonSize, -this.deleteButtonSize));
     }
 
@@ -918,12 +922,20 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     }
 
 
+    /**
+     * 변형 타겟의 ScaleX
+     * @returns {number}
+     */
     get diffScaleX()
     {
         const matrix = this.target.worldTransform;
         return Math.sqrt(matrix.a * matrix.a + matrix.b * matrix.b);
     }
 
+    /**
+     * 변형 타겟의 ScaleY
+     * @returns {number}
+     */
     get diffScaleY()
     {
         const matrix = this.target.worldTransform;
@@ -931,11 +943,27 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     }
 
 
+    /**
+     * NOT USE
+     * 타겟의 넓이와 스케일을 반영한 값
+     * 스티커에서는 drawCenter 에서 사용하지만
+     * 마스크에서는 target이 Mask 또는 BackgroundImage이므로 해당 값을 사용하지 않습니다.
+     * drawCenter시 BitmapContainer 의 넓이를 바로 참조하고 있습니다.
+     * @returns {number}
+     */
     get width()
     {
         return this.target.width * this.diffScaleX;
     }
 
+    /**
+     * NOT USE
+     * 타겟의 넓이와 스케일을 반영한 값
+     * 스티커에서는 drawCenter 에서 사용하지만
+     * 마스크에서는 target이 Mask 또는 BackgroundImage이므로 해당 값을 사용하지 않습니다.
+     * drawCenter시 BitmapContianer의 높이를 바로 참조하고 있습니다.
+     * @returns {number}
+     */
     get height()
     {
         return this.target.height * this.diffScaleY;

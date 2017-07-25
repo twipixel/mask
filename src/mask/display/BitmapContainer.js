@@ -5,6 +5,12 @@ import Calc from './../utils/Calculator';
 
 export default class BitmapContainer extends PIXI.Container
 {
+    /**
+     * 중심좌표를 가운데 두기 위해서 Bitmap을 로드하여 가운데 정렬합니다.
+     * Bitmap은 넓이와 높이만 변경하고 스케일, 회전은 컨테이너를 변경합니다.
+     *
+     * @param url
+     */
     constructor(url)
     {
         super();
@@ -55,6 +61,11 @@ export default class BitmapContainer extends PIXI.Container
     }
 
 
+    /**
+     * global 좌표가로 충돌여부 체크 (마우스 클릭 되었는지 파악)
+     * @param globalPoint Mouse.global
+     * @returns {boolean} 객체가 선택되었는지 여부
+     */
     hitTestWithGlobalPoint(globalPoint)
     {
         const local = this.toLocal(globalPoint);
@@ -95,12 +106,19 @@ export default class BitmapContainer extends PIXI.Container
     /////////////////////////////////////////////////////////////////////////////
 
 
+    /**
+     * 비트맵 넓이를 변경합니다.
+     * 중심점을 가운데로 하기 위해
+     * 컨테이너나 비트맵을 접근해서 처리하지 않고
+     * 반드시 bitmapWidth 속성을 이용해서 사이즈를 조절합니다.
+     * @param value
+     */
     set bitmapWidth(value)
     {
         this.bitmap.width = value;
         this._bitmapHalfWidth = this.bitmap.width / 2;
         this.bitmap.x = -this.bitmapHalfWidth;
-        this.prevBitmapRegistrationPoint = this.bitmapRegistrationPoint;
+        this.prevBitmapRegistrationPoint = this.bitmapLt;
     }
 
     get bitmapWidth()
@@ -115,12 +133,19 @@ export default class BitmapContainer extends PIXI.Container
     }
 
 
+    /**
+     * 비트맵 높이를 변경합니다.
+     * 중심점을 가운데로 하기 위해
+     * 컨테이너나 비트맵을 접근해서 처리하지 않고
+     * 반드시 bitmapHeight 속성을 이용해서 사이즈를 조절합니다.
+     * @param value
+     */
     set bitmapHeight(value)
     {
         this.bitmap.height = value;
         this._bitmapHalfHeight = this.bitmap.height / 2;
         this.bitmap.y = -this.bitmapHalfHeight;
-        this.prevBitmapRegistrationPoint = this.bitmapRegistrationPoint;
+        this.prevBitmapRegistrationPoint = this.bitmapLt;
     }
 
     get bitmapHeight()
@@ -138,8 +163,7 @@ export default class BitmapContainer extends PIXI.Container
     set bitmapRotation(radians)
     {
         this.rotation = radians;
-
-        const current = this.bitmapRegistrationPoint;
+        const current = this.bitmapLt;
         const prev = this.prevBitmapRegistrationPoint;
         this.pivotOffset = new PIXI.Point(current.x - prev.x, current.y - prev.y);
     }
@@ -148,33 +172,6 @@ export default class BitmapContainer extends PIXI.Container
     get bitmapRotation()
     {
         return this.rotation;
-    }
-
-
-    get leftTopPoint()
-    {
-        return this.toGlobal(this.bitmapRegistrationPoint);
-    }
-
-
-    get bitmapRegistrationPoint()
-    {
-        return this.toLocal(this.bitmap.registrationPoint, this.bitmap);
-    }
-
-
-    get bitmapAndContainerRegistrationPointDistance()
-    {
-        if (!this.registrationPoint) {
-            return new PIXI.Point(0, 0);
-        }
-
-        const bitmapRegistrationPoint = this.bitmapRegistrationPoint;
-
-        return new PIXI.Point(
-            this.registrationPoint.x - bitmapRegistrationPoint.x,
-            this.registrationPoint.y - bitmapRegistrationPoint.y,
-        );
     }
 
 
@@ -195,20 +192,102 @@ export default class BitmapContainer extends PIXI.Container
 
     /////////////////////////////////////////////////////////////////////////////
     //
-    // Pivot Functions
+    // Points
     //
     /////////////////////////////////////////////////////////////////////////////
 
 
-    get bitmapLeftTopX()
+    /**
+     * 좌상단 포인트를 글로벌 좌표로 반환합니다.
+     * @returns {PIXI.Point}
+     */
+    get lt()
     {
-        return -this.bitmapHalfWidth;
+        return this.toGlobal(this.bitmapLt);
+    }
+
+    /**
+     * 우상단 포인트를 글로벌 좌표로 반환합니다.
+     * @returns {PIXI.Point}
+     */
+    get rt()
+    {
+        return this.toGlobal(this.bitmapRt);
+    }
+
+    /**
+     * 우하단 포인트를 글로벌 좌표로 반환합니다.
+     * @returns {PIXI.Point}
+     */
+    get rb()
+    {
+        return this.toGlobal(this.bitmapRb);
+    }
+
+    /**
+     * 좌하단 포인트를 글로벌 좌표로 반환합니다.
+     * @returns {PIXI.Point}
+     */
+    get lb()
+    {
+        return this.toGlobal(this.bitmapLb);
     }
 
 
-    get bitmapLeftTopY()
+
+    /**
+     * 비트맵 좌상단 포인트를 로컬 좌표로 반환합니다.
+     * @returns {PIXI.Point}
+     */
+    get bitmapLt()
     {
-        return -this.bitmapHalfHeight;
+        return this.toLocal(this.bitmap.lt, this.bitmap);
+    }
+
+    /**
+     * 비트맵 우상단 포인트를 로컬 좌표로 반환합니다.
+     * @returns {PIXI.Point}
+     */
+    get bitmapRt()
+    {
+        return this.toLocal(this.bitmap.rt, this.bitmap);
+    }
+
+    /**
+     * 비트맵 우하단 포인트를 로컬 좌표로 반환합니다.
+     * @returns {PIXI.Point}
+     */
+    get bitmapRb()
+    {
+        return this.toLocal(this.bitmap.rb, this.bitmap);
+    }
+
+    /**
+     * 비트맵 좌하단 포인트를 로컬 좌표로 반환합니다.
+     * @returns {PIXI.Point}
+     */
+    get bitmpLb()
+    {
+        return this.toLocal(this.bitmap.lb, this.bitmap);
+    }
+
+
+    /**
+     * 중심점과 좌상단의 거리
+     * @returns {svg.Point|PIXI.Point|*}
+     */
+    get distanceBetweenLtAndCenter()
+    {
+        if (!this.registrationPoint) {
+            return new PIXI.Point(0, 0);
+        }
+
+        const bitmapRegistrationPoint = this.bitmapLt;
+
+        return new PIXI.Point(
+            this.registrationPoint.x - bitmapRegistrationPoint.x,
+            this.registrationPoint.y - bitmapRegistrationPoint.y,
+        );
     }
 
 
@@ -243,8 +322,8 @@ export default class BitmapContainer extends PIXI.Container
         this.graphics.lineStyle(1, 0xFF3300);
         this.graphics.drawRect(0, 0, this.bitmap.width, this.bitmap.height);
         this.graphics.endFill();
-        this.graphics.x = this.bitmapLeftTopX;
-        this.graphics.y = this.bitmapLeftTopY;
+        this.graphics.x = -this.bitmapHalfWidth;
+        this.graphics.y = -this.bitmapHalfHeight;
         this.addChild(this.graphics);
     }
 

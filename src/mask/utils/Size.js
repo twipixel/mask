@@ -131,8 +131,8 @@ export default class Size
         this._viewportHalfHeight = value.height / 2;
 
         const initBackgroundImageSize = Calc.getSizeFitInBounds(this.backgroundImage, this.screenBounds);
-        initBackgroundImageSize.x = this.viewportCenterX - initBackgroundImageSize.width / 2;
-        initBackgroundImageSize.y = this.viewportCenterY - initBackgroundImageSize.height / 2;
+        initBackgroundImageSize.x = this.viewportCenterX;
+        initBackgroundImageSize.y = this.viewportCenterY;
         this._initBackgroundImageSize = initBackgroundImageSize;
     }
 
