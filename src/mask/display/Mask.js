@@ -23,12 +23,9 @@ export default class Mask extends BitmapContainer
         this.buttonMode = true;
         this.interactive = true;
 
+        // 반전 여부
         this.scaleSignX = 1;
         this.scaleSignY = 1;
-
-        // 스티커에서 VectorContainer 안에 image 의 스케일을 의미
-        this.childScaleX = 1;
-        this.childScaleY = 1;
 
         //this.transformCompleteListener = this.onTransformComplete.bind(this);
         //this.on(TransformTool.TRANSFORM_COMPLETE, this.transformCompleteListener);

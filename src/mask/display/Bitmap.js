@@ -51,6 +51,7 @@ export default class Bitmap extends PIXI.Container
             this.addChild(this.rt);
             this.addChild(this.rb);
             this.addChild(this.lb);
+            this.points = [this.lt, this.rt, this.rb, this.lb];
 
             this.emit(Bitmap.READY);
         }, 10);

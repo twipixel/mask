@@ -31,7 +31,7 @@ export default class BitmapContainer extends PIXI.Container
 
         this._bitmapHalfWidth = 0;
         this._bitmapHalfHeight = 0;
-        this.pivotOffset = new PIXI.Point(0, 0);
+        this.pivotOffset = new PIXI.Point();
     }
 
 
@@ -162,6 +162,15 @@ export default class BitmapContainer extends PIXI.Container
     }
 
 
+    /**
+     * pivot을 변경하면 객체가 이동하게 됩니다.
+     * 객체를 이동시키지 않고 pivot을 변경하게 하려면
+     * pivot을 변경하고 중심점이 이동한 만큼 객체를 이동시키면
+     * pivot변경 후 에도 객체는 그자리에 있게됩니다.
+     * Container.rotation으로 회전이 가능하지만
+     * 중심점을 기록하기 위해 bitmapRotation을 사용합니다.
+     * @param radians
+     */
     set bitmapRotation(radians)
     {
         this.rotation = radians;
@@ -268,7 +277,7 @@ export default class BitmapContainer extends PIXI.Container
      * 비트맵 좌하단 포인트를 로컬 좌표로 반환합니다.
      * @returns {PIXI.Point}
      */
-    get bitmpLb()
+    get bitmapLb()
     {
         return this.toLocal(this.bitmap.lb, this.bitmap);
     }
@@ -290,6 +299,90 @@ export default class BitmapContainer extends PIXI.Container
             this.registrationPoint.x - bitmapRegistrationPoint.x,
             this.registrationPoint.y - bitmapRegistrationPoint.y,
         );
+    }
+
+
+    /**
+     * 사각형의 맨 좌측값 (충돌검사를 위한 값)
+     * @returns {*}
+     */
+    get left()
+    {
+        const points = this.bitmap.points;
+        var point = this.toGlobal(this.toLocal(points[0], this.bitmap));
+
+        for (var i = 1; i < points.length; i++) {
+            const other = this.toGlobal(this.toLocal(points[i], this.bitmap));
+
+            if (other.x < point.x) {
+                point = other;
+            }
+        }
+
+        return point.x;
+    }
+
+
+    /**
+     * 사각형의 맨 우측값 (충돌검사를 위한 값)
+     * @returns {*}
+     */
+    get right()
+    {
+        const points = this.bitmap.points;
+        var point = this.toGlobal(this.toLocal(points[0], this.bitmap));
+
+        for (var i = 1; i < points.length; i++) {
+            const other = this.toGlobal(this.toLocal(points[i], this.bitmap));
+
+            if (other.x > point.x) {
+                point = other;
+            }
+        }
+
+        return point.x;
+    }
+
+
+    /**
+     * 사각형의 맨 상단값 (충돌검사를 위한 값)
+     * @returns {*}
+     */
+    get top()
+    {
+        const points = this.bitmap.points;
+        var point = this.toGlobal(this.toLocal(points[0], this.bitmap));
+
+        for (var i = 1; i < points.length; i++) {
+            const other = this.toGlobal(this.toLocal(points[i], this.bitmap));
+
+            if (other.y > point.y) {
+                point = other;
+            }
+        }
+
+        return point.y;
+    }
+
+
+    /**
+     * 사각형의 맨 하단값 (충돌검사를 위한 값)
+     * @returns {*}
+     */
+    get bottom()
+    {
+        const points = this.bitmap.points;
+        var point = this.toGlobal(this.toLocal(points[0], this.bitmap));
+
+        for (var i = 1; i < points.length; i++) {
+            const other = this.toGlobal(this.toLocal(points[i], this.bitmap));
+
+            if (other.y < point.y) {
+                point = other;
+            }
+        }
+
+        return point.y;
     }
 
 

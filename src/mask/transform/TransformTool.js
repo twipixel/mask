@@ -183,43 +183,6 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     {
         this.downCnt = 0;
         this.stageLayer.on(TransformTool.SET_TARGET, this.onSetTarget.bind(this));
-        this.stageLayer.root.on('mousedown', this.onMouseDown, this);
-        this.stageLayer.root.on('mouseup', this.onMouseUp, this);
-    }
-
-
-    onMouseDown(event)
-    {
-        if (event.data.originalEvent.target != this.stageLayer.renderer.view) {
-            return;
-        }
-
-        this.mouseDownX = event.data.global.x;
-        this.mouseDownY = event.data.global.y;
-    }
-
-
-    onMouseUp(event)
-    {
-        if (event.data.originalEvent.target != this.stageLayer.renderer.view) {
-            return;
-        }
-
-        this.downCnt--;
-
-        if (this.downCnt < 0 && this.target) {
-
-            const dx = event.data.global.x - this.mouseDownX,
-                dy = event.data.global.y - this.mouseDownY;
-
-            if (dx * dx + dy * dy <= dragRange * dragRange) {
-                this.target.emit(TransformTool.DESELECT);
-                this.target.visible = true;
-                this.releaseTarget();
-            }
-        }
-
-        this.downCnt = 0;
     }
 
 
@@ -258,6 +221,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         this.addTextureUpdateEvent();
         this.update();
         this.drawCenter();
+        this.emit(TransformTool.SELECT, target);
         this.target.emit(TransformTool.SELECT, target);
         this.stageLayer.emit(TransformTool.SET_TARGET, target);
     }
@@ -862,6 +826,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             return;
         }
 
+        this.emit(TransformTool.TRANSFORM_COMPLETE, event);
         this.target.emit(TransformTool.TRANSFORM_COMPLETE, event);
         this.disableCurrentStyleCursor();
         this.emitControlUp(event.modified);

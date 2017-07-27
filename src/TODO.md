@@ -1,8 +1,9 @@
 ## 진행상황
 
 - 변형 툴 기본 적용 완료
-  - Mask, BackgroundImage 에서 변수 확인
-    - childScaleX, Y
+  - 기존 변형툴에서 변수 정리
+    - childScaleX,Y
+    - scaleSingX,Y
 
 <br>
 
@@ -72,3 +73,9 @@
   - 마스크 이미지 받아서 로딩 처리
 - 8주 (8/21 ~ 8/25) (5)
   - 진훈님과 연동 (아웃풋)
+
+<br>
+
+## 리펙토링
+
+- PointUtil -> deault class 로 변경

@@ -21,15 +21,9 @@ export default class BackgroundImage extends BitmapContainer
         this.buttonMode = true;
         this.interactive = true;
 
+        // 반전 여부
         this.scaleSignX = 1;
         this.scaleSignY = 1;
-
-        // restore 시 복원할 scaleSignX,Y 값
-        this._restoreScaleSignX = -1;
-        this._restoreScaleSignY = -1;
-
-        this.childScaleX = 1;
-        this.childScaleY = 1;
 
         //this.transformCompleteListener = this.onTransformComplete.bind(this);
         //this.on(TransformTool.TRANSFORM_COMPLETE, this.transformCompleteListener);

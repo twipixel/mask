@@ -6,6 +6,7 @@ import Bitmap from './display/Bitmap';
 import DimmedMask from './display/DimmedMask';
 import BackgroundImage from './display/BackgroundImage';
 import TransformTool from './transform/TransformTool';
+import CollisionManager from './manager/CollisionManager';
 import {clone} from './utils/util';
 
 
@@ -34,12 +35,16 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
     initialize()
     {
+        // 디버그용 그래픽스
+        window.g = this.g = new PIXI.Graphics();
+        this.stageLayer.addChild(this.g);
+
         this.maskLayer.updateTransform();
 
         //this.testBitmap();
         this.testCreate();
 
-        this.transformTool = new TransformTool(this.stageLayer, this.maskLayer, this.options);
+        this.createTransformTool();
     }
 
 
@@ -74,6 +79,11 @@ export default class MaskMain extends PIXI.utils.EventEmitter
             this.transformTool.drawCenter();
             this.transformTool.updatePrevTargetLt();
         }*/
+
+
+        if (this._hitTest) {
+            this._hitTest();
+        }
     }
 
 
@@ -189,6 +199,20 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
     /////////////////////////////////////////////////////////////////////////////
     //
+    // TransformTool
+    //
+    /////////////////////////////////////////////////////////////////////////////
+
+
+    createTransformTool()
+    {
+        this.transformTool = new TransformTool(this.stageLayer, this.maskLayer, this.options);
+    }
+
+
+
+    /////////////////////////////////////////////////////////////////////////////
+    //
     // Event Functions
     //
     /////////////////////////////////////////////////////////////////////////////
@@ -229,12 +253,17 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
     onMaskDown(event)
     {
+        console.log('onMaskDown');
+
+        this._hitTest = CollisionManager.hitTest.bind(this, this.mask, this.backgroundImage, this.backgroundImage, true);
         this.transformTool.setTarget(event);
     }
 
 
     onMaskTransformComplete(event)
     {
+        console.log('onMaskTransformComplete');
+        this._hitTest = null;
         this.transformTool.setPivotByControl(new PIXI.Point(0, 0));
         this.transformTool.update();
         this.transformTool.drawCenter();
@@ -243,12 +272,17 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
     onBackgroundImageMouseDown(event)
     {
+        console.log('onBackgroundImageMouseDown');
+        this._hitTest = CollisionManager.hitTest.bind(this, this.backgroundImage, this.mask, this.backgroundImage, true);
         this.transformTool.setTarget(event);
     }
 
 
     onBackgroundImageTransformComplete(event)
     {
+        console.log('onBackgroundImageTransformComplete');
+        this._hitTest = null;
+
         this.transformTool.setPivotByControl(new PIXI.Point(0, 0));
         this.transformTool.update();
         this.transformTool.drawCenter();
