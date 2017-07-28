@@ -4,6 +4,7 @@ import PointUtil from './../utils/PointUtil';
 import ToolControl from './ToolControl';
 import ToolControlType from './ToolControlType';
 import RotationControlType from './RotationControlType';
+import CollisionManager from './../manager/CollisionManager';
 import {map, each} from './../utils/lambda';
 
 
@@ -756,7 +757,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
 
         // 자르기 메뉴를 사용하지 않는 경우는 스냅기능 모두 허용
         // 자르기 메뉴를 사용할 경우 스테이지가 회전되었을 때는 스냅기능을 사용하지 않습니다. (추후 기능 추가)
-        if (this.useSnap == true && isImageRotated == false) {
+        /*if (this.useSnap == true && isImageRotated == false) {
             const rotation = this.target._rotation + event.changeRadian;
             const angle = Calc.toDegrees(rotation);
             const absAngle = Math.round(Math.abs(angle) % 90);
@@ -771,7 +772,24 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         } else {
             this.target.rotation += event.changeRadian;
             this.target._rotation = this.target.rotation;
+        }*/
+
+
+        if (this.useSnap == true && isImageRotated == false) {
+            const rotation = this.target._rotation + event.changeRadian;
+            const angle = Calc.toDegrees(rotation);
+            const absAngle = Math.round(Math.abs(angle) % 90);
+
+            if (absAngle < this._startSnapAngle || absAngle > this._endSnapAngle) {
+                CollisionManager.rotate(Calc.toRadians(Calc.snapTo(angle, 90)));
+            } else {
+                CollisionManager.rotate(rotation);
+            }
+
+        } else {
+            CollisionManager.rotate(this.target.rotation + event.changeRadian);
         }
+
 
         this.draw();
         this.updatePrevTargetLt();

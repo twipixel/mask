@@ -194,6 +194,8 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.maskLayer.addChild(dimmedMask);
 
         //this.maskLayer.swapChildren(this.mask, this.dimmedMask);
+
+        CollisionManager.initialize(this.mask, this.backgroundImage);
     }
 
 
@@ -253,17 +255,15 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
     onMaskDown(event)
     {
-        console.log('onMaskDown');
-
-        this._hitTest = CollisionManager.hitTest.bind(this, this.mask, this.backgroundImage, true);
         this.transformTool.setTarget(event);
+        //this._hitTest = CollisionManager.drawBounds.bind(this);
+        //this._hitTest = CollisionManager.hitTest.bind(this, true);
     }
 
 
     onMaskTransformComplete(event)
     {
-        console.log('onMaskTransformComplete');
-        this._hitTest = null;
+        //this._hitTest = null;
         this.transformTool.setPivotByControl(new PIXI.Point(0, 0));
         this.transformTool.update();
         this.transformTool.drawCenter();
@@ -272,17 +272,15 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
     onBackgroundImageMouseDown(event)
     {
-        console.log('onBackgroundImageMouseDown');
-        this._hitTest = CollisionManager.hitTest.bind(this, this.mask, this.backgroundImage, false);
         this.transformTool.setTarget(event);
+        //this._hitTest = CollisionManager.drawBounds.bind(this);
+        //this._hitTest = CollisionManager.hitTest.bind(this, false);
     }
 
 
     onBackgroundImageTransformComplete(event)
     {
-        console.log('onBackgroundImageTransformComplete');
-        this._hitTest = null;
-
+        //this._hitTest = null;
         this.transformTool.setPivotByControl(new PIXI.Point(0, 0));
         this.transformTool.update();
         this.transformTool.drawCenter();

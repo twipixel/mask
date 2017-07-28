@@ -104,6 +104,41 @@ export default class Calc
     }
 
 
+    /**
+     * 회전각과 사각형의 포인트를 넘겨주면 회전된 사각형의 포인트를 전달합니다.
+     * @param pivot 사각형의 pivot(anchor) 포인트
+     * @param rectanglePoints 사각형 좌표 (leftTop, rightTop, rightBottom, leftBottom)
+     * @param degrees 각도 degress
+     * @returns {{lt: ({x, y}|{x: (number|*), y: (number|*)}), rt: ({x, y}|{x: (number|*), y: (number|*)}), rb: ({x, y}|{x: (number|*), y: (number|*)}), lb: ({x, y}|{x: (number|*), y: (number|*)})}}
+     */
+    static getRotationPoints(pivot, rectanglePoints, degrees) {
+        const lt = Calc.getRotationPoint(pivot, rectanglePoints.lt, degrees);
+        const rt = Calc.getRotationPoint(pivot, rectanglePoints.rt, degrees);
+        const rb = Calc.getRotationPoint(pivot, rectanglePoints.rb, degrees);
+        const lb = Calc.getRotationPoint(pivot, rectanglePoints.lb, degrees);
+        return {lt: lt, rt: rt, rb: rb, lb: lb};
+    };
+
+
+    /**
+     * 사각형의 좌표를 가지고 바운드를 계산합니다.
+     * @param rotationPoints 사각형 좌표 (leftTop, rightTop, rightBottom, leftBottom)
+     * @returns {{x: number, y: number, width: number, height: number}}
+     */
+    static getBoundsByRotationPoints(rotationPoints) {
+        const x1 = Math.min(rotationPoints.lt.x, rotationPoints.rt.x, rotationPoints.rb.x, rotationPoints.lb.x);
+        const y1 = Math.min(rotationPoints.lt.y, rotationPoints.rt.y, rotationPoints.rb.y, rotationPoints.lb.y);
+        const x2 = Math.max(rotationPoints.lt.x, rotationPoints.rt.x, rotationPoints.rb.x, rotationPoints.lb.x);
+        const y2 = Math.max(rotationPoints.lt.y, rotationPoints.rt.y, rotationPoints.rb.y, rotationPoints.lb.y);
+        return {x: x1, y: y1, width: x2 - x1, height: y2 - y1};
+    };
+
+
+    static getBoundsByPoints(points) {
+        return {x: points.lt.x, y: points.lt.y, width: points.rb.x - points.lt.x, height: points.rb.y - points.lt.y};
+    };
+
+
     static deltaTransformPoint(matrix, point) {
         const dx = point.x * matrix.a + point.y * matrix.c + 0;
         const dy = point.x * matrix.b + point.y * matrix.d + 0;

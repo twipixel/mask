@@ -7,14 +7,15 @@ export default class DummyCollisionRectangle
      * @param rt 우상단 포인트의 글로벌 좌표입니다.
      * @param rb 우하단 포인트의 글로벌 좌표입니다.
      * @param lb 좌하단 포인트의 글로벌 좌표입니다.
+     * @param lb 가운데 포인트의 글로벌 좌표입니다.
      */
-    constructor(lt, rt, rb, lb)
+    constructor(lt, rt, rb, lb, center)
     {
-        console.log(typeof lt, lt);
         this.lt = lt;
         this.rt = rt;
         this.rb = rb;
         this.lb = lb;
+        this.center = center;
         this.points = [this.lt, this.rt, this.rb, this.lb];
     }
 
@@ -32,6 +33,12 @@ export default class DummyCollisionRectangle
             pt.x = cos * x - sin * y;
             pt.y = sin * x + cos * y;
         }
+    }
+
+
+    rotateAroundPivot(rotation, pivot)
+    {
+
     }
 
 

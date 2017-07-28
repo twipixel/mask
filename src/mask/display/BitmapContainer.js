@@ -65,19 +65,12 @@ export default class BitmapContainer extends PIXI.Container
     }
 
 
-    createCollisionRect()
-    {
-        //this.collisionRectLt = new PIXI.Point();
-        //this.collisionRectRt = new PIXI.Point();
-        //this.collisionRectRb = new PIXI.Point();
-        //this.collisionRectLb = new PIXI.Point();
-        //this.collisionRect = new DummyCollisionRectangle(this.lt, this.rt, this.rb, this.lb);
-    }
+
 
 
     getCollisionRect(rotation = null)
     {
-        const rect = new DummyCollisionRectangle(this.lt, this.rt, this.rb, this.lb);
+        const rect = new DummyCollisionRectangle(this.lt, this.rt, this.rb, this.lb, this.center);
 
         if (rotation) {
             rect.rotate(rotation);
@@ -121,7 +114,6 @@ export default class BitmapContainer extends PIXI.Container
         }
 
         this.addRegistrationPoint();
-        this.createCollisionRect();
         this.drawBounds();
     }
 
@@ -270,6 +262,11 @@ export default class BitmapContainer extends PIXI.Container
     }
 
 
+    get center()
+    {
+        return this.toGlobal(new PIXI.Point());
+    }
+
 
     /**
      * 비트맵 좌상단 포인트를 로컬 좌표로 반환합니다.
@@ -310,6 +307,8 @@ export default class BitmapContainer extends PIXI.Container
         //return this.toLocal(this.bitmap.lb, this.bitmap);
         return this.toLocal(this.bitmap.lb, this.bitmap, this.collisionRectLb);
     }
+
+
 
 
     /**
