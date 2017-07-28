@@ -8,6 +8,9 @@ import CollisionManager from './../manager/CollisionManager';
 import {map, each} from './../utils/lambda';
 
 
+import Painter from './../utils/Painter';
+
+
 const dragRange = 10;
 const collection = {tl: null, tr: null, tc: null, bl: null, br: null, bc: null, ml: null, mr: null, mc: null, rtl: null, rtc: null, rtr: null, rml: null, rmr: null, rbl: null, rbc: null, rbr: null};
 
@@ -775,6 +778,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         }*/
 
 
+        /*
         if (this.useSnap == true && isImageRotated == false) {
             const rotation = this.target._rotation + event.changeRadian;
             const angle = Calc.toDegrees(rotation);
@@ -782,13 +786,35 @@ export default class TransformTool extends PIXI.utils.EventEmitter
 
             if (absAngle < this._startSnapAngle || absAngle > this._endSnapAngle) {
                 CollisionManager.rotate(Calc.toRadians(Calc.snapTo(angle, 90)));
+                this.target._rotation = Calc.toRadians(Calc.snapTo(angle, 90));
             } else {
                 CollisionManager.rotate(rotation);
+                this.target._rotation = rotation;
             }
-
         } else {
             CollisionManager.rotate(this.target.rotation + event.changeRadian);
+            this.target._rotation = rotation;
         }
+        */
+
+        const scale = this.target.scale.x;
+
+        console.log(this.target, 'scale!', scale);
+
+        /*const lt = Calc.getScalePointsWithPivot(this.target.center, this.target.lt, scale);
+        const rt = Calc.getScalePointsWithPivot(this.target.center, this.target.rt, scale);
+        const rb = Calc.getScalePointsWithPivot(this.target.center, this.target.rb, scale);
+        const lb = Calc.getScalePointsWithPivot(this.target.center, this.target.lb, scale);*/
+
+        const lt = Calc.getScalePointsWithPivot(this.target.lt, this.target.center, scale);
+        const rt = Calc.getScalePointsWithPivot(this.target.rt, this.target.center, scale);
+        const rb = Calc.getScalePointsWithPivot(this.target.rb, this.target.center, scale);
+        const lb = Calc.getScalePointsWithPivot(this.target.lb, this.target.center, scale);
+
+        Painter.drawPoint(window.g, lt, 10, true);
+        Painter.drawPoint(window.g, rt, 10, false);
+        Painter.drawPoint(window.g, rb, 10, false);
+        Painter.drawPoint(window.g, lb, 10, false);
 
 
         this.draw();

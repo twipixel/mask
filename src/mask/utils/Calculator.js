@@ -1,43 +1,58 @@
+import PointUtil from './PointUtil';
+
+
 export default class Calc
 {
-    static get DEG_TO_RAD() {
-        if (this._DEG_TO_RAD)
+    static get DEG_TO_RAD()
+    {
+        if (this._DEG_TO_RAD) {
             return this._DEG_TO_RAD;
-
+        }
         this._DEG_TO_RAD = Math.PI / 180;
         return this._DEG_TO_RAD;
     }
 
-    static get RAD_TO_DEG() {
-        if (this._RAD_TO_DEG)
-            return this._RAD_TO_DEG;
 
+    static get RAD_TO_DEG()
+    {
+        if (this._RAD_TO_DEG) {
+            return this._RAD_TO_DEG;
+        }
         this._RAD_TO_DEG = 180 / Math.PI;
         return this._RAD_TO_DEG;
     }
 
-    static get DEG180_TO_RAD() {
-        if (this._DEG180_TO_RAD)
-            return this._DEG180_TO_RAD;
 
+    static get DEG180_TO_RAD()
+    {
+        if (this._DEG180_TO_RAD) {
+            return this._DEG180_TO_RAD;
+        }
         this._DEG180_TO_RAD = 180 * Math.PI / 180;
         return this._DEG180_TO_RAD;
     }
 
-    static toRadians(degree) {
+
+    static toRadians(degree)
+    {
         return degree * this.DEG_TO_RAD;
     }
 
-    static toDegrees(radians) {
+
+    static toDegrees(radians)
+    {
         return radians * this.RAD_TO_DEG;
     }
 
-    static getRotation(centerPoint, mousePoint) {
+
+    static getRotation(centerPoint, mousePoint)
+    {
         const dx = mousePoint.x - centerPoint.x;
         const dy = mousePoint.y - centerPoint.y;
         const radians = Math.atan2(dy, dx);
         return Calc.toDegrees(radians);
     }
+
 
     /**
      * viewport와 backgroundImage비율을 구합니다.
@@ -59,7 +74,7 @@ export default class Calc
         else {
             return {min: scaleY, max: scaleX};
         }
-    };
+    }
 
 
     /**
@@ -72,7 +87,7 @@ export default class Calc
     {
         const scale = this.getScale(backgroundImage, viewport);
         return new PIXI.Rectangle(0, 0, scale.min * backgroundImage.width, scale.min * backgroundImage.height);
-    };
+    }
 
 
     /**
@@ -85,6 +100,12 @@ export default class Calc
     }
 
 
+    static getScalePointsWithPivot(pivot, point, scale)
+    {
+        return PointUtil.interpolate(pivot, point, scale);
+    }
+
+
     /**
      * 회전하는 좌표 구하기
      * @param pivot 사각형의 중심점
@@ -92,7 +113,8 @@ export default class Calc
      * @param angle 회전각 degrees
      * @returns {{x: (number|*), y: (number|*)}}
      */
-    static getRotationPoint(pivot, point, angle) {
+    static getRotationPointWithPivot(pivot, point, angle)
+    {
         const diffX = point.x - pivot.x;
         const diffY = point.y - pivot.y;
         const dist = Math.sqrt(diffX * diffX + diffY * diffY);
@@ -111,13 +133,14 @@ export default class Calc
      * @param degrees 각도 degress
      * @returns {{lt: ({x, y}|{x: (number|*), y: (number|*)}), rt: ({x, y}|{x: (number|*), y: (number|*)}), rb: ({x, y}|{x: (number|*), y: (number|*)}), lb: ({x, y}|{x: (number|*), y: (number|*)})}}
      */
-    static getRotationPoints(pivot, rectanglePoints, degrees) {
-        const lt = Calc.getRotationPoint(pivot, rectanglePoints.lt, degrees);
-        const rt = Calc.getRotationPoint(pivot, rectanglePoints.rt, degrees);
-        const rb = Calc.getRotationPoint(pivot, rectanglePoints.rb, degrees);
-        const lb = Calc.getRotationPoint(pivot, rectanglePoints.lb, degrees);
+    static getRotationPointsWithPivot(pivot, rectanglePoints, degrees)
+    {
+        const lt = Calc.getRotationPointWithPivot(pivot, rectanglePoints.lt, degrees);
+        const rt = Calc.getRotationPointWithPivot(pivot, rectanglePoints.rt, degrees);
+        const rb = Calc.getRotationPointWithPivot(pivot, rectanglePoints.rb, degrees);
+        const lb = Calc.getRotationPointWithPivot(pivot, rectanglePoints.lb, degrees);
         return {lt: lt, rt: rt, rb: rb, lb: lb};
-    };
+    }
 
 
     /**
@@ -125,46 +148,58 @@ export default class Calc
      * @param rotationPoints 사각형 좌표 (leftTop, rightTop, rightBottom, leftBottom)
      * @returns {{x: number, y: number, width: number, height: number}}
      */
-    static getBoundsByRotationPoints(rotationPoints) {
+    static getBoundsByRotationPoints(rotationPoints)
+    {
         const x1 = Math.min(rotationPoints.lt.x, rotationPoints.rt.x, rotationPoints.rb.x, rotationPoints.lb.x);
         const y1 = Math.min(rotationPoints.lt.y, rotationPoints.rt.y, rotationPoints.rb.y, rotationPoints.lb.y);
         const x2 = Math.max(rotationPoints.lt.x, rotationPoints.rt.x, rotationPoints.rb.x, rotationPoints.lb.x);
         const y2 = Math.max(rotationPoints.lt.y, rotationPoints.rt.y, rotationPoints.rb.y, rotationPoints.lb.y);
         return {x: x1, y: y1, width: x2 - x1, height: y2 - y1};
-    };
+    }
 
 
-    static getBoundsByPoints(points) {
+    static getBoundsByPoints(points)
+    {
         return {x: points.lt.x, y: points.lt.y, width: points.rb.x - points.lt.x, height: points.rb.y - points.lt.y};
-    };
+    }
 
 
-    static deltaTransformPoint(matrix, point) {
+    static deltaTransformPoint(matrix, point)
+    {
         const dx = point.x * matrix.a + point.y * matrix.c + 0;
         const dy = point.x * matrix.b + point.y * matrix.d + 0;
         return {x: dx, y: dy};
     }
 
 
-    static getScaleX(matrix) {
+    static getScaleX(matrix)
+    {
         return Math.sqrt(matrix.a * matrix.a + matrix.b * matrix.b);
     }
 
-    static getScaleY(matrix) {
+
+    static getScaleY(matrix)
+    {
         return Math.sqrt(matrix.c * matrix.c + matrix.d * matrix.d);
     }
 
-    static getSkewX(matrix) {
+
+    static getSkewX(matrix)
+    {
         const px = Calc.deltaTransformPoint(matrix, {x:0, y:1});
         return ((180 / Math.PI) * Math.atan2(px.y, px.x) - 90);
     }
 
-    static getSkewY(matrix) {
+
+    static getSkewY(matrix)
+    {
         const py = Calc.deltaTransformPoint(matrix, {x:1, y:0});
         return ((180 / Math.PI) * Math.atan2(py.y, py.x));
     }
 
-    static snapTo(num, snap) {
+
+    static snapTo(num, snap)
+    {
         return Math.round(num / snap) * snap;
     }
 }

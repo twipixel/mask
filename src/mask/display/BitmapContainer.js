@@ -2,7 +2,7 @@ import Size from './../utils/Size';
 import Bitmap from './../display/Bitmap';
 import Calc from './../utils/Calculator';
 import PointUtil from './../utils/PointUtil';
-import DummyCollisionRectangle from './DummyCollisionRectangle';
+import CollisionRectangle from './CollisionRectangle';
 
 
 export default class BitmapContainer extends PIXI.Container
@@ -62,21 +62,6 @@ export default class BitmapContainer extends PIXI.Container
         this.registrationPoint.drawCircle(0, 0, 5);
         this.registrationPoint.endFill();
         this.addChild(this.registrationPoint);
-    }
-
-
-
-
-
-    getCollisionRect(rotation = null)
-    {
-        const rect = new DummyCollisionRectangle(this.lt, this.rt, this.rb, this.lb, this.center);
-
-        if (rotation) {
-            rect.rotate(rotation);
-        }
-
-        return rect;
     }
 
 
@@ -309,8 +294,6 @@ export default class BitmapContainer extends PIXI.Container
     }
 
 
-
-
     /**
      * 중심점과 좌상단의 거리
      * @returns {svg.Point|PIXI.Point|*}
@@ -411,6 +394,25 @@ export default class BitmapContainer extends PIXI.Container
         }
 
         return point.y;
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////////
+    //
+    // Collision
+    //
+    /////////////////////////////////////////////////////////////////////////////
+
+
+    getCollisionRect(rotation = null)
+    {
+        const rect = new CollisionRectangle(this.lt, this.rt, this.rb, this.lb, this.center);
+
+        if (rotation) {
+            rect.rotate(rotation);
+        }
+
+        return rect;
     }
 
 

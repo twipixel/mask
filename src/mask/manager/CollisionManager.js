@@ -23,10 +23,11 @@ export default class CollisionManager
     static hitTest(isMaskMoving = true)
     {
         const mask = this.mask;
-        const backgroundImage = this.backgroundImage;
-        const rotation = -backgroundImage.rotation;
+        const back = this.backgroundImage;
+
+        const rotation = -back.rotation;
         const maskRect = mask.getCollisionRect(rotation);
-        const backRect = backgroundImage.getCollisionRect(rotation);
+        const backRect = back.getCollisionRect(rotation);
 
         const ml = maskRect.left;
         const mr = maskRect.right;
@@ -38,14 +39,14 @@ export default class CollisionManager
         const bt = backRect.top;
         const bb = backRect.bottom;
 
-        Painter.drawBounds(window.g, {
+        Painter.drawRectByBounds(window.g, {
             x: ml,
             y: mt,
             width: mr - ml,
             height: mb - mt
         }, true, 2, 0x00FF00);
 
-        Painter.drawBounds(window.g, {
+        Painter.drawRectByBounds(window.g, {
             x: bl,
             y: bt,
             width: br - bl,
@@ -72,19 +73,19 @@ export default class CollisionManager
         }
         else {
             if (bl > ml) {
-                backgroundImage.x += (ml - bl);
+                back.x += (ml - bl);
             }
 
             if (bt > mt) {
-                backgroundImage.y += (mt - bt);
+                back.y += (mt - bt);
             }
 
             if (mb > bb) {
-                backgroundImage.y += (mb - bb);
+                back.y += (mb - bb);
             }
 
             if (mr > br) {
-                backgroundImage.x += (mr - br);
+                back.x += (mr - br);
             }
         }
     }
@@ -102,8 +103,23 @@ export default class CollisionManager
     {
         console.log('rotate(', Calc.toDegrees(rotation), ')');
 
+
+        /**
+         * 처리 프로세스
+         * 1. backgroundImage 회전
+         * 2. 회전된 backgroundImage 로 getCollisionRect 구하기
+         * 3.
+         */
+
+        //const points = Calc.getRotationPointsWith(this.backgroundImage.center, this.backgroundImage, rotation);
+        //Painter.drawPointsByPoints(window.g, points, 5);
     }
 
+
+    static scale(scale)
+    {
+        //
+    }
 
 
     static test()
@@ -112,14 +128,13 @@ export default class CollisionManager
     }
 
 
-
     static drawBounds()
     {
         const mask = this.mask;
-        const backgroundImage = this.backgroundImage;
-        const rotation = -backgroundImage.rotation;
+        const back = this.backgroundImage;
+        const rotation = -back.rotation;
         const maskRect = mask.getCollisionRect(rotation);
-        const backRect = backgroundImage.getCollisionRect(rotation);
+        const backRect = back.getCollisionRect(rotation);
 
         const ml = maskRect.left;
         const mr = maskRect.right;
@@ -131,7 +146,7 @@ export default class CollisionManager
         const bt = backRect.top;
         const bb = backRect.bottom;
 
-        Painter.drawBounds(window.g, {
+        Painter.drawRectByBounds(window.g, {
             x: ml,
             y: mt,
             width: mr - ml,
@@ -140,7 +155,7 @@ export default class CollisionManager
 
         Painter.drawPoint(window.g, maskRect.center, 10, false);
 
-        Painter.drawBounds(window.g, {
+        Painter.drawRectByBounds(window.g, {
             x: bl,
             y: bt,
             width: br - bl,

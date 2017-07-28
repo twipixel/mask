@@ -99,7 +99,7 @@ export default class DimmedMask extends PIXI.Container
         const leftTop = this.backgroundImage.lt;
 
         // context의 회전한 만큼 좌상단도 회전시키기
-        const rotationLeftTop = Calc.getRotationPoint(this.rotationPivot, leftTop, -Calc.toDegrees(this.backgroundImage.bitmapRotation));
+        const rotationLeftTop = Calc.getRotationPointWithPivot(this.rotationPivot, leftTop, -Calc.toDegrees(this.backgroundImage.bitmapRotation));
 
         this.ctx.translate(rotationLeftTop.x, rotationLeftTop.y);
 
@@ -154,7 +154,7 @@ export default class DimmedMask extends PIXI.Container
         const leftTop = this.backgroundImage.lt;
 
         // context의 회전한 만큼 좌상단도 회전시키기
-        const rotationLeftTop = Calc.getRotationPoint(this.rotationPivot, leftTop, -Calc.toDegrees(this.backgroundImage.bitmapRotation));
+        const rotationLeftTop = Calc.getRotationPointWithPivot(this.rotationPivot, leftTop, -Calc.toDegrees(this.backgroundImage.bitmapRotation));
 
         this.ctx.translate(rotationLeftTop.x, rotationLeftTop.y);
 

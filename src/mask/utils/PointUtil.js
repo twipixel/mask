@@ -37,17 +37,87 @@ export default class PointUtil {
     }
 
 
-    static rotatePoints(rotation, points)
+    /**
+     * 사각형의 맨 좌측값 (충돌검사를 위한 값)
+     * @returns {*}
+     */
+    getLeft(rect)
     {
-        var cos = Math.cos(rotation);
-        var sin = Math.sin(rotation);
+        const points = [rect.lt, rect.rt, rect.rb, rect.lb];
+        var point = points[0];
 
-        for(var i = 0; i < points.length; i++) {
-            var pt = points[i];
-            var x = pt.x;
-            var y = pt.y;
-            pt.x = cos * x - sin * y;
-            pt.y = sin * x + cos * y;
+        for (var i = 1; i < points.length; i++) {
+            const other = points[i];
+
+            if (other.x < point.x) {
+                point = other;
+            }
         }
+
+        return point.x;
     }
+
+
+    /**
+     * 사각형의 맨 우측값 (충돌검사를 위한 값)
+     * @returns {*}
+     */
+    getRight(rect)
+    {
+        const points = [rect.lt, rect.rt, rect.rb, rect.lb];
+        var point = points[0];
+
+        for (var i = 1; i < points.length; i++) {
+            const other = points[i];
+
+            if (other.x > point.x) {
+                point = other;
+            }
+        }
+
+        return point.x;
+    }
+
+
+    /**
+     * 사각형의 맨 상단값 (충돌검사를 위한 값)
+     * @returns {*}
+     */
+    getTop(rect)
+    {
+        const points = [rect.lt, rect.rt, rect.rb, rect.lb];
+        var point = points[0];
+
+        for (var i = 1; i < points.length; i++) {
+            const other = points[i];
+
+            if (other.y < point.y) {
+                point = other;
+            }
+        }
+
+        return point.y;
+    }
+
+
+    /**
+     * 사각형의 맨 하단값 (충돌검사를 위한 값)
+     * @returns {*}
+     */
+    getBottom(rect)
+    {
+        const points = [rect.lt, rect.rt, rect.rb, rect.lb];
+        var point = points[0];
+
+        for (var i = 1; i < points.length; i++) {
+            const other = points[i];
+
+            if (other.y > point.y) {
+                point = other;
+            }
+        }
+
+        return point.y;
+    }
+
 }
