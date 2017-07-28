@@ -11,23 +11,21 @@ export default class CollisionManager
      * @param rotateObject 회전된 객체 (회전되지 않은 객체
      * @param isFixMovement 충돌시 움직임을 수정할지 여부
      */
-    static hitTest(movingObject, fixedObject, rotateObject, isFixMovement = true)
+    static hitTest(mask, backgroundImage, isMaskMoving)
     {
-        const rotation = -rotateObject.rotation;
+        const rotation = -backgroundImage.rotation;
+        const maskRect = mask.getCollisionRect(rotation);
+        const backRect = backgroundImage.getCollisionRect(rotation);
 
-        const movingRect = movingObject.getCollisionRect(rotation);
-        const fixedRect = fixedObject.getCollisionRect(rotation)
+        const ml = maskRect.left;
+        const mr = maskRect.right;
+        const mt = maskRect.top;
+        const mb = maskRect.bottom;
 
-
-        const ml = movingRect.left;
-        const mr = movingRect.right;
-        const mt = movingRect.top;
-        const mb = movingRect.bottom;
-
-        const fl = fixedRect.left;
-        const fr = fixedRect.right;
-        const ft = fixedRect.top;
-        const fb = fixedRect.bottom;
+        const bl = backRect.left;
+        const br = backRect.right;
+        const bt = backRect.top;
+        const bb = backRect.bottom;
 
         Painter.drawBounds(window.g, {
             x: ml,
@@ -37,12 +35,50 @@ export default class CollisionManager
         }, true, 2, 0x00FF00);
 
         Painter.drawBounds(window.g, {
-            x: fl,
-            y: ft,
-            width: fr - fl,
-            height: fb - ft
+            x: bl,
+            y: bt,
+            width: br - bl,
+            height: bb - bt
         }, false, 2);
 
+
+        //console.log('ml', ml, 'fl', bl);
+        console.log('mt', mt, 'bt', bt);
+
+        if (isMaskMoving) {
+            if (ml <= bl) {
+                mask.x = mask.x + (bl - ml);
+            }
+
+            if (mt <= bt) {
+                mask.y = mask.y + (bt - mt);
+            }
+
+            if (mb >= bb) {
+                mask.y = mask.y + (bb - mb);
+            }
+
+            if (mr >= br) {
+                mask.x = mask.x + (br - mr);
+            }
+        }
+        else {
+
+        }
+
+
+
+        /*if (mr < fr) {
+         movingObject.x = fr - mr;
+         }
+
+         if (mt > ft) {
+         movingObject.y = ft - mt;
+         }
+
+         if (mb < fb) {
+         movingObject.y = fb - mb;
+         }*/
 
 
         /*

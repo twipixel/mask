@@ -80,7 +80,6 @@ export default class BitmapContainer extends PIXI.Container
         const rect = new DummyCollisionRectangle(this.lt, this.rt, this.rb, this.lb);
 
         if (rotation) {
-            console.log('? rotation!', rotation);
             rect.rotate(rotation);
         }
 
@@ -386,7 +385,7 @@ export default class BitmapContainer extends PIXI.Container
         for (var i = 1; i < points.length; i++) {
             const other = this.toGlobal(this.toLocal(points[i], this.bitmap));
 
-            if (other.y > point.y) {
+            if (other.y < point.y) {
                 point = other;
             }
         }
@@ -407,7 +406,7 @@ export default class BitmapContainer extends PIXI.Container
         for (var i = 1; i < points.length; i++) {
             const other = this.toGlobal(this.toLocal(points[i], this.bitmap));
 
-            if (other.y < point.y) {
+            if (other.y > point.y) {
                 point = other;
             }
         }

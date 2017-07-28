@@ -89,7 +89,7 @@ export default class DummyCollisionRectangle
         for (var i = 1; i < points.length; i++) {
             const other = points[i];
 
-            if (other.y > point.y) {
+            if (other.y < point.y) {
                 point = other;
             }
         }
@@ -110,11 +110,17 @@ export default class DummyCollisionRectangle
         for (var i = 1; i < points.length; i++) {
             const other = points[i];
 
-            if (other.y < point.y) {
+            if (other.y > point.y) {
                 point = other;
             }
         }
 
         return point.y;
+    }
+
+
+    get bounds()
+    {
+        return new PIXI.Rectangle(this.left, this.top, this.right - this.left, this.bottom - this.top);
     }
 }

@@ -255,7 +255,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     {
         console.log('onMaskDown');
 
-        this._hitTest = CollisionManager.hitTest.bind(this, this.mask, this.backgroundImage, this.backgroundImage, true);
+        this._hitTest = CollisionManager.hitTest.bind(this, this.mask, this.backgroundImage, true);
         this.transformTool.setTarget(event);
     }
 
@@ -273,7 +273,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     onBackgroundImageMouseDown(event)
     {
         console.log('onBackgroundImageMouseDown');
-        this._hitTest = CollisionManager.hitTest.bind(this, this.backgroundImage, this.mask, this.backgroundImage, true);
+        this._hitTest = CollisionManager.hitTest.bind(this, this.mask, this.backgroundImage, false);
         this.transformTool.setTarget(event);
     }
 
