@@ -11,10 +11,41 @@ export default class CollisionManager
      * @param rotateObject 회전된 객체 (회전되지 않은 객체
      * @param isFixMovement 충돌시 움직임을 수정할지 여부
      */
-    static hitTest(movingObject, fixedObject, rotateObject, isFixMovement = true) {
+    static hitTest(movingObject, fixedObject, rotateObject, isFixMovement = true)
+    {
+        const rotation = -rotateObject.rotation;
 
-        const rotation = rotateObject.rotation;
+        const movingRect = movingObject.getCollisionRect(rotation);
+        const fixedRect = fixedObject.getCollisionRect(rotation)
 
+
+        const ml = movingRect.left;
+        const mr = movingRect.right;
+        const mt = movingRect.top;
+        const mb = movingRect.bottom;
+
+        const fl = fixedRect.left;
+        const fr = fixedRect.right;
+        const ft = fixedRect.top;
+        const fb = fixedRect.bottom;
+
+        Painter.drawBounds(window.g, {
+            x: ml,
+            y: mt,
+            width: mr - ml,
+            height: mb - mt
+        }, true, 2, 0x00FF00);
+
+        Painter.drawBounds(window.g, {
+            x: fl,
+            y: ft,
+            width: fr - fl,
+            height: fb - ft
+        }, false, 2);
+
+
+
+        /*
         movingObject.rotation = -rotation;
         fixedObject.rotation = -rotation;
 
@@ -45,9 +76,12 @@ export default class CollisionManager
 
         movingObject.rotation = rotation;
         fixedObject.rotation = rotation;
+        */
+    }
 
 
-        /*
+    static test(movingObject, fixedObject, rotateObject, isFixMovement = true)
+    {
         movingObject.rotation = -rotation;
         fixedObject.rotation = -rotation;
 
@@ -91,6 +125,5 @@ export default class CollisionManager
 
         movingObject.rotation = rotation;
         fixedObject.rotation = rotation;
-        */
     }
 }

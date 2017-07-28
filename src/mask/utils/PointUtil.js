@@ -35,4 +35,19 @@ export default class PointUtil {
     static interpolate(point1, point2, f) {
         return new PIXI.Point(point2.x + f * (point1.x - point2.x), point2.y + f * (point1.y - point2.y));
     }
+
+
+    static rotatePoints(rotation, points)
+    {
+        var cos = Math.cos(rotation);
+        var sin = Math.sin(rotation);
+
+        for(var i = 0; i < points.length; i++) {
+            var pt = points[i];
+            var x = pt.x;
+            var y = pt.y;
+            pt.x = cos * x - sin * y;
+            pt.y = sin * x + cos * y;
+        }
+    }
 }

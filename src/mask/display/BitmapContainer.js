@@ -1,6 +1,8 @@
 import Size from './../utils/Size';
 import Bitmap from './../display/Bitmap';
 import Calc from './../utils/Calculator';
+import PointUtil from './../utils/PointUtil';
+import DummyCollisionRectangle from './DummyCollisionRectangle';
 
 
 export default class BitmapContainer extends PIXI.Container
@@ -63,6 +65,29 @@ export default class BitmapContainer extends PIXI.Container
     }
 
 
+    createCollisionRect()
+    {
+        //this.collisionRectLt = new PIXI.Point();
+        //this.collisionRectRt = new PIXI.Point();
+        //this.collisionRectRb = new PIXI.Point();
+        //this.collisionRectLb = new PIXI.Point();
+        //this.collisionRect = new DummyCollisionRectangle(this.lt, this.rt, this.rb, this.lb);
+    }
+
+
+    getCollisionRect(rotation = null)
+    {
+        const rect = new DummyCollisionRectangle(this.lt, this.rt, this.rb, this.lb);
+
+        if (rotation) {
+            console.log('? rotation!', rotation);
+            rect.rotate(rotation);
+        }
+
+        return rect;
+    }
+
+
     /**
      * global 좌표가로 충돌여부 체크 (마우스 클릭 되었는지 파악)
      * @param globalPoint Mouse.global
@@ -97,6 +122,7 @@ export default class BitmapContainer extends PIXI.Container
         }
 
         this.addRegistrationPoint();
+        this.createCollisionRect();
         this.drawBounds();
     }
 
@@ -252,7 +278,8 @@ export default class BitmapContainer extends PIXI.Container
      */
     get bitmapLt()
     {
-        return this.toLocal(this.bitmap.lt, this.bitmap);
+        //return this.toLocal(this.bitmap.lt, this.bitmap);
+        return this.toLocal(this.bitmap.lt, this.bitmap, this.collisionRectLt);
     }
 
     /**
@@ -261,7 +288,8 @@ export default class BitmapContainer extends PIXI.Container
      */
     get bitmapRt()
     {
-        return this.toLocal(this.bitmap.rt, this.bitmap);
+        //return this.toLocal(this.bitmap.rt, this.bitmap);
+        return this.toLocal(this.bitmap.rt, this.bitmap, this.collisionRectRt);
     }
 
     /**
@@ -270,7 +298,8 @@ export default class BitmapContainer extends PIXI.Container
      */
     get bitmapRb()
     {
-        return this.toLocal(this.bitmap.rb, this.bitmap);
+        //return this.toLocal(this.bitmap.rb, this.bitmap);
+        return this.toLocal(this.bitmap.rb, this.bitmap, this.collisionRectRb);
     }
 
     /**
@@ -279,7 +308,8 @@ export default class BitmapContainer extends PIXI.Container
      */
     get bitmapLb()
     {
-        return this.toLocal(this.bitmap.lb, this.bitmap);
+        //return this.toLocal(this.bitmap.lb, this.bitmap);
+        return this.toLocal(this.bitmap.lb, this.bitmap, this.collisionRectLb);
     }
 
 

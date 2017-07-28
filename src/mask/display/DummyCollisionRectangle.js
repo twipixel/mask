@@ -10,12 +10,30 @@ export default class DummyCollisionRectangle
      */
     constructor(lt, rt, rb, lb)
     {
+        console.log(typeof lt, lt);
         this.lt = lt;
         this.rt = rt;
         this.rb = rb;
         this.lb = lb;
         this.points = [this.lt, this.rt, this.rb, this.lb];
     }
+
+
+    rotate(rotation)
+    {
+        const points = this.points;
+        const cos = Math.cos(rotation);
+        const sin = Math.sin(rotation);
+
+        for (var i = 0; i < points.length; i++) {
+            const pt = points[i];
+            const x = pt.x;
+            const y = pt.y;
+            pt.x = cos * x - sin * y;
+            pt.y = sin * x + cos * y;
+        }
+    }
+
 
     /**
      * 사각형의 맨 좌측값 (충돌검사를 위한 값)

@@ -4,6 +4,7 @@
   - 기존 변형툴에서 변수 정리
     - childScaleX,Y
     - scaleSingX,Y
+- 마스크 변경 처리가 없네요.
 
 <br>
 
