@@ -3,7 +3,7 @@ import Calc from './../utils/Calculator';
 
 export default class Painter
 {
-    static drawPoint(graphics, point, radius = 0.5, isClear = true, color = 0xFF3300, alpha = 0.7)
+    static drawPoint(graphics, point, isClear = true, radius = 1, color = 0xFF3300, alpha = 0.7)
     {
         if (isClear === true) {
             graphics.clear();
@@ -29,11 +29,20 @@ export default class Painter
 
     static drawRectByPoints(graphics, rect, isClear = true, thickness = 1, color = 0xFF3300, alpha = 0.7)
     {
-        Painter.drawRectByBounds(graphics, Calc.getBoundsByPoints(rect), isClear, thickness, color, alpha);
+        if (isClear === true) {
+            graphics.clear();
+        }
+
+        graphics.lineStyle(thickness, color, alpha)
+        graphics.moveTo(rect.lt.x, rect.lt.y);
+        graphics.lineTo(rect.rt.x, rect.rt.y);
+        graphics.lineTo(rect.rb.x, rect.rb.y);
+        graphics.lineTo(rect.lb.x, rect.lb.y);
+        graphics.lineTo(rect.lt.x, rect.lt.y);
     }
 
 
-    static drawPointsByPoints(graphics, rect, radius = 0.5, isClear = true, color = 0xFF3300, alpha = 0.7)
+    static drawPointsByPoints(graphics, rect, isClear = true, radius = 1, color = 0xFF3300, alpha = 0.7)
     {
         if (isClear === true) {
             graphics.clear();

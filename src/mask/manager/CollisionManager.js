@@ -26,8 +26,8 @@ export default class CollisionManager
         const back = this.backgroundImage;
 
         const rotation = -back.rotation;
-        const maskRect = mask.getCollisionRect(rotation);
-        const backRect = back.getCollisionRect(rotation);
+        const maskRect = mask.getRotatedRect(rotation);
+        const backRect = back.getRotatedRect(rotation);
 
         const ml = maskRect.left;
         const mr = maskRect.right;
@@ -133,8 +133,8 @@ export default class CollisionManager
         const mask = this.mask;
         const back = this.backgroundImage;
         const rotation = -back.rotation;
-        const maskRect = mask.getCollisionRect(rotation);
-        const backRect = back.getCollisionRect(rotation);
+        const maskRect = mask.getRotatedRect(rotation);
+        const backRect = back.getRotatedRect(rotation);
 
         const ml = maskRect.left;
         const mr = maskRect.right;

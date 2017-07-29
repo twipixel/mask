@@ -41,7 +41,9 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         this.stageLayer = stageLayer;
         this.targetLayer = targetLayer;
         this.options = options;
-        this.useSnap = options.useSnap;
+        //this.useSnap = options.useSnap;
+        // TODO Debug 기본값은 true;
+        this.useSnap = false;
         this.snapAngle = options.snapAngle;
         this.selectedControl = null;
         this.deleteButtonSize = 28;
@@ -399,7 +401,12 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             scaleX = absScaleY * opScaleX;
         }
 
-        this.target.scale = {x: scaleX, y: scaleY};
+        const rect = this.target.getScaledRect(scaleX);
+        //const rect = this.target.getScaledRect(scaleX - this.target.scale.x);
+        Painter.drawRectByPoints(window.g, rect, true, 5);
+
+        //console.log('diff[', scaleX - this.target.scale.x, scaleY - this.target.scale.y, ']', 'scale[', scaleX, scaleY, ']');
+        //this.target.scale = {x: scaleX, y: scaleY};
     }
 
 
@@ -429,7 +436,12 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             scaleX = scaleY;
         }
 
-        this.target.scale = {x: scaleX, y: scaleY};
+        const rect = this.target.getScaledRect(scaleX);
+        //const rect = this.target.getScaledRect(scaleX - this.target.scale.x);
+        Painter.drawRectByPoints(window.g, rect, true, 5);
+
+        //console.log('diff[', scaleX - this.target.scale.x, scaleY - this.target.scale.y, ']', 'scale[', scaleX, scaleY, ']');
+        //this.target.scale = {x: scaleX, y: scaleY};
     }
 
 
@@ -441,8 +453,12 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     move(event)
     {
         const change = event.targetChangeMovement;
-        this.target.x += change.x;
-        this.target.y += change.y;
+
+        //this.target.x += change.x;
+        //this.target.y += change.y;
+
+        const rect = this.target.getMovedRect(change.x, change.y);
+        Painter.drawRectByPoints(window.g, rect, true, 5);
     }
 
 
@@ -797,24 +813,27 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         }
         */
 
-        const scale = this.target.scale.x;
 
-        console.log(this.target, 'scale!', scale);
+        const rotation = this.target._rotation + event.changeRadian;
 
-        /*const lt = Calc.getScalePointsWithPivot(this.target.center, this.target.lt, scale);
-        const rt = Calc.getScalePointsWithPivot(this.target.center, this.target.rt, scale);
-        const rb = Calc.getScalePointsWithPivot(this.target.center, this.target.rb, scale);
-        const lb = Calc.getScalePointsWithPivot(this.target.center, this.target.lb, scale);*/
+        if (this.useSnap == true && isImageRotated == false) {
 
-        const lt = Calc.getScalePointsWithPivot(this.target.lt, this.target.center, scale);
-        const rt = Calc.getScalePointsWithPivot(this.target.rt, this.target.center, scale);
-        const rb = Calc.getScalePointsWithPivot(this.target.rb, this.target.center, scale);
-        const lb = Calc.getScalePointsWithPivot(this.target.lb, this.target.center, scale);
+            const angle = Calc.toDegrees(rotation);
+            const absAngle = Math.round(Math.abs(angle) % 90);
 
-        Painter.drawPoint(window.g, lt, 10, true);
-        Painter.drawPoint(window.g, rt, 10, false);
-        Painter.drawPoint(window.g, rb, 10, false);
-        Painter.drawPoint(window.g, lb, 10, false);
+            if (absAngle < this._startSnapAngle || absAngle > this._endSnapAngle) {
+                this.target._rotation = Calc.toRadians(Calc.snapTo(angle, 90));
+
+            } else {
+                this.target._rotation = rotation;
+            }
+        } else {
+            this.target._rotation = rotation;
+        }
+
+
+        console.log('rotation', Calc.toDegrees(this.target._rotation));
+        Painter.drawRectByPoints(window.g, this.target.getRotatedRect(Calc.toDegrees(event.changeRadian)), true, 5);
 
 
         this.draw();

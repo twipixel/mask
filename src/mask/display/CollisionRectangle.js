@@ -1,6 +1,3 @@
-import Calc from './../utils/Calculator';
-
-
 export default class CollisionRectangle
 {
     /**
@@ -10,36 +7,15 @@ export default class CollisionRectangle
      * @param rt 우상단 포인트의 글로벌 좌표입니다.
      * @param rb 우하단 포인트의 글로벌 좌표입니다.
      * @param lb 좌하단 포인트의 글로벌 좌표입니다.
-     * @param lb 가운데 포인트의 글로벌 좌표입니다.
      */
-    constructor(lt, rt, rb, lb, center)
+    constructor(lt, rt, rb, lb)
     {
         this.lt = lt;
         this.rt = rt;
         this.rb = rb;
         this.lb = lb;
-        this.center = center;
         this.points = [this.lt, this.rt, this.rb, this.lb];
     }
-
-
-    translate(x, y)
-    {
-
-    }
-
-
-    rotate(rotation)
-    {
-
-    }
-
-
-    scale(x, y)
-    {
-
-    }
-
 
     /**
      * 사각형의 맨 좌측값 (충돌검사를 위한 값)
@@ -122,11 +98,5 @@ export default class CollisionRectangle
         }
 
         return point.y;
-    }
-
-
-    get bounds()
-    {
-        return new PIXI.Rectangle(this.left, this.top, this.right - this.left, this.bottom - this.top);
     }
 }

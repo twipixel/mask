@@ -404,15 +404,85 @@ export default class BitmapContainer extends PIXI.Container
     /////////////////////////////////////////////////////////////////////////////
 
 
-    getCollisionRect(rotation = null)
+    /**
+     * 충돌 검사 시 직접 이동하고 나서 조절하면 떨려 보여서
+     * 이동한 점을 가지고 충돌 검사를합니다. (Global 좌표로 반환)
+     * @param x
+     * @param y
+     * @returns {null}
+     */
+    getMovedRect(x, y)
     {
-        const rect = new CollisionRectangle(this.lt, this.rt, this.rb, this.lb, this.center);
+        var lt = this.lt;
+        var rt = this.rt;
+        var rb = this.rb;
+        var lb = this.lb;
 
-        if (rotation) {
-            rect.rotate(rotation);
-        }
+        lt.x += x;
+        lt.y += y;
+        rt.x += x;
+        rt.y += y;
+        rb.x += x;
+        rb.y += y;
+        lb.x += x;
+        lb.y += y;
 
-        return rect;
+        return new CollisionRectangle(lt, rt, rb, lb);
+    }
+
+
+    /**
+     * 충돌 검사 시 직접 회전 시키지 않고 미리 회전 시킨
+     * 바운드로 가지고 충돌 검사를합니다. (Global 좌표로 봔환)
+     * @param rotation
+     * @returns {CollisionRectangle}
+     */
+    getRotatedRect(rotation)
+    {
+        var lt = this.lt;
+        var rt = this.rt;
+        var rb = this.rb;
+        var lb = this.lb;
+        const center = this.center;
+
+        lt = Calc.getRotationPointWithPivot(center, lt, rotation);
+        rt = Calc.getRotationPointWithPivot(center, rt, rotation);
+        rb = Calc.getRotationPointWithPivot(center, rb, rotation);
+        lb = Calc.getRotationPointWithPivot(center, lb, rotation);
+
+        return {lt:lt, rt:rt, rb:rb, lb:lb};
+        //return new CollisionRectangle(lt, rt, rb, lb);
+    }
+
+
+    /**
+     * 충돌 검사 시 미리 스케일된 값을 가지고 충돌 검사를 합니다.
+     * 직접 스케일된 값을 가지고 조절을 하면 떨려 보입니다. (Global 좌표로 반환)
+     * @param scale
+     * @returns {null}
+     */
+    getScaledRect(scale)
+    {
+        var lt = this.bitmapLt;
+        var rt = this.bitmapRt;
+        var rb = this.bitmapRb;
+        var lb = this.bitmapLb;
+
+        lt.x *= scale;
+        lt.y *= scale;
+        rt.x *= scale;
+        rt.y *= scale;
+        rb.x *= scale;
+        rb.y *= scale;
+        lb.x *= scale;
+        lb.y *= scale;
+
+        lt = this.toGlobal(lt);
+        rt = this.toGlobal(rt);
+        rb = this.toGlobal(rb);
+        lb = this.toGlobal(lb);
+
+        return new CollisionRectangle(lt, rt, rb, lb);
     }
 
 
