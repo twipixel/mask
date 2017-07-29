@@ -830,14 +830,33 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             const rotation = this.target.rotation + event.changeRadian;
             const isOut = CollisionManager.rotate(rotation);
 
-            if (isOut === false) {
+            if (isOut === 'none') {
                 this.target.rotation = rotation;
                 this.target._rotation = rotation;
                 this.prevRotation = rotation;
             }
             else {
-                this.target.rotation = this.prevRotation;
-                this.target._rotation = this.prevRotation;
+
+
+                const prev = this.prevRotation;
+                const curt = rotation;
+                const diff = curt - prev;
+                const sign = (diff < 0) ? -1 : 1;
+                const step = 0.01 * sign;
+
+                console.log('isOUT!', 'prev', Calc.toDegrees(prev), 'current', Calc.toDegrees(curt), 'diff', Calc.toDegrees(diff), 'step', step);
+
+
+                var r = this.prevRotation;
+
+                /*for (var i = prev; i < curt; i+=step) {
+
+                }*/
+
+
+                this.target.rotation = prev;
+                this.target._rotation = prev;
+
             }
         }
 

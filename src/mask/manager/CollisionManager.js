@@ -1,3 +1,4 @@
+import Hit from './../consts/Hit';
 import Calc from './../utils/Calculator';
 import Painter from './../utils/Painter';
 
@@ -52,22 +53,22 @@ export default class CollisionManager
         const bb = backgroundImage.bottom;
 
         if (ml < bl) {
-            return true;
+            return Hit.LEFT;
         }
 
         if (mt < bt) {
-            return true;
+            return Hit.TOP;
         }
 
         if (mr > br) {
-            return true;
+            return Hit.RIGHT;
         }
 
         if (mb > bb) {
-            return true;
+            return Hit.BOTTOM;
         }
 
-        return false;
+        return Hit.NONE;
     }
 
 
