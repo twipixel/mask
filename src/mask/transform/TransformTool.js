@@ -406,7 +406,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         Painter.drawRectByPoints(window.g, rect, true, 5);
 
         //console.log('diff[', scaleX - this.target.scale.x, scaleY - this.target.scale.y, ']', 'scale[', scaleX, scaleY, ']');
-        //this.target.scale = {x: scaleX, y: scaleY};
+        this.target.scale = {x: scaleX, y: scaleY};
     }
 
 
@@ -441,7 +441,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         Painter.drawRectByPoints(window.g, rect, true, 5);
 
         //console.log('diff[', scaleX - this.target.scale.x, scaleY - this.target.scale.y, ']', 'scale[', scaleX, scaleY, ']');
-        //this.target.scale = {x: scaleX, y: scaleY};
+        this.target.scale = {x: scaleX, y: scaleY};
     }
 
 
@@ -454,8 +454,8 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     {
         const change = event.targetChangeMovement;
 
-        //this.target.x += change.x;
-        //this.target.y += change.y;
+        this.target.x += change.x;
+        this.target.y += change.y;
 
         const rect = this.target.getMovedRect(change.x, change.y);
         Painter.drawRectByPoints(window.g, rect, true, 5);
@@ -814,26 +814,36 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         */
 
 
-        const rotation = this.target._rotation + event.changeRadian;
 
         if (this.useSnap == true && isImageRotated == false) {
 
+            /*const rotation = this.target._rotation + event.changeRadian;
             const angle = Calc.toDegrees(rotation);
             const absAngle = Math.round(Math.abs(angle) % 90);
 
             if (absAngle < this._startSnapAngle || absAngle > this._endSnapAngle) {
                 this.target._rotation = Calc.toRadians(Calc.snapTo(angle, 90));
-
             } else {
                 this.target._rotation = rotation;
-            }
+            }*/
         } else {
-            this.target._rotation = rotation;
+            const rotation = this.target.rotation + event.changeRadian;
+            const isOut = CollisionManager.rotate(rotation);
+
+            if (isOut === false) {
+                this.target.rotation = rotation;
+                this.target._rotation = rotation;
+                this.prevRotation = rotation;
+            }
+            else {
+                this.target.rotation = this.prevRotation;
+                this.target._rotation = this.prevRotation;
+            }
         }
 
 
-        console.log('rotation', Calc.toDegrees(this.target._rotation));
-        Painter.drawRectByPoints(window.g, this.target.getRotatedRect(Calc.toDegrees(event.changeRadian)), true, 5);
+        //console.log('rotation', Calc.toDegrees(this.target._rotation));
+        //Painter.drawRectByPoints(window.g, this.target.getRotatedRect(Calc.toDegrees(event.changeRadian)), true, 5);
 
 
         this.draw();

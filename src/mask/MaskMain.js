@@ -79,11 +79,6 @@ export default class MaskMain extends PIXI.utils.EventEmitter
             this.transformTool.drawCenter();
             this.transformTool.updatePrevTargetLt();
         }*/
-
-
-        if (this._hitTest) {
-            this._hitTest();
-        }
     }
 
 
@@ -125,20 +120,6 @@ export default class MaskMain extends PIXI.utils.EventEmitter
             //new BackgroundImage('./../assets/img/background1.jpg', viewport);
 
         backgroundImage.on(Bitmap.READY, this.onBackgroundImageReady.bind(this));
-
-
-        /* 스케일 테스트
-        const g = new PIXI.Container();
-        this.stageLayer.addChild(g);
-        const d = new PIXI.Graphics();
-        d.beginFill(0x00FF00, 1);
-        d.drawRect(0, 0, 50, 50);
-        d.endFill();
-        d.x = -25;
-        d.y = -25;
-        g.addChild(d);
-        g.scale.x += 3;
-        g.scale.y += 3; */
     }
 
 
@@ -270,14 +251,11 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     onMaskDown(event)
     {
         this.transformTool.setTarget(event);
-        //this._hitTest = CollisionManager.drawBounds.bind(this);
-        this._hitTest = CollisionManager.hitTest.bind(this, true);
     }
 
 
     onMaskTransformComplete(event)
     {
-        this._hitTest = null;
         this.transformTool.setPivotByControl(new PIXI.Point(0, 0));
         this.transformTool.update();
         this.transformTool.drawCenter();
@@ -287,14 +265,11 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     onBackgroundImageMouseDown(event)
     {
         this.transformTool.setTarget(event);
-        //this._hitTest = CollisionManager.drawBounds.bind(this);
-        this._hitTest = CollisionManager.hitTest.bind(this, false);
     }
 
 
     onBackgroundImageTransformComplete(event)
     {
-        this._hitTest = null;
         this.transformTool.setPivotByControl(new PIXI.Point(0, 0));
         this.transformTool.update();
         this.transformTool.drawCenter();

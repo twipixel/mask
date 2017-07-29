@@ -20,6 +20,59 @@ export default class CollisionManager
      * 충돌을 감지하고 충돌시 움직임을 수정합니다.
      * @param isMaskMoving 마스크 객체가 이동하는지 여부
      */
+
+
+    /**
+     * 배경이미지안에 마스크가 밖으로 나갔는지 여부
+     * @param mask
+     * @param backgroundImage
+     * @param rotation
+     * @returns {boolean}
+     */
+    static isOut(mask, backgroundImage, rotation)
+    {
+        const r = -rotation;
+
+        mask.rotate(r);
+        backgroundImage.rotate(r);
+
+        const maskBounds = mask.bounds;
+        const backBounds = backgroundImage.bounds;
+        Painter.drawRectByBounds(window.g, maskBounds, true, 1);
+        Painter.drawRectByBounds(window.g, backBounds, false, 1);
+
+        const ml = mask.left;
+        const mr = mask.right;
+        const mt = mask.top;
+        const mb = mask.bottom;
+
+        const bl = backgroundImage.left;
+        const br = backgroundImage.right;
+        const bt = backgroundImage.top;
+        const bb = backgroundImage.bottom;
+
+        if (ml < bl) {
+            return true;
+        }
+
+        if (mt < bt) {
+            return true;
+        }
+
+        if (mr > br) {
+            return true;
+        }
+
+        if (mb > bb) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+    /*
     static hitTest(isMaskMoving = true)
     {
         const mask = this.mask;
@@ -89,6 +142,7 @@ export default class CollisionManager
             }
         }
     }
+    */
 
 
     /**
@@ -101,15 +155,22 @@ export default class CollisionManager
      */
     static rotate(rotation)
     {
-        console.log('rotate(', Calc.toDegrees(rotation), ')');
-
-
         /**
          * 처리 프로세스
-         * 1. backgroundImage 회전
-         * 2. 회전된 backgroundImage 로 getCollisionRect 구하기
-         * 3.
+         * 1. backgroundImage를 미리 회전 시킨 사각형 구하기
+         * 2. 회전된 backgroundImage CollisionRect 구하기
+         * 3. Mask CollisionRect 구하기
+         * 4. 충돌 확인
          */
+
+        console.log('rotate(', Calc.toDegrees(rotation), ')');
+
+        var isOut = this.isOut(this.mask.collisionRect, this.backgroundImage.getRotatedRect(rotation), rotation);
+
+        // 만약 out 이면
+        // 딱 떨어지는 회전각을 반환
+
+        return isOut;
 
         //const points = Calc.getRotationPointsWith(this.backgroundImage.center, this.backgroundImage, rotation);
         //Painter.drawPointsByPoints(window.g, points, 5);

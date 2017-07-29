@@ -450,8 +450,7 @@ export default class BitmapContainer extends PIXI.Container
         rb = Calc.getRotationPointWithPivot(center, rb, rotation);
         lb = Calc.getRotationPointWithPivot(center, lb, rotation);
 
-        return {lt:lt, rt:rt, rb:rb, lb:lb};
-        //return new CollisionRectangle(lt, rt, rb, lb);
+        return new CollisionRectangle(lt, rt, rb, lb);
     }
 
 
@@ -485,6 +484,11 @@ export default class BitmapContainer extends PIXI.Container
         return new CollisionRectangle(lt, rt, rb, lb);
     }
 
+
+    get collisionRect()
+    {
+        return new CollisionRectangle(this.lt, this.rt, this.rb, this.lb);
+    }
 
     /////////////////////////////////////////////////////////////////////////////
     //

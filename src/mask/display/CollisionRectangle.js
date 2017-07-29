@@ -17,6 +17,23 @@ export default class CollisionRectangle
         this.points = [this.lt, this.rt, this.rb, this.lb];
     }
 
+
+    rotate(rotation)
+    {
+        const points = this.points;
+        const cos = Math.cos(rotation);
+        const sin = Math.sin(rotation);
+
+        for (var i = 0; i < points.length; i++) {
+            const pt = points[i];
+            const x = pt.x;
+            const y = pt.y;
+            pt.x = cos * x - sin * y;
+            pt.y = sin * x + cos * y;
+        }
+    }
+
+
     /**
      * 사각형의 맨 좌측값 (충돌검사를 위한 값)
      * @returns {*}
@@ -98,5 +115,11 @@ export default class CollisionRectangle
         }
 
         return point.y;
+    }
+
+
+    get bounds()
+    {
+        return new PIXI.Rectangle(this.left, this.top, this.right - this.left, this.bottom - this.top);
     }
 }
