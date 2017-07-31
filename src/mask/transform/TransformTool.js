@@ -5,6 +5,7 @@ import ToolControl from './ToolControl';
 import ToolControlType from './ToolControlType';
 import RotationControlType from './RotationControlType';
 import CollisionManager from './../manager/CollisionManager';
+import Hit from './../consts/Hit';
 import {map, each} from './../utils/lambda';
 
 
@@ -794,29 +795,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         }*/
 
 
-        /*
         if (this.useSnap == true && isImageRotated == false) {
-            const rotation = this.target._rotation + event.changeRadian;
-            const angle = Calc.toDegrees(rotation);
-            const absAngle = Math.round(Math.abs(angle) % 90);
-
-            if (absAngle < this._startSnapAngle || absAngle > this._endSnapAngle) {
-                CollisionManager.rotate(Calc.toRadians(Calc.snapTo(angle, 90)));
-                this.target._rotation = Calc.toRadians(Calc.snapTo(angle, 90));
-            } else {
-                CollisionManager.rotate(rotation);
-                this.target._rotation = rotation;
-            }
-        } else {
-            CollisionManager.rotate(this.target.rotation + event.changeRadian);
-            this.target._rotation = rotation;
-        }
-        */
-
-
-
-        if (this.useSnap == true && isImageRotated == false) {
-
             /*const rotation = this.target._rotation + event.changeRadian;
             const angle = Calc.toDegrees(rotation);
             const absAngle = Math.round(Math.abs(angle) % 90);
@@ -833,37 +812,14 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             if (isOut === 'none') {
                 this.target.rotation = rotation;
                 this.target._rotation = rotation;
-                this.prevRotation = rotation;
             }
             else {
-
-
-                const prev = this.prevRotation;
-                const curt = rotation;
-                const diff = curt - prev;
-                const sign = (diff < 0) ? -1 : 1;
-                const step = 0.01 * sign;
-
-                console.log('isOUT!', 'prev', Calc.toDegrees(prev), 'current', Calc.toDegrees(curt), 'diff', Calc.toDegrees(diff), 'step', step);
-
-
-                var r = this.prevRotation;
-
-                /*for (var i = prev; i < curt; i+=step) {
-
-                }*/
-
-
-                this.target.rotation = prev;
-                this.target._rotation = prev;
-
+                //
             }
         }
 
-
         //console.log('rotation', Calc.toDegrees(this.target._rotation));
         //Painter.drawRectByPoints(window.g, this.target.getRotatedRect(Calc.toDegrees(event.changeRadian)), true, 5);
-
 
         this.draw();
         this.updatePrevTargetLt();

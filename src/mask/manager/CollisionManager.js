@@ -164,8 +164,6 @@ export default class CollisionManager
          * 4. 충돌 확인
          */
 
-        console.log('rotate(', Calc.toDegrees(rotation), ')');
-
         var isOut = this.isOut(this.mask.collisionRect, this.backgroundImage.getRotatedRect(rotation), rotation);
 
         // 만약 out 이면

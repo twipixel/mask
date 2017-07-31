@@ -45,6 +45,8 @@ export default class ToolControl extends PIXI.Sprite
         this._localPoint = new PIXI.Point();
         this.g = this.graphics = new PIXI.Graphics();
         this.addChild(this.graphics);
+
+        this.ticker = PIXI.ticker.shared;
     }
 
 
@@ -217,15 +219,17 @@ export default class ToolControl extends PIXI.Sprite
         this.hasMouseMoveEvent = true;
         this._mouseMoveListener = this.onMouseMove.bind(this);
         this._mouseUpListener = this.onMouseUp.bind(this);
-        window.document.addEventListener('mousemove', this._mouseMoveListener);
+        this.ticker.add(this._mouseMoveListener);
+        //window.document.addEventListener('mousemove', this._mouseMoveListener);
     };
 
 
     removeMouseMoveEvent()
     {
         this.hasMouseMoveEvent = false;
-        window.document.removeEventListener('mousemove', this._mouseMoveListener);
+        this.ticker.remove(this._mouseMoveListener);
         window.document.removeEventListener('mouseup', this._mouseUpListener);
+        //window.document.removeEventListener('mousemove', this._mouseMoveListener);
     };
 
 

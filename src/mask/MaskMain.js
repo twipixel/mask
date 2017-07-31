@@ -10,6 +10,11 @@ import CollisionManager from './manager/CollisionManager';
 import {clone} from './utils/util';
 
 
+// TEST
+import KeyCode from './consts/KeyCode';
+
+
+
 export default class MaskMain extends PIXI.utils.EventEmitter
 {
     constructor(renderer, stageLayer, maskLayer, options = {useSnap: true, snapAngle: 5})
@@ -45,6 +50,8 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.testCreate();
 
         this.createTransformTool();
+
+        window.addEventListener('keyup', this.onKeyUp.bind(this));
     }
 
 
@@ -292,5 +299,27 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
 
 
+    /////////////////////////////////////////////////////////////////////////////
+    //
+    // Test 함수
+    //
+    /////////////////////////////////////////////////////////////////////////////
 
+
+    onKeyUp(e) {
+        switch (e.keyCode) {
+            case KeyCode.ESCAPE:
+                console.clear();
+                break;
+            case KeyCode.SPACE:
+                //
+                break;
+            case KeyCode.NUMBER_1:
+                //
+                break;
+            case KeyCode.NUMBER_2:
+                //
+                break;
+        }
+    }
 }
