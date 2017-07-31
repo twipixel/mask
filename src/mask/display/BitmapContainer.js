@@ -259,8 +259,7 @@ export default class BitmapContainer extends PIXI.Container
      */
     get bitmapLt()
     {
-        //return this.toLocal(this.bitmap.lt, this.bitmap);
-        return this.toLocal(this.bitmap.lt, this.bitmap, this.collisionRectLt);
+        return this.toLocal(this.bitmap.lt, this.bitmap);
     }
 
     /**
@@ -269,8 +268,7 @@ export default class BitmapContainer extends PIXI.Container
      */
     get bitmapRt()
     {
-        //return this.toLocal(this.bitmap.rt, this.bitmap);
-        return this.toLocal(this.bitmap.rt, this.bitmap, this.collisionRectRt);
+        return this.toLocal(this.bitmap.rt, this.bitmap);
     }
 
     /**
@@ -279,8 +277,7 @@ export default class BitmapContainer extends PIXI.Container
      */
     get bitmapRb()
     {
-        //return this.toLocal(this.bitmap.rb, this.bitmap);
-        return this.toLocal(this.bitmap.rb, this.bitmap, this.collisionRectRb);
+        return this.toLocal(this.bitmap.rb, this.bitmap);
     }
 
     /**
@@ -289,8 +286,7 @@ export default class BitmapContainer extends PIXI.Container
      */
     get bitmapLb()
     {
-        //return this.toLocal(this.bitmap.lb, this.bitmap);
-        return this.toLocal(this.bitmap.lb, this.bitmap, this.collisionRectLb);
+        return this.toLocal(this.bitmap.lb, this.bitmap);
     }
 
 

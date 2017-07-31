@@ -261,9 +261,12 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     }
 
 
+    /**
+     * TransformTool에서 pivot을 설정할 수 있도록 마스크의 중심좌표를 maskLayer에 설정해 둡니다.
+     * @param event
+     */
     onMaskTransformComplete(event)
     {
-        this.transformTool.setPivotByControl(new PIXI.Point(0, 0));
         this.transformTool.update();
         this.transformTool.drawCenter();
     }
@@ -275,9 +278,12 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     }
 
 
+    /**
+     * TransformTool에서 pivot을 설정할 수 있도록 마스크의 중심좌표를 maskLayer에 설정해 둡니다.
+     * @param event
+     */
     onBackgroundImageTransformComplete(event)
     {
-        this.transformTool.setPivotByControl(new PIXI.Point(0, 0));
         this.transformTool.update();
         this.transformTool.drawCenter();
     }

@@ -18,12 +18,6 @@ export default class CollisionManager
 
 
     /**
-     * 충돌을 감지하고 충돌시 움직임을 수정합니다.
-     * @param isMaskMoving 마스크 객체가 이동하는지 여부
-     */
-
-
-    /**
      * 배경이미지안에 마스크가 밖으로 나갔는지 여부
      * @param mask
      * @param backgroundImage
@@ -72,6 +66,11 @@ export default class CollisionManager
     }
 
 
+
+    /**
+     * 충돌을 감지하고 충돌시 움직임을 수정합니다.
+     * @param isMaskMoving 마스크 객체가 이동하는지 여부
+     */
 
     /*
     static hitTest(isMaskMoving = true)
@@ -223,5 +222,15 @@ export default class CollisionManager
         }, false, 2);
 
         Painter.drawPoint(window.g, backRect.center, 10, false);
+    }
+
+
+    /**
+     * 마스크의 중점좌표를 배경 이미지의 pivot으로 사용하기 위해 배경 이미지의 로컬 좌표로 변환합니다.
+     * @returns {PIXI.Point}
+     */
+    static get backgroundImageLocalPivot()
+    {
+        return this.backgroundImage.toLocal(this.mask.toGlobal(this.mask.registrationPoint));
     }
 }

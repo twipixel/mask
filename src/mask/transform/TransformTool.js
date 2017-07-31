@@ -6,6 +6,8 @@ import ToolControlType from './ToolControlType';
 import RotationControlType from './RotationControlType';
 import CollisionManager from './../manager/CollisionManager';
 import Hit from './../consts/Hit';
+import Mask from './../display/Mask';
+import BackgroundImage from './../display/BackgroundImage';
 import {map, each} from './../utils/lambda';
 
 
@@ -369,8 +371,9 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             return;
         }
 
-        this.prevLtX = this.lt.x;
-        this.prevLtY = this.lt.y;
+        const lt = this.lt;
+        this.prevLtX = lt.x;
+        this.prevLtY = lt.y;
     }
 
 
@@ -589,15 +592,39 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     setPivotByLocalPoint(localPoint)
     {
         this.target.setPivot(localPoint);
-        this.target.pivot = localPoint;
         this.adjustPosition();
     }
 
 
     setPivotByControl(control)
     {
-        this.pivot = this.c.mc;
-        this.target.setPivot(this.pivot.localPoint);
+        const pivot = this.getPivot(control);
+        this.target.setPivot(pivot.localPoint);
+        this.adjustPosition();
+    }
+
+
+    /**
+     * Mask는 항상 가운데 중점으로 동작
+     * BackgroundImage는 항상 Mask의 중점을 자신의 중점으로 잡습니다.
+     * @param target
+     */
+    setPivotByTarget(target)
+    {
+
+        if (target instanceof Mask) {
+            this.setPivotByControl(this.c.mc);
+        }
+        else {
+            this.setPivotByLocalPoint(CollisionManager.backgroundImageLocalPivot);
+        }
+    }
+
+
+    setPivotCenter()
+    {
+        const pivot = this.c.mc;
+        this.target.setPivot(pivot.localPoint);
         this.adjustPosition();
     }
 
@@ -608,23 +635,11 @@ export default class TransformTool extends PIXI.utils.EventEmitter
      */
     adjustPosition()
     {
-        const offsetX = this.lt.x - this.prevLtX;
-        const offsetY = this.lt.y - this.prevLtY;
-
-        var scaleX = this.target.scale.x;
-        var scaleY = this.target.scale.y;
-
-        if (this.stageLayer) {
-            scaleX = this.stageLayer.croppedScaleX || 1;
-            scaleY = this.stageLayer.croppedScaleY || 1;
-        }
-
-        const noScaleOffsetX = offsetX / (this.diffScaleX * scaleX);
-        const noScaleOffsetY = offsetY / (this.diffScaleY * scaleY);
-        const pivotOffsetX = offsetX - noScaleOffsetX;
-        const pivotOffsetY = offsetY - noScaleOffsetY;
-        this.target.x = this.target.x - offsetX + pivotOffsetX;
-        this.target.y = this.target.y - offsetY + pivotOffsetY;
+        const lt = this.lt;
+        const offsetX = lt.x - this.prevLtX;
+        const offsetY = lt.y - this.prevLtY;
+        this.target.x = this.target.x - offsetX;
+        this.target.y = this.target.y - offsetY;
         this.updatePrevTargetLt();
     }
 
@@ -754,7 +769,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         this.downCnt++;
         this.target._rotation = this.target.rotation;
         this.selectedControl = event.target;
-        this.setPivotByControl(event.target);
+        this.setPivotByTarget(this.target);
         this.enableCurrentStyleCursor();
     }
 
@@ -850,7 +865,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         this.targetScaleY = this.target.scale.y;
         this.startMousePoint = new PIXI.Point(event.currentMousePoint.x, event.currentMousePoint.y);
         this.selectedControl = event.target;
-        this.setPivotByControl(event.target);
+        this.setPivotByTarget(this.target);
         this.updatePrevTargetLt();
         this.enableCurrentStyleCursor();
     }
@@ -895,12 +910,16 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     }
 
 
+    /**
+     * 타겟의 좌상단 점을 global 좌표로 반환
+     * @returns {*}
+     */
     get lt()
     {
         this.target.displayObjectUpdateTransform();
         const transform = this.target.worldTransform.clone();
         transform.rotate(-this.targetLayer.rotation);
-        return transform.apply(new PIXI.Point(0, 0));
+        return transform.apply(this.target.bitmapLt);
     }
 
 
