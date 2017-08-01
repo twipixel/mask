@@ -1,6 +1,7 @@
-import Hit from './../consts/Hit';
 import Calc from './../utils/Calculator';
 import Painter from './../utils/Painter';
+import CollisionVO from './../vo/CollisionVO';
+import CollisionType from './../consts/CollisionType';
 
 
 export default class CollisionManager
@@ -14,15 +15,66 @@ export default class CollisionManager
     {
         this.mask = mask;
         this.back = this.backgroundImage = backgroundImage;
+        this.vo = new CollisionVO();
     }
 
 
     /**
-     * 배경이미지안에 마스크가 밖으로 나갔는지 여부
+     *
+     * @param changeX 이동한 x값
+     * @param changeY 이동한 y값
+     * @param isMaskMoving 마스크가 이동했는지 여부
+     */
+    static move(changeX, changeY, isMaskMoving = true)
+    {
+        var maskCollisionRect, backCollisionRect;
+
+        if (isMaskMoving === true) {
+            backCollisionRect = this.back.collisionRect;
+            maskCollisionRect = this.mask.getMovedRect(changeX, changeY);
+        }
+        else {
+            maskCollisionRect = this.mask.collisionRect;
+            backCollisionRect = this.back.getMovedRect(changeX, changeY);
+        }
+
+        return this.isOut(maskCollisionRect, backCollisionRect, this.backgroundImage.rotation);
+    }
+
+
+    /**
+     * TransformTool.onRotate 에서 사용
+     * 회전을 시켜보고 출돌이 나면 회전 되지 않도록 처리하기 위해 충돌 부분만 분리
+     *
      * @param mask
      * @param backgroundImage
      * @param rotation
-     * @returns {boolean}
+     */
+    static rotate(rotation)
+    {
+        /**
+         * 처리 프로세스
+         * 1. backgroundImage를 미리 회전 시킨 사각형 구하기
+         * 2. 회전된 backgroundImage CollisionRect 구하기
+         * 3. Mask CollisionRect 구하기
+         * 4. 충돌 확인
+         */
+        return this.isOut(this.mask.collisionRect, this.backgroundImage.getRotatedRect(rotation), rotation);
+    }
+
+
+    static scale(scale)
+    {
+        //
+    }
+
+
+    /**
+     * 밖으로 나갔는지 여부 체크
+     * @param mask {CollisionRectangle} 마스크의 collisionRectangle
+     * @param backgroundImage {CollisionRectangle} 배경이미지의 collisionRectangle
+     * @param rotation {Number] 라디안
+     * @returns {CollisionVO|*}
      */
     static isOut(mask, backgroundImage, rotation)
     {
@@ -46,23 +98,36 @@ export default class CollisionManager
         const bt = backgroundImage.top;
         const bb = backgroundImage.bottom;
 
+        const offset = 0.1;
+
+
         if (ml < bl) {
-            return Hit.LEFT;
+            this.vo.type = CollisionType.LEFT;
+            this.vo.offset = (bl - ml) + offset;
+            return this.vo;
         }
 
         if (mt < bt) {
-            return Hit.TOP;
+            this.vo.type = CollisionType.TOP;
+            this.vo.offset = (bt - mt) + offset;
+            return this.vo;
         }
 
         if (mr > br) {
-            return Hit.RIGHT;
+            this.vo.type = CollisionType.RIGHT;
+            this.vo.offset = (br - mr) - offset;
+            return this.vo;
         }
 
         if (mb > bb) {
-            return Hit.BOTTOM;
+            this.vo.type = CollisionType.BOTTOM;
+            this.vo.offset = (bb - mb) - offset;
+            return this.vo;
         }
 
-        return Hit.NONE;
+        this.vo.type = CollisionType.NONE;
+        this.vo.offset = 0;
+        return this.vo;
     }
 
 
@@ -145,42 +210,6 @@ export default class CollisionManager
     */
 
 
-    /**
-     * TransformTool.onRotate 에서 사용
-     * 회전을 시켜보고 출돌이 나면 회전 되지 않도록 처리하기 위해 충돌 부분만 분리
-     *
-     * @param mask
-     * @param backgroundImage
-     * @param rotation
-     */
-    static rotate(rotation)
-    {
-        /**
-         * 처리 프로세스
-         * 1. backgroundImage를 미리 회전 시킨 사각형 구하기
-         * 2. 회전된 backgroundImage CollisionRect 구하기
-         * 3. Mask CollisionRect 구하기
-         * 4. 충돌 확인
-         */
-
-        var isOut = this.isOut(this.mask.collisionRect, this.backgroundImage.getRotatedRect(rotation), rotation);
-
-        // 만약 out 이면
-        // 딱 떨어지는 회전각을 반환
-
-        return isOut;
-
-        //const points = Calc.getRotationPointsWith(this.backgroundImage.center, this.backgroundImage, rotation);
-        //Painter.drawPointsByPoints(window.g, points, 5);
-    }
-
-
-    static scale(scale)
-    {
-        //
-    }
-
-
     static test()
     {
         //CollisionManager.drawBounds();
@@ -233,4 +262,7 @@ export default class CollisionManager
     {
         return this.backgroundImage.toLocal(this.mask.toGlobal(this.mask.registrationPoint));
     }
+
+
+
 }

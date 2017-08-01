@@ -152,7 +152,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
         this.maskLayer.addChild(this.backgroundImage);
 
-        const mask = this.mask = new Mask('./../assets/img/mask0.png');
+        const mask = this.mask = new Mask('./../assets/img/mask-triangle@3x.png');
         mask.on(Bitmap.READY, this.onMaskImageRady.bind(this));
 
         this._maskTransformCompleteListener = this.onMaskTransformComplete.bind(this);

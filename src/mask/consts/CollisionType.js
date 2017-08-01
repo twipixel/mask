@@ -1,4 +1,4 @@
-export default class Hit
+export default class CollisionType
 {
     static get LEFT()
     {

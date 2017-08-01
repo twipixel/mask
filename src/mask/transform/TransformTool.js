@@ -5,7 +5,7 @@ import ToolControl from './ToolControl';
 import ToolControlType from './ToolControlType';
 import RotationControlType from './RotationControlType';
 import CollisionManager from './../manager/CollisionManager';
-import Hit from './../consts/Hit';
+import CollisionType from './../consts/CollisionType';
 import Mask from './../display/Mask';
 import BackgroundImage from './../display/BackgroundImage';
 import {map, each} from './../utils/lambda';
@@ -190,7 +190,6 @@ export default class TransformTool extends PIXI.utils.EventEmitter
 
     addEvent()
     {
-        this.downCnt = 0;
         this.stageLayer.on(TransformTool.SET_TARGET, this.onSetTarget.bind(this));
     }
 
@@ -458,11 +457,33 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     {
         const change = event.targetChangeMovement;
 
-        this.target.x += change.x;
-        this.target.y += change.y;
+        var collisionVO = CollisionManager.move(change.x, change.y, this.target instanceof Mask);
 
-        const rect = this.target.getMovedRect(change.x, change.y);
-        Painter.drawRectByPoints(window.g, rect, true, 5);
+        if (collisionVO.type === CollisionType.NONE) {
+            this.target.x += change.x;
+            this.target.y += change.y;
+        }
+        else {
+
+            /*if (collisionVO.type === CollisionType.LEFT || collisionVO.type === CollisionType.RIGHT) {
+                this.target.x = this.target.x + collisionVO.offset;
+                this.target.y = this.target.y + change.y;
+            }
+            else if (collisionVO.type === CollisionType.TOP || collisionVO.type === CollisionType.BOTTOM) {
+                this.target.x = this.target.x + change.x;
+                this.target.y = this.target.y + collisionVO.offset;
+            }
+
+            collisionVO = CollisionManager.isOut(CollisionManager.mask.collisionRect, CollisionManager.back.collisionRect, CollisionManager.back.rotation);
+
+            if (collisionVO.type === CollisionType.LEFT || collisionVO.type === CollisionType.RIGHT) {
+                this.target.x = this.target.x + collisionVO.offset;
+            }
+            else if (collisionVO.type === CollisionType.TOP || collisionVO.type === CollisionType.BOTTOM) {
+                this.target.y = this.target.y + collisionVO.offset;
+            }*/
+        }
+
     }
 
 
@@ -766,7 +787,6 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             return;
         }
 
-        this.downCnt++;
         this.target._rotation = this.target.rotation;
         this.selectedControl = event.target;
         this.setPivotByTarget(this.target);
@@ -822,9 +842,9 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             }*/
         } else {
             const rotation = this.target.rotation + event.changeRadian;
-            const isOut = CollisionManager.rotate(rotation);
+            const collisionVO = CollisionManager.rotate(rotation);
 
-            if (isOut === 'none') {
+            if (collisionVO.type === CollisionType.NONE) {
                 this.target.rotation = rotation;
                 this.target._rotation = rotation;
             }
@@ -860,7 +880,6 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             return;
         }
 
-        this.downCnt++;
         this.targetScaleX = this.target.scale.x;
         this.targetScaleY = this.target.scale.y;
         this.startMousePoint = new PIXI.Point(event.currentMousePoint.x, event.currentMousePoint.y);
