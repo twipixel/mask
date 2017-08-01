@@ -85,8 +85,8 @@ export default class CollisionManager
 
         const maskBounds = mask.bounds;
         const backBounds = backgroundImage.bounds;
-        Painter.drawRectByBounds(window.g, maskBounds, true, 1);
-        Painter.drawRectByBounds(window.g, backBounds, false, 1);
+        //Painter.drawRectByBounds(window.g, maskBounds, true, 1);
+        //Painter.drawRectByBounds(window.g, backBounds, false, 1);
 
         const ml = mask.left;
         const mr = mask.right;

@@ -31,14 +31,14 @@
         (function () {
             if (navigator.userAgent.indexOf('Electron') >= 0) {
                 require('babel-register');
-                window.PIXI = require('./vendor/pixi');
-                document.write('<script src="./vendor/be.min.js"><' + '/script>');
-                document.write('<script src="./vendor/animation.js"><' + '/script>');
+                window.PIXI = require('././pixi');
+                document.write('<script src="../vendor/be.min.js"><' + '/script>');
+                document.write('<script src="../vendor/animation.js"><' + '/script>');
                 require('./index');
             }
             else {
-                document.write('<script src="./../src/vendor/be.min.js"><' + '/script>');
-                document.write('<script src="./../src/vendor/animation.js"><' + '/script>');
+                document.write('<script src="../vendor/be.min.js"><' + '/script>');
+                document.write('<script src="../vendor/animation.js"><' + '/script>');
                 document.write('<script src="./vendor.bundle.js"><' + '/script>');
                 document.write('<script src="./bundle.js"><' + '/script>');
             }

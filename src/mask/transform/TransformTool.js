@@ -406,7 +406,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
 
         const rect = this.target.getScaledRect(scaleX);
         //const rect = this.target.getScaledRect(scaleX - this.target.scale.x);
-        Painter.drawRectByPoints(window.g, rect, true, 5);
+        //Painter.drawRectByPoints(window.g, rect, true, 5);
 
         //console.log('diff[', scaleX - this.target.scale.x, scaleY - this.target.scale.y, ']', 'scale[', scaleX, scaleY, ']');
         this.target.scale = {x: scaleX, y: scaleY};
@@ -441,7 +441,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
 
         const rect = this.target.getScaledRect(scaleX);
         //const rect = this.target.getScaledRect(scaleX - this.target.scale.x);
-        Painter.drawRectByPoints(window.g, rect, true, 5);
+        //Painter.drawRectByPoints(window.g, rect, true, 5);
 
         //console.log('diff[', scaleX - this.target.scale.x, scaleY - this.target.scale.y, ']', 'scale[', scaleX, scaleY, ']');
         this.target.scale = {x: scaleX, y: scaleY};
