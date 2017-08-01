@@ -1,5 +1,8 @@
-import MaskTest from './mask/test/MaskTest';
 import MaskMain from './mask/MaskMain';
+
+// TEST
+import MaskTest from './mask/test/MaskTest';
+
 
 var canvas, renderer, stage, maskMain, stageLayer, maskLayer;
 

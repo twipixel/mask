@@ -19,6 +19,13 @@ export default class CollisionManager
     }
 
 
+    static changeMask(mask)
+    {
+        this.mask = null;
+        this.mask = mask;
+    }
+
+
     /**
      *
      * @param changeX 이동한 x값

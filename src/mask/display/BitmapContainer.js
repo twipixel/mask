@@ -39,7 +39,8 @@ export default class BitmapContainer extends PIXI.Container
 
     _addEvent()
     {
-        this.bitmap.on(Bitmap.READY, this.onReadyBitmap.bind(this));
+        this._readyBitmapListener = this.onReadyBitmap.bind(this);
+        this.bitmap.on(Bitmap.READY, this._readyBitmapListener);
     }
 
 
@@ -81,6 +82,22 @@ export default class BitmapContainer extends PIXI.Container
         }
 
         return false;
+    }
+
+
+    destroy()
+    {
+        if (this._readyBitmapListener) {
+            this.bitmap.off(Bitmap.READY, this._readyBitmapListener);
+        }
+
+        this.removeChild(this.bitmap);
+        this.bitmap.destroy();
+        this.bitmap = null;
+        this.removeChild(this.registrationPoint);
+        this.registrationPoint = null;
+
+        super.destroy();
     }
 
 

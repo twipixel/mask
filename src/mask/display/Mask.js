@@ -1,6 +1,4 @@
-import Bitmap from './Bitmap';
 import BitmapContainer from './BitmapContainer';
-import TransformTool from './../transform/TransformTool';
 
 
 export default class Mask extends BitmapContainer
@@ -26,9 +24,6 @@ export default class Mask extends BitmapContainer
         // 반전 여부
         this.scaleSignX = 1;
         this.scaleSignY = 1;
-
-        //this.transformCompleteListener = this.onTransformComplete.bind(this);
-        //this.on(TransformTool.TRANSFORM_COMPLETE, this.transformCompleteListener);
     }
 
 

@@ -1,4 +1,3 @@
-import Bitmap from './../display/Bitmap';
 import BitmapContainer from './BitmapContainer';
 
 
@@ -24,9 +23,6 @@ export default class BackgroundImage extends BitmapContainer
         // 반전 여부
         this.scaleSignX = 1;
         this.scaleSignY = 1;
-
-        //this.transformCompleteListener = this.onTransformComplete.bind(this);
-        //this.on(TransformTool.TRANSFORM_COMPLETE, this.transformCompleteListener);
     }
 
 

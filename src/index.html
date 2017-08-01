@@ -15,6 +15,10 @@
             background-color: #191919;
         }
 
+        #datGuiHolder {
+            position: absolute;
+        }
+
         #canvas {
             margin: 0px;
             /*width: 100%;*/
@@ -25,20 +29,24 @@
     </style>
 </head>
 <body>
+    <div id="datGuiHolder" class="datGuiHolder"></div>
+
     <canvas id="canvas"></canvas>
 
     <script>
         (function () {
             if (navigator.userAgent.indexOf('Electron') >= 0) {
                 require('babel-register');
-                window.PIXI = require('././pixi');
-                document.write('<script src="../vendor/be.min.js"><' + '/script>');
-                document.write('<script src="../vendor/animation.js"><' + '/script>');
+                window.PIXI = require('./../vendor/pixi.min');
+                document.write('<script src="./../vendor/be.min.js"><' + '/script>');
+                document.write('<script src="./../vendor/animation.js"><' + '/script>');
+                document.write('<script src="./../vendor/dat.gui.js"><' + '/script>');
                 require('./index');
             }
             else {
-                document.write('<script src="../vendor/be.min.js"><' + '/script>');
-                document.write('<script src="../vendor/animation.js"><' + '/script>');
+                document.write('<script src="./../vendor/be.min.js"><' + '/script>');
+                document.write('<script src="./../vendor/animation.js"><' + '/script>');
+                document.write('<script src="./../vendor/dat.gui.js"><' + '/script>');
                 document.write('<script src="./vendor.bundle.js"><' + '/script>');
                 document.write('<script src="./bundle.js"><' + '/script>');
             }

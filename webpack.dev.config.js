@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 const RemoveWebpackPlugin = require('remove-webpack-plugin');
 
-const pixi = path.join(__dirname, 'src/vendor/pixi.js');
+const pixi = path.join(__dirname, 'vendor/pixi.js');
 const assets = path.join(__dirname, 'assets/');
 
 

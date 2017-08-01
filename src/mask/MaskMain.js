@@ -11,7 +11,9 @@ import {clone} from './utils/util';
 
 
 // TEST
+import DatGui from './debug/DatGui';
 import KeyCode from './consts/KeyCode';
+
 
 
 
@@ -27,7 +29,11 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.maskLayer = maskLayer;
         this.options = options;
 
-        this.initialize();
+        // TEST 코드 추가
+        this.options.maskURL = './../assets/img/mask-triangle@3x.png';
+        this.options.maskDefaultSize
+
+        this.initialize(options);
     }
 
 
@@ -38,21 +44,116 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     /////////////////////////////////////////////////////////////////////////////
 
 
-    initialize()
+    initialize(options)
     {
+        this.options = options;
+
+        // 어플리케이션 시작 여부
+        this.isStart = false;
+
         // 디버그용 그래픽스
         window.g = this.g = new PIXI.Graphics();
         this.stageLayer.addChild(this.g);
 
+        // 마스크 레이어 업데이트
         this.maskLayer.updateTransform();
 
-        //this.testBitmap();
-        this.testCreate();
+        // 뷰포트 생성
+        const viewport = this.viewport = Size.windowSize;
 
-        this.createTransformTool();
+        // 배경 이미지 생성
+        const backgroundImage = this.backgroundImage = new BackgroundImage('./../assets/img/background0.png', viewport);
+        backgroundImage.on(Bitmap.READY, this.onBackgroundImageReady.bind(this));
 
+        // 변형툴 생성
+        this.transformTool = new TransformTool(this.stageLayer, this.maskLayer, this.options);
+
+        // 디버그 키 등록
         window.addEventListener('keyup', this.onKeyUp.bind(this));
     }
+
+
+    createMask(url)
+    {
+        if (url) {
+            const mask = this.mask = new Mask(url);
+            this._imageReadyListener = this.onMaskImageRady.bind(this);
+            mask.on(Bitmap.READY, this._imageReadyListener);
+
+            this._maskTransformCompleteListener = this.onMaskTransformComplete.bind(this);
+            this.mask.on(TransformTool.TRANSFORM_COMPLETE, this._maskTransformCompleteListener);
+        }
+    }
+
+
+    removeMask()
+    {
+        if (this.mask) {
+            this.maskLayer.removeChild(this.mask);
+            this.mask.off(Bitmap.READY, this._imageReadyListener);
+            this.mask.off(TransformTool.TRANSFORM_COMPLETE, this._maskTransformCompleteListener);
+            this._imageReadyListener = null;
+            this._maskTransformCompleteListener = null;
+            this.mask.destroy();
+        }
+    }
+
+
+    changeMask(url)
+    {
+        if (this.transformTool) {
+            this.transformTool.releaseTarget();
+        }
+
+        this.dimmedMask.stopRender();
+        this.removeMask();
+        this.createMask(url);
+    }
+
+
+    /**
+     * 마스크 첫 시작
+     */
+    startApplication()
+    {
+        this.isStart = true;
+
+        this.addEvent();
+        this.createDimmedMask();
+        this.createCollisionManager();
+        this.addDatGui();
+    }
+
+
+    addEvent()
+    {
+        window.document.addEventListener('mousedown', this.onStageDown.bind(this));
+    }
+
+
+    createDimmedMask()
+    {
+        const dimmedMask = this.dimmedMask = new DimmedMask(this.backgroundImage, this.mask);
+        dimmedMask.alpha = 0.82;
+        //dimmedMask.alpha = 0.32;
+        dimmedMask.visible = true;
+        this.maskLayer.addChild(dimmedMask);
+    }
+
+
+    createCollisionManager()
+    {
+        if (this.mask && this.backgroundImage) {
+            CollisionManager.initialize(this.mask, this.backgroundImage);
+        }
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////////
+    //
+    // Public Function
+    //
+    /////////////////////////////////////////////////////////////////////////////
 
 
     resize()
@@ -82,52 +183,18 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         }
 
         /*if (this.transformTool) {
-            this.transformTool.updateGraphics();
-            this.transformTool.drawCenter();
-            this.transformTool.updatePrevTargetLt();
-        }*/
+         this.transformTool.updateGraphics();
+         this.transformTool.drawCenter();
+         this.transformTool.updatePrevTargetLt();
+         }*/
     }
 
 
     /////////////////////////////////////////////////////////////////////////////
     //
-    // 테스트
+    // Event Functions
     //
     /////////////////////////////////////////////////////////////////////////////
-
-
-    testBitmap()
-    {
-        const backgroundImage = this.backgroundImage = new Bitmap('./../assets/img/background0.png');
-        backgroundImage.on(Bitmap.READY, () => {
-
-            const viewport = Size.windowSize;
-            Size.initialize(backgroundImage, viewport);
-
-            const imageSize = Size.initializedBackgroundImageSize;
-            backgroundImage.x = imageSize.x;
-            backgroundImage.y = imageSize.y;
-            backgroundImage.width = imageSize.width;
-            backgroundImage.height = imageSize.height;
-
-            this.maskLayer.addChild(backgroundImage);
-        });
-
-        const mask = this.mask = new Bitmap('./../assets/img/mask1.png');
-        this.maskLayer.addChild(mask);
-    }
-
-
-    testCreate()
-    {
-        const viewport = this.viewport = Size.windowSize;
-
-        const backgroundImage = this.backgroundImage =
-            new BackgroundImage('./../assets/img/background0.png', viewport);
-            //new BackgroundImage('./../assets/img/background1.jpg', viewport);
-
-        backgroundImage.on(Bitmap.READY, this.onBackgroundImageReady.bind(this));
-    }
 
 
     onBackgroundImageReady()
@@ -135,37 +202,39 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         // Size 객체 초기화, 배경 이미지 사이즈, 위치 설정
         Size.initialize(this.backgroundImage, this.viewport);
 
+        // 배경 이미지 사이즈 초기화
         const imageSize = Size.initializedBackgroundImageSize;
         this.backgroundImage.bitmapWidth = imageSize.width;
         this.backgroundImage.bitmapHeight = imageSize.height;
 
+        // 배경 이미지 테스트 설정
         this.backgroundImage.bitmapRotation = Calc.toRadians(10);
         this.backgroundImage.x = Size.windowCenterX;
         this.backgroundImage.y = Size.windowCenterY;
-
-        /*this.backgroundImage.x = 600;
-        this.backgroundImage.y = 900;
-        this.backgroundImage.bitmapRotation = -Calc.toRadians(30);*/
-
         //this.backgroundImage.alpha = 0.3;
         //this.backgroundImage.visible = false;
 
+        // 배경 이미지 addChild
         this.maskLayer.addChild(this.backgroundImage);
 
-        const mask = this.mask = new Mask('./../assets/img/mask-triangle@3x.png');
-        mask.on(Bitmap.READY, this.onMaskImageRady.bind(this));
-
-        this._maskTransformCompleteListener = this.onMaskTransformComplete.bind(this);
-        this.mask.on(TransformTool.TRANSFORM_COMPLETE, this._maskTransformCompleteListener);
-
+        // 배경 이미지 이벤트 등록
         this._backgroundImageTransformCompleteListener = this.onBackgroundImageTransformComplete.bind(this);
         this.backgroundImage.on(TransformTool.TRANSFORM_COMPLETE, this._backgroundImageTransformCompleteListener);
+
+        // 마스크 생성
+        this.createMask(this.options.maskURL);
     }
 
 
     onMaskImageRady()
     {
-        const maskDefaultSize = new PIXI.Rectangle(0, 0, 174, 188);
+        console.log('onMaskImageReady!');
+
+        /**
+         * TODO 최대/기본/최소 사이즈 처리 필요
+         * @type {*|PIXI.Rectangle}
+         */
+        const maskDefaultSize = new PIXI.Rectangle(0, 0, 300, 300);
         this.mask.bitmapWidth = maskDefaultSize.width;
         this.mask.bitmapHeight = maskDefaultSize.height;
         this.mask.x = Size.windowCenterX - 200;
@@ -175,51 +244,16 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.mask.visible = false;
         this.maskLayer.addChild(this.mask);
 
-        this.start();
+        // 처음 마스크를 로드한 경우
+        if (this.isStart === false) {
+            this.startApplication();
+        }
+        else {
+            this.dimmedMask.setMaskImage(this.mask);
+            this.dimmedMask.startRender();
+            CollisionManager.changeMask(this.mask);
+        }
     }
-
-
-    start()
-    {
-        //this._maskMouseDownListener = this.onMaskDown.bind(this);
-        //this.mask.mousedown = this._maskMouseDownListener;
-
-        //this._backgroundImageMouseDownListener = this.onBackgroundImageMouseDown.bind(this);
-        //this.backgroundImage.mousedown = this._backgroundImageMouseDownListener;
-
-        window.document.addEventListener('mousedown', this.onStageDown.bind(this));
-
-        const dimmedMask = this.dimmedMask = new DimmedMask(this.backgroundImage, this.mask);
-        dimmedMask.alpha = 0.82;
-        //dimmedMask.alpha = 0.32;
-        dimmedMask.visible = true;
-        this.maskLayer.addChild(dimmedMask);
-
-        //this.maskLayer.swapChildren(this.mask, this.dimmedMask);
-
-        CollisionManager.initialize(this.mask, this.backgroundImage);
-    }
-
-
-    /////////////////////////////////////////////////////////////////////////////
-    //
-    // TransformTool
-    //
-    /////////////////////////////////////////////////////////////////////////////
-
-
-    createTransformTool()
-    {
-        this.transformTool = new TransformTool(this.stageLayer, this.maskLayer, this.options);
-    }
-
-
-
-    /////////////////////////////////////////////////////////////////////////////
-    //
-    // Event Functions
-    //
-    /////////////////////////////////////////////////////////////////////////////
 
 
     onStageDown(event)
@@ -291,18 +325,17 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
     /////////////////////////////////////////////////////////////////////////////
     //
-    // 유틸 함수
+    // Debugger
     //
     /////////////////////////////////////////////////////////////////////////////
 
 
-
-    /////////////////////////////////////////////////////////////////////////////
-    //
-    // Getter & Setter
-    //
-    /////////////////////////////////////////////////////////////////////////////
-
+    addDatGui()
+    {
+        this.datGui = DatGui.instance;
+        this.datGui.initialize(this.options);
+        this.datGui.on(DatGui.CHAGE_MASK, this.onChangeMask.bind(this));
+    }
 
 
     /////////////////////////////////////////////////////////////////////////////
@@ -312,7 +345,37 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     /////////////////////////////////////////////////////////////////////////////
 
 
-    onKeyUp(e) {
+    testBitmap()
+    {
+        const backgroundImage = this.backgroundImage = new Bitmap('./../assets/img/background0.png');
+        backgroundImage.on(Bitmap.READY, () => {
+
+            const viewport = Size.windowSize;
+            Size.initialize(backgroundImage, viewport);
+
+            const imageSize = Size.initializedBackgroundImageSize;
+            backgroundImage.x = imageSize.x;
+            backgroundImage.y = imageSize.y;
+            backgroundImage.width = imageSize.width;
+            backgroundImage.height = imageSize.height;
+
+            this.maskLayer.addChild(backgroundImage);
+        });
+
+        const mask = this.mask = new Bitmap('./../assets/img/mask1.png');
+        this.maskLayer.addChild(mask);
+    }
+
+
+    onChangeMask(maskURL)
+    {
+        console.log('onChangeMask(', maskURL, ')');
+        this.changeMask(maskURL);
+    }
+
+
+    onKeyUp(e)
+    {
         switch (e.keyCode) {
             case KeyCode.ESCAPE:
                 console.clear();

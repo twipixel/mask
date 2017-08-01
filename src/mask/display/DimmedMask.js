@@ -26,6 +26,7 @@ export default class DimmedMask extends PIXI.Container
 
     initialize()
     {
+        this.isStop = false;
         this.canvas = document.createElement('canvas');
         this.canvas.width = Size.canvasLimitWidth;
         this.canvas.height = Size.canvasLimitHeight;
@@ -62,10 +63,30 @@ export default class DimmedMask extends PIXI.Container
 
     update(ms)
     {
-        this.clearCanvas();
-        //this.drawBackground();
-        this.drawDimmedBackground();
-        this.drawMask();
+        this.render();
+    }
+
+
+    render()
+    {
+        if (this.isStop === false) {
+            this.clearCanvas();
+            //this.drawBackground();
+            this.drawDimmedBackground();
+            this.drawMask();
+        }
+    }
+
+
+    startRender()
+    {
+        this.isStop = false;
+    }
+
+
+    stopRender()
+    {
+        this.isStop = true;
     }
 
 
@@ -188,5 +209,15 @@ export default class DimmedMask extends PIXI.Container
 
         // 이전 상태 복원
         this.ctx.restore();
+    }
+
+
+    /**
+     * 마스크 이미지 변경
+     * @param maskImage
+     */
+    setMaskImage(maskImage)
+    {
+        this.maskImage = maskImage;
     }
 }

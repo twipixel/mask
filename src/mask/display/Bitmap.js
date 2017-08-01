@@ -32,6 +32,16 @@ export default class Bitmap extends PIXI.Container
     }
 
 
+    destroy()
+    {
+        this._image.destroy();
+        this._image = null;
+        this._imageElement.onload = null;
+        this._imageElement = null;
+        super.destroy();
+    }
+
+
     onImageLoadComplete() {
         // 살짝 딜레이를 주지 않으면 랜더링에 문제가 될 수 있습니다.
         setTimeout(() => {
