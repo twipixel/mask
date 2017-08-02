@@ -208,9 +208,11 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.backgroundImage.bitmapHeight = imageSize.height;
 
         // 배경 이미지 테스트 설정
-        this.backgroundImage.bitmapRotation = Calc.toRadians(10);
+        //this.backgroundImage.bitmapRotation = Calc.toRadians(10);
         this.backgroundImage.x = Size.windowCenterX;
         this.backgroundImage.y = Size.windowCenterY;
+        this.backgroundImage.scale.x = 0.8;
+        this.backgroundImage.scale.y = 0.8;
         //this.backgroundImage.alpha = 0.3;
         //this.backgroundImage.visible = false;
 
@@ -237,8 +239,8 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         const maskDefaultSize = new PIXI.Rectangle(0, 0, 300, 300);
         this.mask.bitmapWidth = maskDefaultSize.width;
         this.mask.bitmapHeight = maskDefaultSize.height;
-        this.mask.x = Size.windowCenterX - 200;
-        this.mask.y = Size.windowCenterY - 100;
+        this.mask.x = Size.windowCenterX;
+        this.mask.y = Size.windowCenterY;
         //this.mask.alpha = 0.0;
         //this.mask.alpha = 0.1;
         this.mask.visible = false;
@@ -379,6 +381,11 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         switch (e.keyCode) {
             case KeyCode.ESCAPE:
                 console.clear();
+
+                if (window.g) {
+                    window.g.clear();
+                }
+
                 break;
             case KeyCode.SPACE:
                 //

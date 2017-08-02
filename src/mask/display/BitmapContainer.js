@@ -4,6 +4,9 @@ import Calc from './../utils/Calculator';
 import PointUtil from './../utils/PointUtil';
 import CollisionRectangle from './CollisionRectangle';
 
+// TEST
+import Painter from './../utils/Painter';
+
 
 export default class BitmapContainer extends PIXI.Container
 {
@@ -82,6 +85,16 @@ export default class BitmapContainer extends PIXI.Container
         }
 
         return false;
+    }
+
+
+    /**
+     * 피봇설정 (로컬좌표)
+     * @param localPoint
+     */
+    setPivot(localPoint)
+    {
+        this.pivot = localPoint;
     }
 
 
@@ -270,6 +283,12 @@ export default class BitmapContainer extends PIXI.Container
     }
 
 
+    get globalPivot()
+    {
+        return this.toGlobal(this.pivot);
+    }
+
+
     /**
      * 비트맵 좌상단 포인트를 로컬 좌표로 반환합니다.
      * @returns {PIXI.Point}
@@ -447,21 +466,26 @@ export default class BitmapContainer extends PIXI.Container
     /**
      * 충돌 검사 시 직접 회전 시키지 않고 미리 회전 시킨
      * 바운드로 가지고 충돌 검사를합니다. (Global 좌표로 봔환)
-     * @param rotation
+     * @param changeAngle rotation (라디안)
      * @returns {CollisionRectangle}
      */
-    getRotatedRect(rotation)
+    getRotatedRect(changeAngle)
     {
         var lt = this.lt;
         var rt = this.rt;
         var rb = this.rb;
         var lb = this.lb;
-        const center = this.center;
+        const pivot = this.globalPivot;
 
-        lt = Calc.getRotationPointWithPivot(center, lt, rotation);
-        rt = Calc.getRotationPointWithPivot(center, rt, rotation);
-        rb = Calc.getRotationPointWithPivot(center, rb, rotation);
-        lb = Calc.getRotationPointWithPivot(center, lb, rotation);
+        const angle = changeAngle + 10;
+
+        lt = Calc.getRotationPointWithPivot(pivot, lt, angle);
+        rt = Calc.getRotationPointWithPivot(pivot, rt, angle);
+        rb = Calc.getRotationPointWithPivot(pivot, rb, angle);
+        lb = Calc.getRotationPointWithPivot(pivot, lb, angle);
+
+        // TODO 디버그 삭제 Painter
+        Painter.drawPointsByPoints(window.g, new CollisionRectangle(lt, rt, rb, lb), false, 1);
 
         return new CollisionRectangle(lt, rt, rb, lb);
     }

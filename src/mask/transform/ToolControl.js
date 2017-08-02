@@ -88,9 +88,11 @@ export default class ToolControl extends PIXI.Sprite
         this.g.clear();
         this.g.beginFill(0xFF33FF, this.drawAlpha);
         this.g.drawRect(-buttonRectHalf, -buttonRectHalf, buttonRectSize, buttonRectSize);
-        this.g.beginFill(0xFFFFFF, 1);
+        //this.g.beginFill(0xFFFFFF, 1);
+        this.g.beginFill(0xFFFFFF, 0);
         this.g.drawRect(-outerRectHalf, -outerRectHalf, outerRectSize, outerRectSize);
-        this.g.beginFill(0x000000, 1);
+        //this.g.beginFill(0x000000, 1);
+        this.g.beginFill(0x000000, 0);
         this.g.drawRect(-innerRectHalf, -innerRectHalf, innerRectSize, innerRectSize);
         this.g.endFill();
     }

@@ -10,8 +10,10 @@ import Mask from './../display/Mask';
 import BackgroundImage from './../display/BackgroundImage';
 import {map, each} from './../utils/lambda';
 
-
+// Debug
+import Echo from './../debug/Echo';
 import Painter from './../utils/Painter';
+
 
 
 const dragRange = 10;
@@ -407,7 +409,6 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         const rect = this.target.getScaledRect(scaleX);
         //const rect = this.target.getScaledRect(scaleX - this.target.scale.x);
         //Painter.drawRectByPoints(window.g, rect, true, 5);
-
         //console.log('diff[', scaleX - this.target.scale.x, scaleY - this.target.scale.y, ']', 'scale[', scaleX, scaleY, ']');
         this.target.scale = {x: scaleX, y: scaleY};
     }
@@ -847,15 +848,55 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             }*/
         } else {
             const rotation = this.target.rotation + event.changeRadian;
-            const collisionVO = CollisionManager.rotate(rotation);
+            const collisionVO = CollisionManager.rotate(rotation, event.changeRotation);
 
+            // 충돌하지 않았으면 회전
             if (collisionVO.type === CollisionType.NONE) {
                 this.target.rotation = rotation;
                 this.target._rotation = rotation;
             }
-            else {
-                //
+
+            const target = this.target;
+            const lt = target.lt;
+            const rt = target.rt;
+            const rb = target.rb;
+            const lb = target.lb;
+            console.log('TARG[',
+                Echo._digit(lt.x), Echo._digit(lt.y), ',',
+                Echo._digit(rt.x), Echo._digit(rt.y), ',',
+                Echo._digit(rb.x), Echo._digit(rb.y), ',',
+                Echo._digit(lb.x), Echo._digit(lb.y),
+                ']');
+
+            /*const recollisionVO = CollisionManager.rotate(rotation);
+
+            if (collisionVO.type !== CollisionType.NONE) {
+                var increase, increaseX = 0, increaseY = 0;
+
+                switch (collisionVO.type) {
+                    case CollisionType.LEFT:
+                    case CollisionType.RIGHT:
+                        increase = Math.abs(recollisionVO.offsetX) + 1;
+                        increaseX += increase;
+                        this.target.width += increase;
+                        break;
+
+                    case CollisionType.TOP:
+                    case CollisionType.BOTTOM:
+                        increase = Math.abs(recollisionVO.offsetY) + 1;
+                        increaseY += increase;
+                        this.target.height += increase;
+                        break;
+                }
             }
+
+
+            if(increaseX > increaseY) {
+                this.target.scale.y = this.target.scale.x;
+            }
+            else {
+                this.target.scale.x = this.target.scale.y;
+            }*/
         }
 
         //console.log('rotation', Calc.toDegrees(this.target._rotation));

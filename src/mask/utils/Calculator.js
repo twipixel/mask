@@ -110,7 +110,7 @@ export default class Calc
      * 회전하는 좌표 구하기
      * @param pivot 사각형의 중심점
      * @param point 계산하고 싶은 포인트
-     * @param angle 회전각 degrees
+     * @param angle 회전각 (디그리)
      * @returns {{x: (number|*), y: (number|*)}}
      */
     static getRotationPointWithPivot(pivot, point, angle)
@@ -120,10 +120,25 @@ export default class Calc
         const dist = Math.sqrt(diffX * diffX + diffY * diffY);
         const ca = Math.atan2(diffY, diffX) * 180 / Math.PI;
         const na = ((ca + angle) % 360) * Math.PI / 180;
-        const x = (pivot.x + dist * Math.cos(na) + 0.5) | 0;
-        const y = (pivot.y + dist * Math.sin(na) + 0.5) | 0;
+        const x = pivot.x + dist * Math.cos(na);
+        const y = pivot.y + dist * Math.sin(na);
         return {x: x, y: y};
     }
+
+
+    /*
+    static getRotationPointWithPivot(pivot, point, degrees)
+    {
+        const diffX = point.x - pivot.x;
+        const diffY = point.y - pivot.y;
+        const dist = Math.sqrt(diffX * diffX + diffY * diffY);
+        const ca = Math.atan2(diffY, diffX) * 180 / Math.PI;
+        const na = ((ca + degrees) % 360) * Math.PI / 180;
+        const x = pivot.x + dist * Math.cos(na);
+        const y = pivot.y + dist * Math.sin(na);
+        return {x: x, y: y};
+    }
+    */
 
 
     /**

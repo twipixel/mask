@@ -27,12 +27,6 @@ export default class Mask extends BitmapContainer
     }
 
 
-    setPivot(localPoint)
-    {
-        this.pivot = localPoint;
-    }
-
-
     /**
      * 이동 시에는 다시 canvg에서 다시 안그리도록 처리하고
      * 대신 updateTransform 하도록 TEXTURE_UPDATE 이벤트를 전달합니다.

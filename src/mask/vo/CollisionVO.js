@@ -10,7 +10,7 @@ export default class CollisionVO
      */
     constructor(type = CollisionType.NONE, offsetX = 0, offsetY = 0)
     {
-        this.type = type;
+        this._type = type;
         this.offsetX = offsetX;
         this.offsetY = offsetY;
     }

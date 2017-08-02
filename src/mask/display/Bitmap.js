@@ -49,7 +49,7 @@ export default class Bitmap extends PIXI.Container
             this._originalImageHeight = this._image.height;
             this._originalImageSize = new PIXI.Rectangle(0, 0, this.originalImageWidth, this.originalImageHeight);
 
-            const size = 10;
+            const size = 0;
             // leftTop, rightTop, rightBottom, leftBottom, registrationPoint 생성
             this.lt = this.registrationPoint = ShapeFactory.getRectangle(0, 0, size);
             this.rt = ShapeFactory.getRectangle(-size, 0, size);
