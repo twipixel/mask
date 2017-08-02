@@ -456,34 +456,39 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     move(event)
     {
         const change = event.targetChangeMovement;
-
-        var collisionVO = CollisionManager.move(change.x, change.y, this.target instanceof Mask);
+        const isMaskMoving = this.target instanceof Mask;
+        var collisionVO = CollisionManager.move(change.x, change.y, isMaskMoving);
+        const tx = this.target.x + change.x;
+        const ty = this.target.y + change.y;
 
         if (collisionVO.type === CollisionType.NONE) {
-            this.target.x += change.x;
-            this.target.y += change.y;
+            this.target.x = tx;
+            this.target.y = ty;
         }
         else {
 
-            /*if (collisionVO.type === CollisionType.LEFT || collisionVO.type === CollisionType.RIGHT) {
-                this.target.x = this.target.x + collisionVO.offset;
-                this.target.y = this.target.y + change.y;
-            }
-            else if (collisionVO.type === CollisionType.TOP || collisionVO.type === CollisionType.BOTTOM) {
-                this.target.x = this.target.x + change.x;
-                this.target.y = this.target.y + collisionVO.offset;
+            // 배경이미지가 움직인 경우라면 마스크 기준의 offset 값이므로 부호를 바꿔줍니다.
+            if (isMaskMoving === false) {
+                collisionVO.offsetX *= -1;
+                collisionVO.offsetY *= -1;
             }
 
-            collisionVO = CollisionManager.isOut(CollisionManager.mask.collisionRect, CollisionManager.back.collisionRect, CollisionManager.back.rotation);
-
-            if (collisionVO.type === CollisionType.LEFT || collisionVO.type === CollisionType.RIGHT) {
-                this.target.x = this.target.x + collisionVO.offset;
+            if (collisionVO.offsetX !== 0 && collisionVO.offsetY !== 0) {
+                this.target.x = tx + collisionVO.offsetX;
+                this.target.y = ty + collisionVO.offsetY;
             }
-            else if (collisionVO.type === CollisionType.TOP || collisionVO.type === CollisionType.BOTTOM) {
-                this.target.y = this.target.y + collisionVO.offset;
-            }*/
+            else {
+                if (collisionVO.type === CollisionType.LEFT || collisionVO.type === CollisionType.RIGHT) {
+                    this.target.x = tx + collisionVO.offsetX;
+                    this.target.y = ty;
+                }
+
+                if (collisionVO.type === CollisionType.TOP || collisionVO.type === CollisionType.BOTTOM) {
+                    this.target.x = tx;
+                    this.target.y = ty + collisionVO.offsetY;
+                }
+            }
         }
-
     }
 
 

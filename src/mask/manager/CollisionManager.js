@@ -4,6 +4,13 @@ import CollisionVO from './../vo/CollisionVO';
 import CollisionType from './../consts/CollisionType';
 
 
+/**
+ * 충돌시 여백을 주지 않으면 부드럽게 움직이지 못하기 때문에 약간의 공간을 줍니다.
+ * @type {number}
+ */
+const collisinoSpace = 0.0;
+
+
 export default class CollisionManager
 {
     /**
@@ -19,6 +26,10 @@ export default class CollisionManager
     }
 
 
+    /**
+     * 마스크 변경
+     * @param mask
+     */
     static changeMask(mask)
     {
         this.mask = null;
@@ -45,7 +56,7 @@ export default class CollisionManager
             backCollisionRect = this.back.getMovedRect(changeX, changeY);
         }
 
-        return this.isOut(maskCollisionRect, backCollisionRect, this.backgroundImage.rotation);
+        return this.getFixPosition(maskCollisionRect, backCollisionRect, this.backgroundImage.rotation);
     }
 
 
@@ -66,7 +77,7 @@ export default class CollisionManager
          * 3. Mask CollisionRect 구하기
          * 4. 충돌 확인
          */
-        return this.isOut(this.mask.collisionRect, this.backgroundImage.getRotatedRect(rotation), rotation);
+        return this.getFixPosition(this.mask.collisionRect, this.backgroundImage.getRotatedRect(rotation), rotation);
     }
 
 
@@ -77,21 +88,21 @@ export default class CollisionManager
 
 
     /**
-     * 밖으로 나갔는지 여부 체크
+     * 충돌되었으면 넘어가지 않도록 계산하여 이동할 위치를 반환합니다.
      * @param mask {CollisionRectangle} 마스크의 collisionRectangle
      * @param backgroundImage {CollisionRectangle} 배경이미지의 collisionRectangle
      * @param rotation {Number] 라디안
      * @returns {CollisionVO|*}
      */
-    static isOut(mask, backgroundImage, rotation)
+    static getFixPosition(mask, backgroundImage, rotation)
     {
         const r = -rotation;
 
         mask.rotate(r);
         backgroundImage.rotate(r);
 
-        const maskBounds = mask.bounds;
-        const backBounds = backgroundImage.bounds;
+        //const maskBounds = mask.bounds;
+        //const backBounds = backgroundImage.bounds;
         //Painter.drawRectByBounds(window.g, maskBounds, true, 1);
         //Painter.drawRectByBounds(window.g, backBounds, false, 1);
 
@@ -105,35 +116,28 @@ export default class CollisionManager
         const bt = backgroundImage.top;
         const bb = backgroundImage.bottom;
 
-        const offset = 0.1;
-
+        this.vo.reset();
 
         if (ml < bl) {
             this.vo.type = CollisionType.LEFT;
-            this.vo.offset = (bl - ml) + offset;
-            return this.vo;
-        }
-
-        if (mt < bt) {
-            this.vo.type = CollisionType.TOP;
-            this.vo.offset = (bt - mt) + offset;
-            return this.vo;
+            this.vo.offsetX = (bl - ml) + collisinoSpace;
         }
 
         if (mr > br) {
             this.vo.type = CollisionType.RIGHT;
-            this.vo.offset = (br - mr) - offset;
-            return this.vo;
+            this.vo.offsetX = (br - mr) - collisinoSpace;
+        }
+
+        if (mt < bt) {
+            this.vo.type = CollisionType.TOP;
+            this.vo.offsetY = (bt - mt) + collisinoSpace;
         }
 
         if (mb > bb) {
             this.vo.type = CollisionType.BOTTOM;
-            this.vo.offset = (bb - mb) - offset;
-            return this.vo;
+            this.vo.offsetY = (bb - mb) - collisinoSpace;
         }
 
-        this.vo.type = CollisionType.NONE;
-        this.vo.offset = 0;
         return this.vo;
     }
 
