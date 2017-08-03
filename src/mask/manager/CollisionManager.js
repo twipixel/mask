@@ -68,17 +68,11 @@ export default class CollisionManager
 
     /**
      * 미리 스케일링하고 충돌여부와 offset 값을 반환합니다.
-     *
-     * @param scale
-     */
-
-    /**
-     *
      * @param scale 변화하고자 하는 스케일
      * @param isMaskScaling
      * @returns {CollisionVO|*}
      */
-    static virtualScaleCollisionCheck(scale, isMaskScaling = true)
+    static virtualScaleCollisionCheck(scale, isMaskScaling = true, space = 0.1)
     {
         var mask, back, rotation = this.backgroundImage.rotation;
 
@@ -90,7 +84,7 @@ export default class CollisionManager
             back = this.back.getScaledRect(scale);
         }
 
-        return this.getFixPosition(mask, back, rotation);
+        return this.getFixPosition(mask, back, rotation, space);
     }
 
 

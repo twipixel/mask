@@ -11,6 +11,11 @@ export default class CollisionType
     static get RIGHT_TOP() {return 'rightTop';}
     static get RIGHT_BOTTOM() {return 'rightBottom';}
 
+    static get TOP_BOTTOM() {return 'topBottom';}
+    static get BOTTOM_TOP() {return 'bottomTop';}
+    static get LEFT_RIGHT() {return 'leftRight';}
+    static get RIGHT_LEFT() {return 'rightLeft';}
+
     /**
      * 현재 사용 않함
      * CollisionManager.getFixPosition 함수에서

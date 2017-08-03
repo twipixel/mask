@@ -9,7 +9,7 @@ export default class Echo
      * @param digitNumber
      * @returns {number}
      */
-    static _digit(convertNumber, digitNumber = 1)
+    static digit(convertNumber, digitNumber = 1)
     {
         if (digitNumber === 0) {
             digitNumber = 1;
@@ -26,7 +26,7 @@ export default class Echo
      * @param zeros
      * @returns {string}
      */
-    static _leadingZeros(number, zeros = 4)
+    static leadingZeros(number, zeros = 4)
     {
         var zero = '';
         number = number.toString();
@@ -47,7 +47,7 @@ export default class Echo
      */
     static number(number, zeros = 4)
     {
-        return this._leadingZeros(parseInt(number), zeros)
+        return this.leadingZeros(parseInt(number), zeros)
     }
 
 
@@ -58,10 +58,10 @@ export default class Echo
     static rect(rect, isReturnLog = false)
     {
         var log = '' +
-            'lt[' + this._digit(rect.lt.x) + ', ' + this._digit(rect.lt.y) + '] ' +
-            'rt[' + this._digit(rect.rt.x) + ', ' + this._digit(rect.rt.y) + '] ' +
-            'rb[' + this._digit(rect.rb.x) + ', ' + this._digit(rect.rb.y) + '] ' +
-            'lb[' + this._digit(rect.lb.x) + ', ' + this._digit(rect.lb.y) + '] ';
+            'lt[' + this.digit(rect.lt.x) + ', ' + this.digit(rect.lt.y) + '] ' +
+            'rt[' + this.digit(rect.rt.x) + ', ' + this.digit(rect.rt.y) + '] ' +
+            'rb[' + this.digit(rect.rb.x) + ', ' + this.digit(rect.rb.y) + '] ' +
+            'lb[' + this.digit(rect.lb.x) + ', ' + this.digit(rect.lb.y) + '] ';
 
         if (isReturnLog) {
             return log;

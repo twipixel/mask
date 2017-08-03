@@ -42,7 +42,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
      * @param targetLayer == PhotoEditor._stickerLayer
      * @param options
      */
-    constructor(stageLayer, targetLayer, options = {useSnap: true, snapAngle: 5, deleteButtonOffsetY: 0})
+    constructor(stageLayer, targetLayer, options = {useSnap: true, snapAngle: 2, deleteButtonOffsetY: 0})
     {
         super();
         this.stageLayer = stageLayer;
@@ -443,11 +443,41 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             scaleX = scaleY;
         }
 
+        const isBigger = this.targetScaleX < scaleX;
+        const isSmaller = this.targetScaleX > scaleX;
+
+        //this.target.scale = {x: scaleX, y: scaleY};
+        //const collisionVO = CollisionManager.getCollisionVO();
+
         const isMaskScaling = this.target instanceof Mask;
         const collisionVO = CollisionManager.virtualScaleCollisionCheck(scaleX, isMaskScaling);
 
+        console.log('\n isMaskScaling', isMaskScaling, 'scale[', scaleX, scaleY, '], isBigger', isBigger, 'isSmaller', isSmaller);
+
         if (collisionVO.type === CollisionType.NONE) {
             this.target.scale = {x: scaleX, y: scaleY};
+        }
+        else {
+            // 부딪쳤으면 딱 맞는 스케일을 반환해서 처리
+
+            var unCollisionScale = this.targetScaleX;
+            for (var i = this.targetScaleX; i < scaleX; i += 0.01) {
+                const vo = CollisionManager.virtualScaleCollisionCheck(i, isMaskScaling);
+                console.log(i, vo.type);
+
+                if (i === this.targetScaleX || vo.type === CollisionType.NONE) {
+                    unCollisionScale = i;
+                }
+                else {
+
+                    console.log('!!!!!!! unCollisionScale', unCollisionScale);
+                    break;
+                }
+            }
+
+            this.target.scale.x = unCollisionScale;
+            this.target.scale.y = unCollisionScale;
+
         }
     }
 
@@ -832,30 +862,17 @@ export default class TransformTool extends PIXI.utils.EventEmitter
 
         // 충돌하였으면 확대
         if (collisionVO.type !== CollisionType.NONE) {
-            var increase, increaseX = 0, increaseY = 0;
+            // 부딪쳤으면 딱 맞는 스케일을 반환해서 처리
+            var type = collisionVO.type, increaseX = 0, increaseY = 0;
 
-            switch (collisionVO.type) {
-                case CollisionType.LEFT:
-                case CollisionType.LEFT_TOP:
-                case CollisionType.LEFT_BOTTOM:
-                case CollisionType.RIGHT:
-                case CollisionType.RIGHT_TOP:
-                case CollisionType.RIGHT_BOTTOM:
-                    increase = Math.abs(collisionVO.offsetX) + rotateSpace;
-                    increaseX += increase;
-                    this.target.width += increase;
-                    break;
+            if (type.indexOf(CollisionType.LEFT) > -1 || type.indexOf(CollisionType.RIGHT) > -1) {
+                increaseX = Math.abs(collisionVO.offsetX);
+                this.target.width += increaseX;
+            }
 
-                case CollisionType.TOP:
-                case CollisionType.LEFT_TOP:
-                case CollisionType.RIGHT_TOP:
-                case CollisionType.BOTTOM:
-                case CollisionType.LEFT_BOTTOM:
-                case CollisionType.RIGHT_BOTTOM:
-                    increase = Math.abs(collisionVO.offsetY) + rotateSpace;
-                    increaseY += increase;
-                    this.target.height += increase;
-                    break;
+            if (type.indexOf(CollisionType.TOP) > -1 || type.indexOf(CollisionType.BOTTOM) > -1) {
+                increaseY = Math.abs(collisionVO.offsetY);
+                this.target.height += increaseY;
             }
 
             if(increaseX > increaseY) {
