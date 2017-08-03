@@ -126,21 +126,6 @@ export default class Calc
     }
 
 
-    /*
-    static getRotationPointWithPivot(pivot, point, degrees)
-    {
-        const diffX = point.x - pivot.x;
-        const diffY = point.y - pivot.y;
-        const dist = Math.sqrt(diffX * diffX + diffY * diffY);
-        const ca = Math.atan2(diffY, diffX) * 180 / Math.PI;
-        const na = ((ca + degrees) % 360) * Math.PI / 180;
-        const x = pivot.x + dist * Math.cos(na);
-        const y = pivot.y + dist * Math.sin(na);
-        return {x: x, y: y};
-    }
-    */
-
-
     /**
      * 회전각과 사각형의 포인트를 넘겨주면 회전된 사각형의 포인트를 전달합니다.
      * @param pivot 사각형의 pivot(anchor) 포인트
@@ -216,5 +201,16 @@ export default class Calc
     static snapTo(num, snap)
     {
         return Math.round(num / snap) * snap;
+    }
+
+
+    /**
+     * Degrees 로 바꾸고 round 처리 하는 이유는
+     * 각도가 90, 180, 270로 딱 안떨어지고 +, - 오차가 나는 경우가 있어 round 처리하면 딱 떨어집니다.
+     * @param angle (라디안)
+     */
+    static toRoundDegreesByRadians(angle)
+    {
+        return Math.round(Calc.toDegrees(angle));
     }
 }

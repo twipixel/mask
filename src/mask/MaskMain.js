@@ -31,7 +31,6 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
         // TEST 코드 추가
         this.options.maskURL = './../assets/img/mask-triangle@3x.png';
-        this.options.maskDefaultSize
 
         this.initialize(options);
     }

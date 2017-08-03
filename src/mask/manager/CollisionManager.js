@@ -107,10 +107,11 @@ export default class CollisionManager
      * 충돌되었으면 넘어가지 않도록 계산하여 이동할 위치를 반환합니다.
      * @param mask {CollisionRectangle} 마스크의 collisionRectangle
      * @param backgroundImage {CollisionRectangle} 배경이미지의 collisionRectangle
-     * @param rotation {Number] 라디안
+     * @param rotation {Number] backgroundImage 회전값 (라디안)
+     * @param space {Number] offset 값에 여백을 주고 싶을때 사용
      * @returns {CollisionVO|*}
      */
-    static getFixPosition(mask, backgroundImage, rotation)
+    static getFixPosition(mask, backgroundImage, rotation, space = 0)
     {
         const r = -rotation;
 
@@ -136,22 +137,22 @@ export default class CollisionManager
 
         if (ml < bl) {
             this.vo.type = CollisionType.LEFT;
-            this.vo.offsetX = (bl - ml);
+            this.vo.offsetX = (bl - ml) + space;
         }
 
         if (mr > br) {
             this.vo.type = CollisionType.RIGHT;
-            this.vo.offsetX = (br - mr);
+            this.vo.offsetX = (br - mr) - space;
         }
 
         if (mt < bt) {
             this.vo.type = CollisionType.TOP;
-            this.vo.offsetY = (bt - mt);
+            this.vo.offsetY = (bt - mt) + space;
         }
 
         if (mb > bb) {
             this.vo.type = CollisionType.BOTTOM;
-            this.vo.offsetY = (bb - mb);
+            this.vo.offsetY = (bb - mb) - space;
         }
 
         return this.vo;
@@ -206,5 +207,13 @@ export default class CollisionManager
     }
 
 
+    /**
+     * 배경 이미지 회전 여부
+     * @returns {boolean}
+     */
+    static get isImageRotated()
+    {
+        return (Calc.toRoundDegreesByRadians(this.back.rotation) % 90 != 0);
+    }
 
 }

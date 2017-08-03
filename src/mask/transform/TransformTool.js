@@ -48,9 +48,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         this.stageLayer = stageLayer;
         this.targetLayer = targetLayer;
         this.options = options;
-        //this.useSnap = options.useSnap;
-        // TODO Debug 기본값은 true;
-        this.useSnap = false;
+        this.useSnap = options.useSnap;
         this.snapAngle = options.snapAngle;
         this.selectedControl = null;
         this.deleteButtonSize = 28;
@@ -811,9 +809,8 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             return;
         }
 
-        const rotation = this.target.rotation + event.changeRadian;
-
-        if (this.useSnap == true) {
+        if (this.useSnap == true && CollisionManager.isImageRotated === false) {
+            const rotation = this.target._rotation + event.changeRadian;
             const angle = Calc.toDegrees(rotation);
             const absAngle = Math.round(Math.abs(angle) % 90);
 
@@ -869,21 +866,6 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             }
         }
 
-        // TODO Debug
-        const target = this.target;
-        const lt = target.lt;
-        const rt = target.rt;
-        const rb = target.rb;
-        const lb = target.lb;
-
-        console.log(collisionVO.type.toUpperCase(), 'Result[',
-            Echo._digit(lt.x), Echo._digit(lt.y), ',',
-            Echo._digit(rt.x), Echo._digit(rt.y), ',',
-            Echo._digit(rb.x), Echo._digit(rb.y), ',',
-            Echo._digit(lb.x), Echo._digit(lb.y),
-            ']');
-
-        //console.log('rotation', Calc.toDegrees(this.target._rotation));
         //Painter.drawRectByPoints(window.g, this.target.getRotatedRect(Calc.toDegrees(event.changeRadian)), true, 5);
 
         this.draw();
