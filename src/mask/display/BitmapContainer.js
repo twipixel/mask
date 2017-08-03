@@ -474,12 +474,13 @@ export default class BitmapContainer extends PIXI.Container
     {
         const prevRotation = this.rotation;
         this.rotation = rotation;
-
         this.updateTransform();
+
         const lt = this.lt.clone();
         const rt = this.rt.clone();
         const rb = this.rb.clone();
         const lb = this.lb.clone();
+
         this.rotation = prevRotation;
 
         // TODO 디버그 삭제 Painter
@@ -497,24 +498,21 @@ export default class BitmapContainer extends PIXI.Container
      */
     getScaledRect(scale)
     {
-        var lt = this.bitmapLt;
-        var rt = this.bitmapRt;
-        var rb = this.bitmapRb;
-        var lb = this.bitmapLb;
+        const prevScale = this.scale.x;
+        this.scale.x = scale;
+        this.scale.y = scale;
+        this.updateTransform();
 
-        lt.x *= scale;
-        lt.y *= scale;
-        rt.x *= scale;
-        rt.y *= scale;
-        rb.x *= scale;
-        rb.y *= scale;
-        lb.x *= scale;
-        lb.y *= scale;
+        const lt = this.lt.clone();
+        const rt = this.rt.clone();
+        const rb = this.rb.clone();
+        const lb = this.lb.clone();
 
-        lt = this.toGlobal(lt);
-        rt = this.toGlobal(rt);
-        rb = this.toGlobal(rb);
-        lb = this.toGlobal(lb);
+        this.scale.x = prevScale;
+        this.scale.y = prevScale;
+
+        // TODO 디버그 삭제 Painter
+        //Painter.drawPointsByPoints(window.g, new CollisionRectangle(lt, rt, rb, lb), false, 1);
 
         return new CollisionRectangle(lt, rt, rb, lb);
     }

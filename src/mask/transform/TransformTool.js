@@ -380,6 +380,10 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     }
 
 
+    /**
+     * 스케일 방법이 하나만 있으면 되어서 사용 안함
+     * @param event
+     */
     scaleCorner(event)
     {
         const target = event.target;
@@ -392,10 +396,8 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         const size = PointUtil.subtract(localControlPoint, localCenterPoint);
         const width = size.x * 2;
         const height = size.y * 2;
-
-        var scaleX = (this.targetScaleX + (vector.x / width)) * this.targetFlipScale.x;
-        var scaleY = (this.targetScaleY + (vector.y / height)) * this.targetFlipScale.y;
-
+        var scaleX = (1 + (vector.x / width)) * this.targetFlipScale.x;
+        var scaleY = (1 + (vector.y / height)) * this.targetFlipScale.y;
         const absScaleX = Math.abs(scaleX);
         const absScaleY = Math.abs(scaleY);
         const opScaleX = scaleX > 0 ? 1 : -1;
@@ -408,14 +410,15 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             scaleX = absScaleY * opScaleX;
         }
 
-        const rect = this.target.getScaledRect(scaleX);
-        //const rect = this.target.getScaledRect(scaleX - this.target.scale.x);
-        //Painter.drawRectByPoints(window.g, rect, true, 5);
-        //console.log('diff[', scaleX - this.target.scale.x, scaleY - this.target.scale.y, ']', 'scale[', scaleX, scaleY, ']');
         this.target.scale = {x: scaleX, y: scaleY};
     }
 
 
+    /**
+     * 스케일링 합니다.
+     * @param event
+     * @param isScaleHorizontal
+     */
     scaleMiddle(event, isScaleHorizontal = true)
     {
         const target = event.target;
@@ -442,12 +445,12 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             scaleX = scaleY;
         }
 
-        const rect = this.target.getScaledRect(scaleX);
-        //const rect = this.target.getScaledRect(scaleX - this.target.scale.x);
-        //Painter.drawRectByPoints(window.g, rect, true, 5);
+        const isMaskScaling = this.target instanceof Mask;
+        const collisionVO = CollisionManager.virtualScaleCollisionCheck(scaleX, isMaskScaling);
 
-        //console.log('diff[', scaleX - this.target.scale.x, scaleY - this.target.scale.y, ']', 'scale[', scaleX, scaleY, ']');
-        this.target.scale = {x: scaleX, y: scaleY};
+        if (collisionVO.type === CollisionType.NONE) {
+            this.target.scale = {x: scaleX, y: scaleY};
+        }
     }
 
 
@@ -502,12 +505,12 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             case ToolControlType.TOP_RIGHT:
             case ToolControlType.BOTTOM_LEFT:
             case ToolControlType.BOTTOM_RIGHT:
-                this.scaleCorner(event);
+                this.scaleMiddle(event);
                 break;
 
             case ToolControlType.MIDDLE_LEFT:
             case ToolControlType.MIDDLE_RIGHT:
-                this.scaleMiddle(event, true);
+                this.scaleMiddle(event);
                 break;
 
             case ToolControlType.TOP_CENTER:

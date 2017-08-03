@@ -6,13 +6,6 @@ import CollisionType from './../consts/CollisionType';
 import Echo from './../debug/Echo';
 
 
-/**
- * 충돌시 여백을 주지 않으면 부드럽게 움직이지 못하기 때문에 약간의 공간을 줍니다.
- * @type {number}
- */
-const collisinoSpace = 0.0;
-
-
 export default class CollisionManager
 {
     /**
@@ -69,32 +62,7 @@ export default class CollisionManager
      */
     static virtualRotateCollisionCheck(rotation)
     {
-        const lt = this.backgroundImage.lt;
-        const rt = this.backgroundImage.rt;
-        const rb = this.backgroundImage.rb;
-        const lb = this.backgroundImage.lb;
-
-        console.log('\n' + Calc.toDegrees(rotation) +' ---------------------------------------------------------');
-        console.log('BackgroundImage[',
-            Echo._digit(lt.x), Echo._digit(lt.y), ',',
-            Echo._digit(rt.x), Echo._digit(rt.y), ',',
-            Echo._digit(rb.x), Echo._digit(rb.y), ',',
-            Echo._digit(lb.x), Echo._digit(lb.y),
-            ']');
-
-        const rotatedRect = this.backgroundImage.getRotatedRect(rotation);
-        const rlt = rotatedRect.lt;
-        const rrt = rotatedRect.rt;
-        const rrb = rotatedRect.rb;
-        const rlb = rotatedRect.lb;
-        console.log('RotatedRect[',
-            Echo._digit(rlt.x), Echo._digit(rlt.y), ',',
-            Echo._digit(rrt.x), Echo._digit(rrt.y), ',',
-            Echo._digit(rrb.x), Echo._digit(rrb.y), ',',
-            Echo._digit(rlb.x), Echo._digit(rlb.y),
-            ']');
-
-        return this.getFixPosition(this.mask.collisionRect, rotatedRect, rotation);
+        return this.getFixPosition(this.mask.collisionRect, this.backgroundImage.getRotatedRect(rotation), rotation);
     }
 
 
@@ -103,14 +71,31 @@ export default class CollisionManager
      *
      * @param scale
      */
-    static virtualScaleCollisionCheck(scale)
+
+    /**
+     *
+     * @param scale 변화하고자 하는 스케일
+     * @param isMaskScaling
+     * @returns {CollisionVO|*}
+     */
+    static virtualScaleCollisionCheck(scale, isMaskScaling = true)
     {
-        //
+        var mask, back, rotation = this.backgroundImage.rotation;
+
+        if (isMaskScaling === true) {
+            mask = this.mask.getScaledRect(scale);
+            back = this.back.collisionRect;
+        } else {
+            mask = this.mask.collisionRect;
+            back = this.back.getScaledRect(scale);
+        }
+
+        return this.getFixPosition(mask, back, rotation);
     }
 
 
     /**
-     * 현재 상태에서 충돌 결과 값을 반환합니다.
+     * 현재 상태에서 충돌 결과를 반환합니다.
      */
     static getCollisionVO()
     {
@@ -151,110 +136,25 @@ export default class CollisionManager
 
         if (ml < bl) {
             this.vo.type = CollisionType.LEFT;
-            this.vo.offsetX = (bl - ml) + collisinoSpace;
+            this.vo.offsetX = (bl - ml);
         }
 
         if (mr > br) {
             this.vo.type = CollisionType.RIGHT;
-            this.vo.offsetX = (br - mr) - collisinoSpace;
+            this.vo.offsetX = (br - mr);
         }
 
         if (mt < bt) {
             this.vo.type = CollisionType.TOP;
-            this.vo.offsetY = (bt - mt) + collisinoSpace;
+            this.vo.offsetY = (bt - mt);
         }
 
         if (mb > bb) {
             this.vo.type = CollisionType.BOTTOM;
-            this.vo.offsetY = (bb - mb) - collisinoSpace;
+            this.vo.offsetY = (bb - mb);
         }
 
         return this.vo;
-    }
-
-
-
-    /**
-     * 충돌을 감지하고 충돌시 움직임을 수정합니다.
-     * @param isMaskMoving 마스크 객체가 이동하는지 여부
-     */
-
-    /*
-    static hitTest(isMaskMoving = true)
-    {
-        const mask = this.mask;
-        const back = this.backgroundImage;
-
-        const rotation = -back.rotation;
-        const maskRect = mask.getRotatedRect(rotation);
-        const backRect = back.getRotatedRect(rotation);
-
-        const ml = maskRect.left;
-        const mr = maskRect.right;
-        const mt = maskRect.top;
-        const mb = maskRect.bottom;
-
-        const bl = backRect.left;
-        const br = backRect.right;
-        const bt = backRect.top;
-        const bb = backRect.bottom;
-
-        Painter.drawRectByBounds(window.g, {
-            x: ml,
-            y: mt,
-            width: mr - ml,
-            height: mb - mt
-        }, true, 2, 0x00FF00);
-
-        Painter.drawRectByBounds(window.g, {
-            x: bl,
-            y: bt,
-            width: br - bl,
-            height: bb - bt
-        }, false, 2);
-
-
-        if (isMaskMoving) {
-            if (ml < bl) {
-                mask.x += (bl - ml);
-            }
-
-            if (mt < bt) {
-                mask.y += (bt - mt);
-            }
-
-            if (mb > bb) {
-                mask.y += (bb - mb);
-            }
-
-            if (mr > br) {
-                mask.x += (br - mr);
-            }
-        }
-        else {
-            if (bl > ml) {
-                back.x += (ml - bl);
-            }
-
-            if (bt > mt) {
-                back.y += (mt - bt);
-            }
-
-            if (mb > bb) {
-                back.y += (mb - bb);
-            }
-
-            if (mr > br) {
-                back.x += (mr - br);
-            }
-        }
-    }
-    */
-
-
-    static test()
-    {
-        //CollisionManager.drawBounds();
     }
 
 
