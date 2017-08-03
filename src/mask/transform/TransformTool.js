@@ -458,7 +458,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     {
         const change = event.targetChangeMovement;
         const isMaskMoving = this.target instanceof Mask;
-        var collisionVO = CollisionManager.move(change.x, change.y, isMaskMoving);
+        var collisionVO = CollisionManager.virtualMoveCollisionCheck(change.x, change.y, isMaskMoving);
         const tx = this.target.x + change.x;
         const ty = this.target.y + change.y;
 
@@ -806,20 +806,9 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             return;
         }
 
-        var useCrop = false;
-        var isImageRotated = false;
-        const photoEditor = this.stageLayer;
+        const rotation = this.target.rotation + event.changeRadian;
 
-        // 자르기 메뉴를 사용하지는 체크
-        if (photoEditor.crop) {
-            useCrop = true;
-            isImageRotated = photoEditor.crop.isImageRotated || false;
-        }
-
-        // 자르기 메뉴를 사용하지 않는 경우는 스냅기능 모두 허용
-        // 자르기 메뉴를 사용할 경우 스테이지가 회전되었을 때는 스냅기능을 사용하지 않습니다. (추후 기능 추가)
-        /*if (this.useSnap == true && isImageRotated == false) {
-            const rotation = this.target._rotation + event.changeRadian;
+        if (this.useSnap == true) {
             const angle = Calc.toDegrees(rotation);
             const absAngle = Math.round(Math.abs(angle) % 90);
 
@@ -833,68 +822,53 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         } else {
             this.target.rotation += event.changeRadian;
             this.target._rotation = this.target.rotation;
-        }*/
+        }
 
 
-        if (this.useSnap == true && isImageRotated == false) {
-            /*const rotation = this.target._rotation + event.changeRadian;
-            const angle = Calc.toDegrees(rotation);
-            const absAngle = Math.round(Math.abs(angle) % 90);
+        // 현재 상태의 충돌 상태 반환
+        const collisionVO = CollisionManager.getCollisionVO();
 
-            if (absAngle < this._startSnapAngle || absAngle > this._endSnapAngle) {
-                this.target._rotation = Calc.toRadians(Calc.snapTo(angle, 90));
-            } else {
-                this.target._rotation = rotation;
-            }*/
-        } else {
-            const rotation = this.target.rotation + event.changeRadian;
-            const collisionVO = CollisionManager.rotate(rotation);
+        // 충돌하였으면 확대
+        if (collisionVO.type !== CollisionType.NONE) {
+            var increase, increaseX = 0, increaseY = 0;
 
-            // 충돌하지 않았으면 회전
-            if (collisionVO.type === CollisionType.NONE) {
-                this.target.rotation = rotation;
-                this.target._rotation = rotation;
+            switch (collisionVO.type) {
+                case CollisionType.LEFT:
+                case CollisionType.RIGHT:
+                    increase = Math.abs(collisionVO.offsetX) + 1;
+                    increaseX += increase;
+                    this.target.width += increase;
+                    break;
+
+                case CollisionType.TOP:
+                case CollisionType.BOTTOM:
+                    increase = Math.abs(collisionVO.offsetY) + 1;
+                    increaseY += increase;
+                    this.target.height += increase;
+                    break;
+            }
+
+            if(increaseX > increaseY) {
+                this.target.scale.y = this.target.scale.x;
             }
             else {
-                var increase, increaseX = 0, increaseY = 0;
-
-                switch (collisionVO.type) {
-                    case CollisionType.LEFT:
-                    case CollisionType.RIGHT:
-                        increase = Math.abs(collisionVO.offsetX) + 1;
-                        increaseX += increase;
-                        this.target.width += increase;
-                        break;
-
-                    case CollisionType.TOP:
-                    case CollisionType.BOTTOM:
-                        increase = Math.abs(collisionVO.offsetY) + 1;
-                        increaseY += increase;
-                        this.target.height += increase;
-                        break;
-                }
-
-                if(increaseX > increaseY) {
-                    this.target.scale.y = this.target.scale.x;
-                }
-                else {
-                    this.target.scale.x = this.target.scale.y;
-                }
+                this.target.scale.x = this.target.scale.y;
             }
-
-            const target = this.target;
-            const lt = target.lt;
-            const rt = target.rt;
-            const rb = target.rb;
-            const lb = target.lb;
-
-            console.log(collisionVO.type.toUpperCase(), 'Result[',
-                Echo._digit(lt.x), Echo._digit(lt.y), ',',
-                Echo._digit(rt.x), Echo._digit(rt.y), ',',
-                Echo._digit(rb.x), Echo._digit(rb.y), ',',
-                Echo._digit(lb.x), Echo._digit(lb.y),
-                ']');
         }
+
+        // TODO Debug
+        const target = this.target;
+        const lt = target.lt;
+        const rt = target.rt;
+        const rb = target.rb;
+        const lb = target.lb;
+
+        console.log(collisionVO.type.toUpperCase(), 'Result[',
+            Echo._digit(lt.x), Echo._digit(lt.y), ',',
+            Echo._digit(rt.x), Echo._digit(rt.y), ',',
+            Echo._digit(rb.x), Echo._digit(rb.y), ',',
+            Echo._digit(lb.x), Echo._digit(lb.y),
+            ']');
 
         //console.log('rotation', Calc.toDegrees(this.target._rotation));
         //Painter.drawRectByPoints(window.g, this.target.getRotatedRect(Calc.toDegrees(event.changeRadian)), true, 5);

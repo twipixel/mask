@@ -40,12 +40,12 @@ export default class CollisionManager
 
 
     /**
-     *
+     * 미리 이동 시켜보고 충돌여부와 offset 값을 반환합니다.
      * @param changeX 이동한 x값
      * @param changeY 이동한 y값
      * @param isMaskMoving 마스크가 이동했는지 여부
      */
-    static move(changeX, changeY, isMaskMoving = true)
+    static virtualMoveCollisionCheck(changeX, changeY, isMaskMoving = true)
     {
         var maskCollisionRect, backCollisionRect;
 
@@ -63,22 +63,12 @@ export default class CollisionManager
 
 
     /**
-     * TransformTool.onRotate 에서 사용
-     * 회전을 시켜보고 출돌이 나면 회전 되지 않도록 처리하기 위해 충돌 부분만 분리
-     *
+     * 미리 회전 시켜보고 충돌여부와 offset 값을 반환합니다.
      * @param rotation 현재 회전 각도 (라디안)
      * @returns {CollisionVO|*}
      */
-    static rotate(rotation)
+    static virtualRotateCollisionCheck(rotation)
     {
-        /**
-         * 프로세스
-         * 1. backgroundImage를 미리 회전 시킨 사각형 구하기
-         * 2. 회전된 backgroundImage CollisionRect 구하기
-         * 3. Mask CollisionRect 구하기
-         * 4. 충돌 확인
-         */
-
         const lt = this.backgroundImage.lt;
         const rt = this.backgroundImage.rt;
         const rb = this.backgroundImage.rb;
@@ -107,9 +97,24 @@ export default class CollisionManager
         return this.getFixPosition(this.mask.collisionRect, rotatedRect, rotation);
     }
 
-    static scale(scale)
+
+    /**
+     * 미리 스케일링하고 충돌여부와 offset 값을 반환합니다.
+     *
+     * @param scale
+     */
+    static virtualScaleCollisionCheck(scale)
     {
         //
+    }
+
+
+    /**
+     * 현재 상태에서 충돌 결과 값을 반환합니다.
+     */
+    static getCollisionVO()
+    {
+        return this.getFixPosition(this.mask.collisionRect, this.back.collisionRect, this.back.rotation);
     }
 
 
