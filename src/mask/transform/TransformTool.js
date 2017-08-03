@@ -16,7 +16,9 @@ import Painter from './../utils/Painter';
 
 
 
+
 const dragRange = 10;
+const rotateSpace = 1;
 const collection = {tl: null, tr: null, tc: null, bl: null, br: null, bc: null, ml: null, mr: null, mc: null, rtl: null, rtc: null, rtr: null, rml: null, rmr: null, rbl: null, rbc: null, rbr: null};
 
 
@@ -834,15 +836,23 @@ export default class TransformTool extends PIXI.utils.EventEmitter
 
             switch (collisionVO.type) {
                 case CollisionType.LEFT:
+                case CollisionType.LEFT_TOP:
+                case CollisionType.LEFT_BOTTOM:
                 case CollisionType.RIGHT:
-                    increase = Math.abs(collisionVO.offsetX) + 1;
+                case CollisionType.RIGHT_TOP:
+                case CollisionType.RIGHT_BOTTOM:
+                    increase = Math.abs(collisionVO.offsetX) + rotateSpace;
                     increaseX += increase;
                     this.target.width += increase;
                     break;
 
                 case CollisionType.TOP:
+                case CollisionType.LEFT_TOP:
+                case CollisionType.RIGHT_TOP:
                 case CollisionType.BOTTOM:
-                    increase = Math.abs(collisionVO.offsetY) + 1;
+                case CollisionType.LEFT_BOTTOM:
+                case CollisionType.RIGHT_BOTTOM:
+                    increase = Math.abs(collisionVO.offsetY) + rotateSpace;
                     increaseY += increase;
                     this.target.height += increase;
                     break;
