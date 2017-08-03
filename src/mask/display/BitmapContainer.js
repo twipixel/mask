@@ -6,6 +6,7 @@ import CollisionRectangle from './CollisionRectangle';
 
 // TEST
 import Painter from './../utils/Painter';
+import Echo from './../debug/Echo';
 
 
 export default class BitmapContainer extends PIXI.Container
@@ -466,26 +467,23 @@ export default class BitmapContainer extends PIXI.Container
     /**
      * 충돌 검사 시 직접 회전 시키지 않고 미리 회전 시킨
      * 바운드로 가지고 충돌 검사를합니다. (Global 좌표로 봔환)
-     * @param changeAngle rotation (라디안)
+     * @param rotation rotation (라디안)
      * @returns {CollisionRectangle}
      */
-    getRotatedRect(changeAngle)
+    getRotatedRect(rotation)
     {
-        var lt = this.lt;
-        var rt = this.rt;
-        var rb = this.rb;
-        var lb = this.lb;
-        const pivot = this.globalPivot;
+        const prevRotation = this.rotation;
+        this.rotation = rotation;
 
-        const angle = changeAngle + 10;
-
-        lt = Calc.getRotationPointWithPivot(pivot, lt, angle);
-        rt = Calc.getRotationPointWithPivot(pivot, rt, angle);
-        rb = Calc.getRotationPointWithPivot(pivot, rb, angle);
-        lb = Calc.getRotationPointWithPivot(pivot, lb, angle);
+        this.updateTransform();
+        const lt = this.lt.clone();
+        const rt = this.rt.clone();
+        const rb = this.rb.clone();
+        const lb = this.lb.clone();
+        this.rotation = prevRotation;
 
         // TODO 디버그 삭제 Painter
-        Painter.drawPointsByPoints(window.g, new CollisionRectangle(lt, rt, rb, lb), false, 1);
+        //Painter.drawPointsByPoints(window.g, new CollisionRectangle(lt, rt, rb, lb), false, 1);
 
         return new CollisionRectangle(lt, rt, rb, lb);
     }

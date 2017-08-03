@@ -67,10 +67,9 @@ export default class CollisionManager
      * 회전을 시켜보고 출돌이 나면 회전 되지 않도록 처리하기 위해 충돌 부분만 분리
      *
      * @param rotation 현재 회전 각도 (라디안)
-     * @param changeAngle 변화한 각도 (디그리)
      * @returns {CollisionVO|*}
      */
-    static rotate(rotation, changeAngle)
+    static rotate(rotation)
     {
         /**
          * 프로세스
@@ -84,31 +83,21 @@ export default class CollisionManager
         const rt = this.backgroundImage.rt;
         const rb = this.backgroundImage.rb;
         const lb = this.backgroundImage.lb;
-        console.log('BACK[',
+
+        console.log('\n' + Calc.toDegrees(rotation) +' ---------------------------------------------------------');
+        console.log('BackgroundImage[',
             Echo._digit(lt.x), Echo._digit(lt.y), ',',
             Echo._digit(rt.x), Echo._digit(rt.y), ',',
             Echo._digit(rb.x), Echo._digit(rb.y), ',',
             Echo._digit(lb.x), Echo._digit(lb.y),
             ']');
 
-        const collision = this.backgroundImage.collisionRect;
-        const clt = collision.lt;
-        const crt = collision.rt;
-        const crb = collision.rb;
-        const clb = collision.lb;
-        console.log('COLI[',
-            Echo._digit(clt.x), Echo._digit(clt.y), ',',
-            Echo._digit(crt.x), Echo._digit(crt.y), ',',
-            Echo._digit(crb.x), Echo._digit(crb.y), ',',
-            Echo._digit(clb.x), Echo._digit(clb.y),
-            ']');
-
-        const rotatedRect = this.backgroundImage.getRotatedRect(changeAngle);
+        const rotatedRect = this.backgroundImage.getRotatedRect(rotation);
         const rlt = rotatedRect.lt;
         const rrt = rotatedRect.rt;
         const rrb = rotatedRect.rb;
         const rlb = rotatedRect.lb;
-        console.log('ROTA[',
+        console.log('RotatedRect[',
             Echo._digit(rlt.x), Echo._digit(rlt.y), ',',
             Echo._digit(rrt.x), Echo._digit(rrt.y), ',',
             Echo._digit(rrb.x), Echo._digit(rrb.y), ',',
@@ -174,10 +163,6 @@ export default class CollisionManager
             this.vo.type = CollisionType.BOTTOM;
             this.vo.offsetY = (bb - mb) - collisinoSpace;
         }
-
-        // TODO 테스트 코드
-        this.vo.mask = mask;
-        this.vo.back = backgroundImage;
 
         return this.vo;
     }
