@@ -122,4 +122,14 @@ export default class CollisionRectangle
     {
         return new PIXI.Rectangle(this.left, this.top, this.right - this.left, this.bottom - this.top);
     }
+
+
+    /**
+     * 면적
+     */
+    get area()
+    {
+        const bounds = this.bounds;
+        return bounds.width * bounds.height;
+    }
 }

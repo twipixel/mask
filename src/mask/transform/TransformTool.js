@@ -443,41 +443,44 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             scaleX = scaleY;
         }
 
-        const isBigger = this.targetScaleX < scaleX;
-        const isSmaller = this.targetScaleX > scaleX;
-
-        //this.target.scale = {x: scaleX, y: scaleY};
-        //const collisionVO = CollisionManager.getCollisionVO();
-
         const isMaskScaling = this.target instanceof Mask;
-        const collisionVO = CollisionManager.virtualScaleCollisionCheck(scaleX, isMaskScaling);
 
-        console.log('\n isMaskScaling', isMaskScaling, 'scale[', scaleX, scaleY, '], isBigger', isBigger, 'isSmaller', isSmaller);
+        // 오차가 약 0.06 정도 발생합니다
+        const collisionVO = CollisionManager.virtualScaleCollisionCheck(scaleX, isMaskScaling, 0);
 
-        if (collisionVO.type === CollisionType.NONE) {
-            this.target.scale = {x: scaleX, y: scaleY};
-        }
-        else {
-            // 부딪쳤으면 딱 맞는 스케일을 반환해서 처리
+        console.log('[' + collisionVO.type.toUpperCase() + ']', 'fitScale', this.fitScale, 'scale:', scaleX, 'target[', this.target.width, ',', this.target.height, ']');
 
-            var unCollisionScale = this.targetScaleX;
-            for (var i = this.targetScaleX; i < scaleX; i += 0.01) {
-                const vo = CollisionManager.virtualScaleCollisionCheck(i, isMaskScaling);
-                console.log(i, vo.type);
-
-                if (i === this.targetScaleX || vo.type === CollisionType.NONE) {
-                    unCollisionScale = i;
+        if (isMaskScaling === true) {
+            // scaleX < this.fitScale 조건은 오차 발생으로 덜덜 떨리는 현상을 방지하기 위함입니다.
+            if (collisionVO.type === CollisionType.NONE && scaleX < this.fitScale) {
+                this.target.scale = {x: scaleX, y: scaleY};
+            }
+            else {
+                if (scaleX < this.fitScale) {
+                    // fitScale 이하는 스케일 반영
+                    this.target.scale = {x: scaleX, y: scaleX}
                 }
                 else {
-
-                    console.log('!!!!!!! unCollisionScale', unCollisionScale);
-                    break;
+                    // fitScale 이상은 fitScale 처리
+                    this.target.scale = {x: this.fitScale, y: this.fitScale};
                 }
             }
-
-            this.target.scale.x = unCollisionScale;
-            this.target.scale.y = unCollisionScale;
-
+        }
+        else {
+            // scaleX < this.fitScale 조건은 오차 발생으로 덜덜 떨리는 현상을 방지하기 위함입니다.
+            if (collisionVO.type === CollisionType.NONE && scaleX > this.fitScale) {
+                this.target.scale = {x: scaleX, y: scaleY};
+            }
+            else {
+                if (scaleX > this.fitScale) {
+                    // fitScale 이하는 스케일 반영
+                    this.target.scale = {x: scaleX, y: scaleX}
+                }
+                else {
+                    // fitScale 이상은 fitScale 처리
+                    this.target.scale = {x: this.fitScale, y: this.fitScale};
+                }
+            }
         }
     }
 
@@ -913,6 +916,15 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         this.targetScaleY = this.target.scale.y;
         this.startMousePoint = new PIXI.Point(event.currentMousePoint.x, event.currentMousePoint.y);
         this.selectedControl = event.target;
+
+        // 스케일 조절 컨트롤이면 충돌시 스케일 값을 미리 구합니다.
+        if (this.selectedControl.type !== ToolControlType.MIDDLE_CENTER) {
+            this.fitScale = CollisionManager.getFitScale(this.target);
+            console.log('---------------------------------------------------------');
+            console.log('FitScale', this.fitScale);
+            console.log('---------------------------------------------------------');
+        }
+
         this.setPivotByTarget(this.target);
         this.updatePrevTargetLt();
         this.enableCurrentStyleCursor();
