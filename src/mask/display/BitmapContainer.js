@@ -520,7 +520,6 @@ export default class BitmapContainer extends PIXI.Container
 
     getScale(width = 0, height = 0)
     {
-        //console.log('BEFORE', 'scale[', this.scale.x, this.scale.y, ']', 'getScale(', width, ',', height, ')', 'target[', this.width, ',', this.height, ']');
         const prevWidth = this.width;
         const prevHeight = this.height;
         this.width = width;
@@ -529,7 +528,6 @@ export default class BitmapContainer extends PIXI.Container
 
         const scaleX = this.scale.x;
         const scaleY = this.scale.y;
-        //console.log('AFTER', 'scale[', scaleX, ',', scaleY, '], target[', this.width, ',', this.height, ']');
         this.width = prevWidth;
         this.height = prevHeight;
         return {scaleX: scaleX, scaleY: scaleY};

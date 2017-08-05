@@ -1,3 +1,4 @@
+import MaskVO from './../vo/MaskVO';
 
 
 var instance = null;
@@ -26,35 +27,25 @@ export default class DatGuiData
      */
     initialize(options)
     {
-        const maskURL = options.maskURL;
-
-        if (maskURL) {
-            for (var prop in this.maskList) {
-                const value = this.maskList[prop];
-                //const url = value.split('/');
-                //const fileName = url[url.length - 1];
-
-                if (maskURL === value) {
-                    this.mask = value;
-                }
-            }
-        }
-        else {
-            this.mask = './../assets/img/mask-triangle@3x.png';
-        }
+        /**
+         * MaskVO.setTestData(index)에 사용할 index
+         * 기본값 삼각형
+         * @type {number}
+         */
+        this.maskDataIndex = 1;
     }
 
 
     get maskList()
     {
         return {
-            TRIANGLE: './../assets/img/mask-triangle@3x.png',
-            CIRCLE: './../assets/img/mask-oval@3x.png',
-            POLYGON: './../assets/img/mask-polygon@3x.png',
-            STAR_1: './../assets/img/mask-star@3x.png',
-            STAR_2: './../assets/img/mask-star-2@3x.png',
-            ROUND_SQURE: './../assets/img/mask-round-squre@3x.png',
-            ROUND_STAR: './../assets/img/mask-round-star@3x.png'
+            CIRCLE: 0,
+            TRIANGLE: 1,
+            ROUND_SQURE: 2,
+            POLYGON: 3,
+            STAR_1: 4,
+            STAR_2: 5,
+            ROUND_STAR: 6
         };
     }
 }

@@ -46,9 +46,9 @@ export default class DatGui extends PIXI.utils.EventEmitter
         const maskSelect = this.maskSelect = gui.addFolder('MASK SELECT');
 
         // add(data instance, property name, property value);
-        const maskSelectControl = maskSelect.add(data, 'mask', data.maskList).listen();
-        maskSelectControl.onFinishChange((maskURL) => {
-            this.emit(DatGui.CHAGE_MASK, maskURL);
+        const maskSelectControl = maskSelect.add(data, 'maskDataIndex', data.maskList).listen();
+        maskSelectControl.onFinishChange((maskTestDataIndex) => {
+            this.emit(DatGui.CHAGE_MASK, maskTestDataIndex);
         });
         maskSelect.open();
     }

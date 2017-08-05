@@ -7,6 +7,7 @@ import DimmedMask from './display/DimmedMask';
 import BackgroundImage from './display/BackgroundImage';
 import TransformTool from './transform/TransformTool';
 import CollisionManager from './manager/CollisionManager';
+import MaskVO from './vo/MaskVO';
 import {clone} from './utils/util';
 
 
@@ -29,8 +30,18 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.maskLayer = maskLayer;
         this.options = options;
 
-        // TEST 코드 추가
-        this.options.maskURL = './../assets/img/mask-triangle@3x.png';
+
+        // TODO TEST 코드
+        const maskVO = new MaskVO();
+        //maskVO.setTestData(0);  //원
+        maskVO.setTestData(1);  //삼각
+        //maskVO.setTestData(2);  //둥근사각
+        //maskVO.setTestData(3);  //다각
+        //maskVO.setTestData(4);  //별1
+        //maskVO.setTestData(5);  //별2
+        //maskVO.setTestData(6);  //둥근별
+
+        this.options.maskVO = maskVO;
 
         this.initialize(options);
     }
@@ -72,10 +83,14 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     }
 
 
-    createMask(url)
+    /**
+     * 마스크 생성
+     * @param maskVO {MaskVO}
+     */
+    createMask(maskVO)
     {
-        if (url) {
-            const mask = this.mask = new Mask(url);
+        if (maskVO) {
+            const mask = this.mask = new Mask(maskVO);
             this._imageReadyListener = this.onMaskImageRady.bind(this);
             mask.on(Bitmap.READY, this._imageReadyListener);
 
@@ -98,7 +113,11 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     }
 
 
-    changeMask(url)
+    /**
+     * 마스크 변경
+     * @param maskVO {MaskVO}
+     */
+    changeMask(maskVO)
     {
         if (this.transformTool) {
             this.transformTool.releaseTarget();
@@ -106,7 +125,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
         this.dimmedMask.stopRender();
         this.removeMask();
-        this.createMask(url);
+        this.createMask(maskVO);
     }
 
 
@@ -223,21 +242,12 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.backgroundImage.on(TransformTool.TRANSFORM_COMPLETE, this._backgroundImageTransformCompleteListener);
 
         // 마스크 생성
-        this.createMask(this.options.maskURL);
+        this.createMask(this.options.maskVO);
     }
 
 
     onMaskImageRady()
     {
-        console.log('onMaskImageReady!');
-
-        /**
-         * TODO 최대/기본/최소 사이즈 처리 필요
-         * @type {*|PIXI.Rectangle}
-         */
-        const maskDefaultSize = new PIXI.Rectangle(0, 0, 300, 300);
-        this.mask.bitmapWidth = maskDefaultSize.width;
-        this.mask.bitmapHeight = maskDefaultSize.height;
         this.mask.x = Size.windowCenterX;
         this.mask.y = Size.windowCenterY;
         //this.mask.alpha = 0.0;
@@ -368,10 +378,16 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     }
 
 
-    onChangeMask(maskURL)
+    /**
+     * 마스크 교체
+     * @param maskTestDataIndex {Number} MaskVO.setTestData(index)에 사용할 index 넘버
+     */
+    onChangeMask(maskTestDataIndex)
     {
-        console.log('onChangeMask(', maskURL, ')');
-        this.changeMask(maskURL);
+        console.log('onChangeMask(', maskTestDataIndex, ')');
+        const maskVO = new MaskVO();
+        maskVO.setTestData(maskTestDataIndex);
+        this.changeMask(maskVO);
     }
 
 

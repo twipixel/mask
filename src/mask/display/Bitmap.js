@@ -1,6 +1,9 @@
 import ShapeFactory from './../factory/ShapeFactory';
 
 
+const pointRectSize = 0;
+
+
 export default class Bitmap extends PIXI.Container
 {
     static READY()
@@ -49,12 +52,11 @@ export default class Bitmap extends PIXI.Container
             this._originalImageHeight = this._image.height;
             this._originalImageSize = new PIXI.Rectangle(0, 0, this.originalImageWidth, this.originalImageHeight);
 
-            const size = 0;
             // leftTop, rightTop, rightBottom, leftBottom, registrationPoint 생성
-            this.lt = this.registrationPoint = ShapeFactory.getRectangle(0, 0, size);
-            this.rt = ShapeFactory.getRectangle(-size, 0, size);
-            this.rb = ShapeFactory.getRectangle(-size, -size, size);
-            this.lb = ShapeFactory.getRectangle(0, -size, size);
+            this.lt = this.registrationPoint = ShapeFactory.getRectangle(0, 0, pointRectSize);
+            this.rt = ShapeFactory.getRectangle(-pointRectSize, 0, pointRectSize);
+            this.rb = ShapeFactory.getRectangle(-pointRectSize, -pointRectSize, pointRectSize);
+            this.lb = ShapeFactory.getRectangle(0, -pointRectSize, pointRectSize);
             this.rt.x = this.rb.x = this._image.width;
             this.rb.y = this.lb.y = this._image.height;
             this.addChild(this.lt);

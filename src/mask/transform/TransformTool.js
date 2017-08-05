@@ -482,6 +482,8 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         }
 
         //console.log(collisionVO.type.toUpperCase(), scaleX, this.fitScale);
+
+        console.log('TARGET[', this.target.width, this.target.height, ']');
     }
 
 
