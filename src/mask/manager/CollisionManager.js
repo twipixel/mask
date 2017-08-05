@@ -113,9 +113,6 @@ export default class CollisionManager
         var offsetX = vo.offsetX * 2;
         var offsetY = vo.offsetY * 2;
 
-        console.log('\n[', type.toUpperCase(), ']', 'offset[', offsetX, ',', offsetY, ']');
-        console.log('---------------------------------------------------------');
-
         // 타겟이 마스크면 offset 만큼 커지면 되고 타겟이 배경이미지면 offset 만큼 작아지면 된다.
         if (isSelectMask === false) {
             target = this.backgroundImage;
@@ -130,32 +127,41 @@ export default class CollisionManager
             firstFitScale = target.getScale(0, target.height + offsetY).scaleY;
         }
 
-        var count = 0;
-        var step = 0.002;
-        var scaleRange = 0.3;
+        //console.log('----------------------------------------------------------------------------------');
+        //console.log('[' + type.toUpperCase() + ']', 'firstFitScale', firstFitScale, 'offset[', offsetX, ',', offsetY, ']');
+        //console.log('----------------------------------------------------------------------------------');
+
+        const step = 0.002;
+        const scaleRange = 0.3;
         var fitScale, startScale;
 
         if (isSelectMask) {
             // 마스크는 스케일을 키워가면서 충돌검사를 합니다.
             startScale = firstFitScale - scaleRange;
+
+            // 오차를 감안해서 스케일을 더 키워 검사합니다.
+            firstFitScale = firstFitScale + 1;
+
             for (var i = startScale; i < firstFitScale; i += step) {
                 if (this.virtualScaleCollisionCheck(i, isSelectMask, 0).type !== CollisionType.NONE) {
                     break;
                 }
                 fitScale = i;
-                count++;
             }
 
         }
         else {
             // 배경이미지는 스케일을 줄여가면서 충돌검사를 합니다.
             startScale = firstFitScale + scaleRange;
+
+            // 오차를 감안해서 스케일을 더 줄여 검사합니다.
+            firstFitScale = firstFitScale - 1;
+
             for (var i = startScale; i > firstFitScale; i -= step) {
                 if (this.virtualScaleCollisionCheck(i, isSelectMask, 0).type !== CollisionType.NONE) {
                     break;
                 }
                 fitScale = i;
-                count++;
             }
         }
 

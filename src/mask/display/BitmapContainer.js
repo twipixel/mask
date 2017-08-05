@@ -510,7 +510,6 @@ export default class BitmapContainer extends PIXI.Container
 
         this.scale.x = prevScale;
         this.scale.y = prevScale;
-        //this.updateTransform();
 
         // TODO 디버그 삭제 Painter
         //Painter.drawPointsByPoints(window.g, new CollisionRectangle(lt, rt, rb, lb), false, 1);
@@ -521,18 +520,18 @@ export default class BitmapContainer extends PIXI.Container
 
     getScale(width = 0, height = 0)
     {
-        console.log('BEFORE', 'scale[', this.scale.x, this.scale.y, ']', 'getScale(', width, ',', height, ')', 'target[', this.width, ',', this.height, ']');
+        //console.log('BEFORE', 'scale[', this.scale.x, this.scale.y, ']', 'getScale(', width, ',', height, ')', 'target[', this.width, ',', this.height, ']');
         const prevWidth = this.width;
         const prevHeight = this.height;
         this.width = width;
         this.height = height;
         this.updateTransform();
+
         const scaleX = this.scale.x;
         const scaleY = this.scale.y;
-        console.log('AFTER', 'scale[', scaleX, ',', scaleY, '], target[', this.width, ',', this.height, ']');
+        //console.log('AFTER', 'scale[', scaleX, ',', scaleY, '], target[', this.width, ',', this.height, ']');
         this.width = prevWidth;
         this.height = prevHeight;
-        //this.updateTransform();
         return {scaleX: scaleX, scaleY: scaleY};
 
     }
