@@ -456,13 +456,15 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             else {
                 if (scaleX < this.fitScale) {
                     // fitScale 이하는 스케일 반영
-                    this.target.scale = {x: scaleX, y: scaleX}
+                    this.target.scale = {x: scaleX, y: scaleX};
                 }
                 else {
                     // fitScale 이상은 fitScale 처리
                     this.target.scale = {x: this.fitScale, y: this.fitScale};
                 }
             }
+
+            this.target.checkMinMaxSize();
         }
         else {
             // scaleX > this.fitScale 조건은 오차 발생으로 덜덜 떨리는 현상을 방지하기 위함입니다.

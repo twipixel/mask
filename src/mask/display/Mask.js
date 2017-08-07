@@ -63,6 +63,24 @@ export default class Mask extends BitmapContainer
 
 
     /**
+     * 마스크의 경우 최소/최대 사이즈를 벗어나지 못하다도록 제한 합니다.
+     */
+    checkMinMaxSize()
+    {
+        const width = this.width;
+
+        if (width > this.maxSizeX) {
+            this.width = this.maxSizeX;
+            this.scale.y = this.scale.x;
+        }
+        else if (width < this.minSizeX) {
+            this.width = this.minSizeX;
+            this.scale.y = this.scale.x;
+        }
+    }
+
+
+    /**
      * 최대 사이즈 설정
      * @param value {String} 예) 500x500
      */
