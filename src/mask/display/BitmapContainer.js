@@ -153,7 +153,7 @@ export default class BitmapContainer extends PIXI.Container
         this.bitmap.width = value;
         this._bitmapHalfWidth = this.bitmap.width / 2;
         this.bitmap.x = -this.bitmapHalfWidth;
-        this.prevBitmapRegistrationPoint = this.bitmapLt;
+        this.prevBitmapRegistrationPoint = this.localLt;
     }
 
     get bitmapWidth()
@@ -180,7 +180,7 @@ export default class BitmapContainer extends PIXI.Container
         this.bitmap.height = value;
         this._bitmapHalfHeight = this.bitmap.height / 2;
         this.bitmap.y = -this.bitmapHalfHeight;
-        this.prevBitmapRegistrationPoint = this.bitmapLt;
+        this.prevBitmapRegistrationPoint = this.localLt;
     }
 
     get bitmapHeight()
@@ -207,7 +207,7 @@ export default class BitmapContainer extends PIXI.Container
     set bitmapRotation(radians)
     {
         this.rotation = radians;
-        const current = this.bitmapLt;
+        const current = this.localLt;
         const prev = this.prevBitmapRegistrationPoint;
         this.pivotOffset = new PIXI.Point(current.x - prev.x, current.y - prev.y);
     }
@@ -247,7 +247,7 @@ export default class BitmapContainer extends PIXI.Container
      */
     get lt()
     {
-        return this.toGlobal(this.bitmapLt);
+        return this.toGlobal(this.localLt);
     }
 
     /**
@@ -256,7 +256,7 @@ export default class BitmapContainer extends PIXI.Container
      */
     get rt()
     {
-        return this.toGlobal(this.bitmapRt);
+        return this.toGlobal(this.localRt);
     }
 
     /**
@@ -265,7 +265,7 @@ export default class BitmapContainer extends PIXI.Container
      */
     get rb()
     {
-        return this.toGlobal(this.bitmapRb);
+        return this.toGlobal(this.localRb);
     }
 
     /**
@@ -274,7 +274,7 @@ export default class BitmapContainer extends PIXI.Container
      */
     get lb()
     {
-        return this.toGlobal(this.bitmapLb);
+        return this.toGlobal(this.localLb);
     }
 
 
@@ -294,7 +294,7 @@ export default class BitmapContainer extends PIXI.Container
      * 비트맵 좌상단 포인트를 로컬 좌표로 반환합니다.
      * @returns {PIXI.Point}
      */
-    get bitmapLt()
+    get localLt()
     {
         return this.toLocal(this.bitmap.lt, this.bitmap);
     }
@@ -303,7 +303,7 @@ export default class BitmapContainer extends PIXI.Container
      * 비트맵 우상단 포인트를 로컬 좌표로 반환합니다.
      * @returns {PIXI.Point}
      */
-    get bitmapRt()
+    get localRt()
     {
         return this.toLocal(this.bitmap.rt, this.bitmap);
     }
@@ -312,7 +312,7 @@ export default class BitmapContainer extends PIXI.Container
      * 비트맵 우하단 포인트를 로컬 좌표로 반환합니다.
      * @returns {PIXI.Point}
      */
-    get bitmapRb()
+    get localRb()
     {
         return this.toLocal(this.bitmap.rb, this.bitmap);
     }
@@ -321,7 +321,7 @@ export default class BitmapContainer extends PIXI.Container
      * 비트맵 좌하단 포인트를 로컬 좌표로 반환합니다.
      * @returns {PIXI.Point}
      */
-    get bitmapLb()
+    get localLb()
     {
         return this.toLocal(this.bitmap.lb, this.bitmap);
     }
@@ -337,7 +337,7 @@ export default class BitmapContainer extends PIXI.Container
             return new PIXI.Point(0, 0);
         }
 
-        const bitmapRegistrationPoint = this.bitmapLt;
+        const bitmapRegistrationPoint = this.localLt;
 
         return new PIXI.Point(
             this.registrationPoint.x - bitmapRegistrationPoint.x,

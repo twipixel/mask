@@ -62,6 +62,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     initialize()
     {
         this.target = null;
+        this.isLimit = false;
         this.transform = new PIXI.Matrix();
         this.invertTransform = new PIXI.Matrix();
         this.g = this.graphics = new PIXI.Graphics();
@@ -448,37 +449,46 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         if (isMaskScaling === true) {
             // scaleX < this.fitScale 조건은 오차 발생으로 덜덜 떨리는 현상을 방지하기 위함입니다.
             if (collisionVO.type === CollisionType.NONE && scaleX < this.fitScale) {
+                this.isLimit = false;
                 this.target.scale = {x: scaleX, y: scaleY};
             }
             else {
                 if (scaleX < this.fitScale) {
+                    this.isLimit = false;
                     // fitScale 이하는 스케일 반영
                     this.target.scale = {x: scaleX, y: scaleX};
                 }
                 else {
+                    this.isLimit = true;
                     // fitScale 이상은 fitScale 처리
                     this.target.scale = {x: this.fitScale, y: this.fitScale};
                 }
             }
 
-            this.target.checkLimitSize();
+            const isMinMaxSize = this.target.checkLimitSize();
+            this.isLimit = (this.isLimit) ? this.isLimit : isMinMaxSize;
         }
         else {
             // scaleX > this.fitScale 조건은 오차 발생으로 덜덜 떨리는 현상을 방지하기 위함입니다.
             if (collisionVO.type === CollisionType.NONE && scaleX > this.fitScale) {
+                this.isLimit = false;
                 this.target.scale = {x: scaleX, y: scaleY};
             }
             else {
                 if (scaleX > this.fitScale) {
+                    this.isLimit = false;
                     // fitScale 이하는 스케일 반영
                     this.target.scale = {x: scaleX, y: scaleX}
                 }
                 else {
+                    this.isLimit = true;
                     // fitScale 이상은 fitScale 처리
                     this.target.scale = {x: this.fitScale, y: this.fitScale};
                 }
             }
         }
+
+        console.log('isLimit', this.isLimit);
     }
 
 
@@ -557,34 +567,80 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     {
         this.stageLayer.updateTransform();
 
-        const g = this.g;
-        g.visible = true;
+        let globalPoints;
 
         const transform = this.target.worldTransform.clone();
 
-        const globalPoints = {
-            de: this.deleteButtonPosition,
-            //ro: this.rotateControlPosition,
-            tl: transform.apply(this.c.tl.localPoint),
-            tr: transform.apply(this.c.tr.localPoint),
-            tc: transform.apply(this.c.tc.localPoint),
-            bl: transform.apply(this.c.bl.localPoint),
-            br: transform.apply(this.c.br.localPoint),
-            bc: transform.apply(this.c.bc.localPoint),
-            ml: transform.apply(this.c.ml.localPoint),
-            mr: transform.apply(this.c.mr.localPoint),
-            mc: transform.apply(this.c.mc.localPoint),
-            rde: this.deleteButtonPosition,
-            rtl: transform.apply(this.c.rtl.localPoint),
-            rtc: transform.apply(this.c.rtc.localPoint),
-            rtr: transform.apply(this.c.rtr.localPoint),
-            rml: transform.apply(this.c.rml.localPoint),
-            rmr: transform.apply(this.c.rmr.localPoint),
-            rbl: transform.apply(this.c.rbl.localPoint),
-            rbc: transform.apply(this.c.rbc.localPoint),
-            rbr: transform.apply(this.c.rbr.localPoint)
-        };
+        if (this.isLimit === false) {
 
+            globalPoints = {
+                de: this.deleteButtonPosition,
+                //ro: this.rotateControlPosition,
+                tl: transform.apply(this.c.tl.localPoint),
+                tr: transform.apply(this.c.tr.localPoint),
+                tc: transform.apply(this.c.tc.localPoint),
+                bl: transform.apply(this.c.bl.localPoint),
+                br: transform.apply(this.c.br.localPoint),
+                bc: transform.apply(this.c.bc.localPoint),
+                ml: transform.apply(this.c.ml.localPoint),
+                mr: transform.apply(this.c.mr.localPoint),
+                mc: transform.apply(this.c.mc.localPoint),
+                rde: this.deleteButtonPosition,
+                rtl: transform.apply(this.c.rtl.localPoint),
+                rtc: transform.apply(this.c.rtc.localPoint),
+                rtr: transform.apply(this.c.rtr.localPoint),
+                rml: transform.apply(this.c.rml.localPoint),
+                rmr: transform.apply(this.c.rmr.localPoint),
+                rbl: transform.apply(this.c.rbl.localPoint),
+                rbc: transform.apply(this.c.rbc.localPoint),
+                rbr: transform.apply(this.c.rbr.localPoint)
+            };
+        }
+        else {
+
+
+            const w = this.target.width;
+            const h = this.target.height;
+            const tl = this.target.lt;
+            const tr = this.target.rt;
+            const bl = this.target.lb;
+            const br = this.target.rb;
+            const bc = PointUtil.interpolate(br, bl, .5);
+            const mr = PointUtil.interpolate(br, tr, .5);
+            const tc = PointUtil.interpolate(tr, tl, .5);
+            const ml = PointUtil.interpolate(bl, tl, .5);
+            const mc = PointUtil.interpolate(bc, tc, .5);
+
+
+            console.log('lt[', Echo.digit(tl.x), Echo.digit(tl.y), ']');
+
+
+            globalPoints = {
+                de: this.deleteButtonPosition,
+                //ro: this.rotateControlPosition,
+                tl: tl,
+                tr: tr,
+                tc: tc,
+                bl: bl,
+                br: br,
+                bc: bc,
+                ml: ml,
+                mr: mr,
+                mc: mc,
+                rde: this.deleteButtonPosition,
+                rtl: tl,
+                rtc: tc,
+                rtr: tr,
+                rml: ml,
+                rmr: mr,
+                rbl: bl,
+                rbc: bc,
+                rbr: br
+            }
+        }
+
+        const g = this.g;
+        g.visible = true;
         g.clear();
         g.lineStyle(0.5, 0xFFFFFF);
         this.drawRect(g, globalPoints);
@@ -826,6 +882,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             return;
         }
 
+        this.isLimit = false;
         this.target._rotation = this.target.rotation;
         this.selectedControl = event.target;
         this.setPivotByTarget(this.target);
@@ -909,6 +966,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             return;
         }
 
+        this.isLimit = false;
         this.targetScaleX = this.target.scale.x;
         this.targetScaleY = this.target.scale.y;
         this.startMousePoint = new PIXI.Point(event.currentMousePoint.x, event.currentMousePoint.y);
@@ -975,7 +1033,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         this.target.displayObjectUpdateTransform();
         const transform = this.target.worldTransform.clone();
         transform.rotate(-this.targetLayer.rotation);
-        return transform.apply(this.target.bitmapLt);
+        return transform.apply(this.target.localLt);
     }
 
 

@@ -64,6 +64,7 @@ export default class Mask extends BitmapContainer
 
     /**
      * 마스크의 경우 최소/최대 사이즈를 벗어나지 못하다도록 제한 합니다.
+     * @returns {Boolean} 최소/최대 사이즈를 벗어났는지 여부
      */
     checkLimitSize()
     {
