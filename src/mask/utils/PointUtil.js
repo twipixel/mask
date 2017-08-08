@@ -25,6 +25,7 @@ export default class PointUtil {
         return PointUtil.interpolate(point1, point2, f);
     }
 
+
     /**
      * factor에 의해 point1과 point2를 잇는 선분의 한점을 반환합니다.
      * @param point1
@@ -41,7 +42,7 @@ export default class PointUtil {
      * 사각형의 맨 좌측값 (충돌검사를 위한 값)
      * @returns {*}
      */
-    getLeft(rect)
+    static getLeft(rect)
     {
         const points = [rect.lt, rect.rt, rect.rb, rect.lb];
         var point = points[0];
@@ -62,7 +63,7 @@ export default class PointUtil {
      * 사각형의 맨 우측값 (충돌검사를 위한 값)
      * @returns {*}
      */
-    getRight(rect)
+    static getRight(rect)
     {
         const points = [rect.lt, rect.rt, rect.rb, rect.lb];
         var point = points[0];
@@ -83,7 +84,7 @@ export default class PointUtil {
      * 사각형의 맨 상단값 (충돌검사를 위한 값)
      * @returns {*}
      */
-    getTop(rect)
+    static getTop(rect)
     {
         const points = [rect.lt, rect.rt, rect.rb, rect.lb];
         var point = points[0];
@@ -104,7 +105,7 @@ export default class PointUtil {
      * 사각형의 맨 하단값 (충돌검사를 위한 값)
      * @returns {*}
      */
-    getBottom(rect)
+    static getBottom(rect)
     {
         const points = [rect.lt, rect.rt, rect.rb, rect.lb];
         var point = points[0];
@@ -118,6 +119,21 @@ export default class PointUtil {
         }
 
         return point.y;
+    }
+
+
+    /**
+     * 포인트로 bounds 를 구합니다.
+     * @param points
+     * @returns {{x: number, y: number, width: number, height: number}}
+     */
+    static getBoundsWithPoints(points)
+    {
+        const lt = points.lt || points.tl;
+        const rt = points.rt || points.tr;
+        const rb = points.rb || points.br;
+        const lb = points.lb || points.bl;
+        return { x: lt.x, y: lt.y, width: rt.x - lt.x, height: rb.y - rt.y };
     }
 
 }

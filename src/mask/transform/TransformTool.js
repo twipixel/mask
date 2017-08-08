@@ -184,9 +184,6 @@ export default class TransformTool extends PIXI.utils.EventEmitter
                     break;
             }
         }
-
-        this.mouseDownX = 0;
-        this.mouseDownY = 0;
     };
 
 
@@ -464,7 +461,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
                 }
             }
 
-            this.target.checkMinMaxSize();
+            this.target.checkLimitSize();
         }
         else {
             // scaleX > this.fitScale 조건은 오차 발생으로 덜덜 떨리는 현상을 방지하기 위함입니다.
@@ -482,10 +479,6 @@ export default class TransformTool extends PIXI.utils.EventEmitter
                 }
             }
         }
-
-        //console.log(collisionVO.type.toUpperCase(), scaleX, this.fitScale);
-
-        console.log('TARGET[', this.target.width, this.target.height, ']');
     }
 
 
