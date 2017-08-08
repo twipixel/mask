@@ -328,15 +328,30 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         //this.c.ro.localPoint = PointUtil.add(this.c.tc.localPoint.clone(), new PIXI.Point(0, rotationLineLength));
 
         const c = this.c;
-        this.c.rde.localPoint = new PIXI.Point(c.de.localPoint.x, c.de.localPoint.y);
-        this.c.rtl.localPoint = new PIXI.Point(c.tl.localPoint.x, c.tl.localPoint.y);
-        this.c.rtc.localPoint = new PIXI.Point(c.tc.localPoint.x, c.tc.localPoint.y);
-        this.c.rtr.localPoint = new PIXI.Point(c.tr.localPoint.x, c.tr.localPoint.y);
-        this.c.rml.localPoint = new PIXI.Point(c.ml.localPoint.x, c.ml.localPoint.y);
-        this.c.rmr.localPoint = new PIXI.Point(c.mr.localPoint.x, c.mr.localPoint.y);
-        this.c.rbl.localPoint = new PIXI.Point(c.bl.localPoint.x, c.bl.localPoint.y);
-        this.c.rbc.localPoint = new PIXI.Point(c.bc.localPoint.x, c.bc.localPoint.y);
-        this.c.rbr.localPoint = new PIXI.Point(c.br.localPoint.x, c.br.localPoint.y);
+
+        if (this.target.rotable === true) {
+            this.c.rde.localPoint = new PIXI.Point(c.de.localPoint.x, c.de.localPoint.y);
+            this.c.rtl.localPoint = new PIXI.Point(c.tl.localPoint.x, c.tl.localPoint.y);
+            this.c.rtc.localPoint = new PIXI.Point(c.tc.localPoint.x, c.tc.localPoint.y);
+            this.c.rtr.localPoint = new PIXI.Point(c.tr.localPoint.x, c.tr.localPoint.y);
+            this.c.rml.localPoint = new PIXI.Point(c.ml.localPoint.x, c.ml.localPoint.y);
+            this.c.rmr.localPoint = new PIXI.Point(c.mr.localPoint.x, c.mr.localPoint.y);
+            this.c.rbl.localPoint = new PIXI.Point(c.bl.localPoint.x, c.bl.localPoint.y);
+            this.c.rbc.localPoint = new PIXI.Point(c.bc.localPoint.x, c.bc.localPoint.y);
+            this.c.rbr.localPoint = new PIXI.Point(c.br.localPoint.x, c.br.localPoint.y);
+        }
+        else {
+            // -5000 으로 화면 밖으로 보냅니다.
+            this.c.rde.localPoint = new PIXI.Point(-5000, -5000);
+            this.c.rtl.localPoint = new PIXI.Point(-5000, -5000);
+            this.c.rtc.localPoint = new PIXI.Point(-5000, -5000);
+            this.c.rtr.localPoint = new PIXI.Point(-5000, -5000);
+            this.c.rml.localPoint = new PIXI.Point(-5000, -5000);
+            this.c.rmr.localPoint = new PIXI.Point(-5000, -5000);
+            this.c.rbl.localPoint = new PIXI.Point(-5000, -5000);
+            this.c.rbc.localPoint = new PIXI.Point(-5000, -5000);
+            this.c.rbr.localPoint = new PIXI.Point(-5000, -5000);
+        }
 
         for (var prop in this.controls) {
             var control = this.controls[prop];
@@ -894,10 +909,12 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             return;
         }
 
+        const rotation = this.target._rotation + event.changeRadian;
+        const angle = Calc.toDegrees(rotation);
+        const sign = (angle < 0) ? -1 : 1;
+        const absAngle = Math.round(Math.abs(angle) % 90);
+
         if (this.useSnap == true && CollisionManager.isImageRotated === false) {
-            const rotation = this.target._rotation + event.changeRadian;
-            const angle = Calc.toDegrees(rotation);
-            const absAngle = Math.round(Math.abs(angle) % 90);
 
             if (absAngle < this._startSnapAngle || absAngle > this._endSnapAngle) {
                 this.target.rotation = Calc.toRadians(Calc.snapTo(angle, 90));
