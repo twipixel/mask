@@ -598,22 +598,20 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         }
         else {
 
-
-            const w = this.target.width;
-            const h = this.target.height;
-            const tl = this.target.lt;
+            /**
+             * TODO tl 을 두번 구해주면 정상동작하는데. 이유를 모르겠어요. tl 값이 변하는 이유도 모르겠구요.
+             * @type {PIXI.Point}
+             */
+            let tl = this.target.lt;
             const tr = this.target.rt;
             const bl = this.target.lb;
             const br = this.target.rb;
+            const mc = PointUtil.interpolate(bl, tr, .5);
+            tl = PointUtil.interpolate(mc, br, 2);
             const bc = PointUtil.interpolate(br, bl, .5);
             const mr = PointUtil.interpolate(br, tr, .5);
             const tc = PointUtil.interpolate(tr, tl, .5);
             const ml = PointUtil.interpolate(bl, tl, .5);
-            const mc = PointUtil.interpolate(bc, tc, .5);
-
-
-            console.log('lt[', Echo.digit(tl.x), Echo.digit(tl.y), ']');
-
 
             globalPoints = {
                 de: this.deleteButtonPosition,
