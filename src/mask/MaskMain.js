@@ -225,7 +225,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
             const duration = 0.5;
             const easing = Quart.easeOut;
 
-            const mask = Be.to(this.mask, {x:centerX, y:centerY, scaleX:4, scaleY:4}, duration, easing);
+            const mask = Be.to(this.mask, {x:centerX, y:centerY}, duration, easing);
             mask.onUpdate = () => {
                 this.transformTool.activeTarget(target);
             };
