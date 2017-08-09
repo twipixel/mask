@@ -235,7 +235,7 @@ export default class ToolControl extends PIXI.Sprite
 
     /**
      * MaskMain 에서 실제 'mousedown' 이벤트가 아닌 가짜로 'mousedown'을 emit 합니다.
-     * MaskMain -> onMaskDown or onBackgroundImageMouseDown -> transformTool.setTarget -> c.mc.emit('mousedown');
+     * MaskMain -> onMaskDown or onBackgroundImageMouseDown -> transformTool.setTargetByEvent -> c.mc.emit('mousedown');
      * @param event
      */
     onMouseDown(event)

@@ -7,6 +7,7 @@ import DimmedMask from './display/DimmedMask';
 import BackgroundImage from './display/BackgroundImage';
 import TransformTool from './transform/TransformTool';
 import CollisionManager from './manager/CollisionManager';
+import ToolControlType from './transform/ToolControlType';
 import MaskVO from './vo/MaskVO';
 import {clone} from './utils/util';
 
@@ -14,6 +15,7 @@ import {clone} from './utils/util';
 // TEST
 import DatGui from './debug/DatGui';
 import KeyCode from './consts/KeyCode';
+import BitmapContainer from './display/BitmapContainer';
 
 
 
@@ -208,6 +210,36 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     }
 
 
+    /**
+     * 변형이후 가운데로 이동시켜 줍니다.
+     */
+    moveCenter(event)
+    {
+        if (event.type === ToolControlType.MIDDLE_CENTER) {
+            const target = this.transformTool.target;
+            const centerX = Size.viewportCenterX;
+            const centerY = Size.viewportCenterY;
+            const offsetX = centerX - this.mask.x;
+            const offsetY = centerY - this.mask.y;
+
+            const duration = 0.5;
+            const easing = Quart.easeOut;
+
+            const mask = Be.to(this.mask, {x:centerX, y:centerY, scaleX:4, scaleY:4}, duration, easing);
+            mask.onUpdate = () => {
+                this.transformTool.activeTarget(target);
+            };
+            mask.onComplete = () => {
+                this.transformTool.activeTarget(target);
+            };
+            mask.play();
+
+            const background = Be.to(this.backgroundImage, {x:this.backgroundImage.x + offsetX, y:this.backgroundImage.y + offsetY}, duration, easing);
+            background.play();
+        }
+    }
+
+
     /////////////////////////////////////////////////////////////////////////////
     //
     // Event Functions
@@ -302,7 +334,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
     onMaskDown(event)
     {
-        this.transformTool.setTarget(event);
+        this.transformTool.setTargetByEvent(event);
     }
 
 
@@ -314,12 +346,13 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     {
         this.transformTool.update();
         this.transformTool.drawCenter();
+        this.moveCenter(event);
     }
 
 
     onBackgroundImageMouseDown(event)
     {
-        this.transformTool.setTarget(event);
+        this.transformTool.setTargetByEvent(event);
     }
 
 

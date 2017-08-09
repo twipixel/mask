@@ -151,7 +151,10 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         this.c.mc.on(ToolControl.MOVE, this.onControlMove.bind(this));
         this.c.mc.on(ToolControl.MOVE_END, this.onControlMoveEnd.bind(this));
 
-        this.stageLayer.addChild(this.c.rde);
+        if (this.useDelete === true) {
+            this.stageLayer.addChild(this.c.rde);
+        }
+
         this.stageLayer.addChild(this.c.rtl);
         this.stageLayer.addChild(this.c.rtc);
         this.stageLayer.addChild(this.c.rtr);
@@ -266,7 +269,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     }
 
 
-    setTarget(event)
+    setTargetByEvent(event)
     {
         const pixiSprite = event.target;
         pixiSprite.emit(TransformTool.SET_TARGET, pixiSprite);
