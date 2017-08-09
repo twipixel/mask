@@ -16,9 +16,10 @@ import Painter from './../utils/Painter';
 
 
 
-
+const gridDivide = 3;
 const dragRange = 10;
 const rotateSpace = 1;
+const deleteButtonSize = 28;
 const collection = {tl: null, tr: null, tc: null, bl: null, br: null, bc: null, ml: null, mr: null, mc: null, rtl: null, rtc: null, rtr: null, rml: null, rmr: null, rbl: null, rbc: null, rbr: null};
 
 
@@ -40,19 +41,26 @@ export default class TransformTool extends PIXI.utils.EventEmitter
      * targetLayer 에 스티커나 텍스트를 붙힙니다.
      * @param stageLayer == PhotoEditor
      * @param targetLayer == PhotoEditor._stickerLayer
-     * @param options
+     * @param options {useSnap: 회전시 snap을 사용할지 여부, snapAngle: 스냅각도, deleteButtonOffsetY: 삭제 버튼 y offset, useDelete: 삭제 버튼 사용 여부}
      */
-    constructor(stageLayer, targetLayer, options = {useSnap: true, snapAngle: 2, deleteButtonOffsetY: 0})
+    constructor(stageLayer, targetLayer, options = {useSnap: true, snapAngle: 2, deleteButtonOffsetY: 0, useDelete: false})
     {
         super();
         this.stageLayer = stageLayer;
         this.targetLayer = targetLayer;
         this.options = options;
-        this.useSnap = options.useSnap;
-        this.snapAngle = options.snapAngle;
-        this.selectedControl = null;
-        this.deleteButtonSize = 28;
-        this.deleteButtonOffsetY = options.deleteButtonOffsetY;
+
+        // 회전시 스냅 사용 여부
+        this.useSnap = options.useSnap || true;
+
+        // 스냅 사용시 해당 각도 안에 들어오면 스냅이 됩니다.
+        this.snapAngle = options.snapAngle || 2;
+
+        // 삭제 버튼 y offset 값
+        this.deleteButtonOffsetY = options.deleteButtonOffsetY || 0;
+
+        // 삭제 버튼 사용 여부
+        this.useDelete = options.useDelete || false;
 
         this.initialize();
         this.addEvent();
@@ -62,7 +70,14 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     initialize()
     {
         this.target = null;
+        this.selectedControl = null;
+
+        // 제한선에 도달해서 더 이상 변형이 안되는 상태
         this.isLimit = false;
+
+        // 그리드가 필요한 상태인지 여부
+        this.isNeedGridDisplay = false;
+
         this.transform = new PIXI.Matrix();
         this.invertTransform = new PIXI.Matrix();
         this.g = this.graphics = new PIXI.Graphics();
@@ -158,8 +173,12 @@ export default class TransformTool extends PIXI.utils.EventEmitter
 
             switch (control.type) {
                 case ToolControlType.DELETE:
-                    this.stageLayer.addChild(control);
-                    control.on('click', this.onDelete.bind(this));
+
+                    if (this.useDelete === true) {
+                        this.stageLayer.addChild(control);
+                        control.on('click', this.onDelete.bind(this));
+                    }
+
                     break;
 
                 case ToolControlType.ROTATION:
@@ -225,6 +244,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     activeTarget(target)
     {
         this.target = target;
+        this.isNeedGridDisplay = false;
         this.removeTextureUpdateEvent();
         this.addTextureUpdateEvent();
         this.update();
@@ -313,7 +333,6 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         const x = -hw;
         const y = -hh;
         const deleteButtonOffsetY = this.deleteButtonOffsetY * scaleSignY;
-        //const rotationLineLength = this.rotationLineLength * scaleSignY;
 
         this.c.tl.localPoint = new PIXI.Point(x, y);
         this.c.tr.localPoint = new PIXI.Point(hw, y);
@@ -325,7 +344,6 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         this.c.mr.localPoint = PointUtil.interpolate(this.c.br.localPoint, this.c.tr.localPoint, .5);
         this.c.mc.localPoint = PointUtil.interpolate(this.c.bc.localPoint, this.c.tc.localPoint, .5);
         this.c.de.localPoint = PointUtil.add(this.c.tl.localPoint.clone(), new PIXI.Point(0, deleteButtonOffsetY));
-        //this.c.ro.localPoint = PointUtil.add(this.c.tc.localPoint.clone(), new PIXI.Point(0, rotationLineLength));
 
         const c = this.c;
 
@@ -397,6 +415,8 @@ export default class TransformTool extends PIXI.utils.EventEmitter
      */
     scaleCorner(event)
     {
+        this.isNeedGridDisplay = true;
+
         const target = event.target;
         const mousePoint = event.currentMousePoint;
         const localMousePoint = this.invertTransform.apply(mousePoint);
@@ -432,9 +452,10 @@ export default class TransformTool extends PIXI.utils.EventEmitter
      */
     scaleMiddle(event, isScaleHorizontal = true)
     {
+        this.isNeedGridDisplay = true;
+
         const target = event.target;
         const mousePoint = event.currentMousePoint;
-
         var scaleX = this.targetScaleX;
         var scaleY = this.targetScaleY;
 
@@ -502,8 +523,6 @@ export default class TransformTool extends PIXI.utils.EventEmitter
                 }
             }
         }
-
-        console.log('isLimit', this.isLimit);
     }
 
 
@@ -590,7 +609,6 @@ export default class TransformTool extends PIXI.utils.EventEmitter
 
             globalPoints = {
                 de: this.deleteButtonPosition,
-                //ro: this.rotateControlPosition,
                 tl: transform.apply(this.c.tl.localPoint),
                 tr: transform.apply(this.c.tr.localPoint),
                 tc: transform.apply(this.c.tc.localPoint),
@@ -627,10 +645,10 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             const mr = PointUtil.interpolate(br, tr, .5);
             const tc = PointUtil.interpolate(tr, tl, .5);
             const ml = PointUtil.interpolate(bl, tl, .5);
+            const deleteButtonPosition = PointUtil.add(PointUtil.getAddedInterpolate(tl, ml, this.deleteButtonOffsetY), new PIXI.Point(-deleteButtonSize, -deleteButtonSize));
 
             globalPoints = {
-                de: this.deleteButtonPosition,
-                //ro: this.rotateControlPosition,
+                de: deleteButtonPosition,
                 tl: tl,
                 tr: tr,
                 tc: tc,
@@ -640,7 +658,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
                 ml: ml,
                 mr: mr,
                 mc: mc,
-                rde: this.deleteButtonPosition,
+                rde: deleteButtonPosition,
                 rtl: tl,
                 rtc: tc,
                 rtr: tr,
@@ -664,6 +682,33 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             c.x = p.x;
             c.y = p.y;
             c.visible = true;
+        }
+
+        // 격자 표시
+        const useGrid = this.target.useGrid || false;
+
+        if (useGrid === true && this.isNeedGridDisplay === true) {
+            var lt = globalPoints.tl;
+            var rt = globalPoints.tr;
+            var lb = globalPoints.bl;
+            var rb = globalPoints.br;
+            var w = rt.x - lt.x;
+            var h = lb.y - lt.y;
+            var gw = w / gridDivide;
+            var gh = h / gridDivide;
+
+            g.lineStyle(1, 0xFFFFFF, 0.5);
+
+            let step, stepX, stepY;
+            for (var i = 0; i < gridDivide - 1; i++) {
+                step = i + 1;
+                stepX = lt.x + gw * step;
+                stepY = lt.y + gh * step;
+                g.moveTo(stepX, lt.y);
+                g.lineTo(stepX, lb.y);
+                g.moveTo(lt.x, stepY);
+                g.lineTo(rt.x, stepY);
+            }
         }
     }
 
@@ -740,11 +785,12 @@ export default class TransformTool extends PIXI.utils.EventEmitter
      */
     setPivotByTarget(target)
     {
-
         if (target instanceof Mask) {
+            // 마스크이면 마스크의 중앙을 pivot으로 설정
             this.setPivotByControl(this.c.mc);
         }
         else {
+            // 배경이미지이면 마스크의 중점을 pivot으로 설정
             this.setPivotByLocalPoint(CollisionManager.backgroundImageLocalPivot);
         }
     }
@@ -896,6 +942,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         }
 
         this.isLimit = false;
+        this.isNeedGridDisplay = true;
         this.target._rotation = this.target.rotation;
         this.selectedControl = event.target;
         this.setPivotByTarget(this.target);
@@ -909,12 +956,19 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             return;
         }
 
-        const rotation = this.target._rotation + event.changeRadian;
-        const angle = Calc.toDegrees(rotation);
-        const sign = (angle < 0) ? -1 : 1;
-        const absAngle = Math.round(Math.abs(angle) % 90);
+        let rotation = this.target._rotation + event.changeRadian;
+        const sign = (rotation < 0) ? -1 : 1;
 
+        // 최대 회전각도가 있으면 최대각도 처리
+        if (this.target.maxRotation) {
+            const absRotation = Math.abs(rotation);
+            rotation = (absRotation > this.target.maxRotation) ? sign * this.target.maxRotation : rotation;
+        }
+
+        // 스냅기능을 사용하고 이미지가 0, 90, 180, 270도 인 경우
         if (this.useSnap == true && CollisionManager.isImageRotated === false) {
+            const angle = Calc.toDegrees(rotation);
+            const absAngle = Math.round(Math.abs(angle) % 90);
 
             if (absAngle < this._startSnapAngle || absAngle > this._endSnapAngle) {
                 this.target.rotation = Calc.toRadians(Calc.snapTo(angle, 90));
@@ -922,11 +976,11 @@ export default class TransformTool extends PIXI.utils.EventEmitter
                 this.target.rotation = rotation;
             }
 
-            this.target._rotation = rotation;
         } else {
-            this.target.rotation += event.changeRadian;
-            this.target._rotation = this.target.rotation;
+            this.target.rotation = rotation;
         }
+
+        this.target._rotation = rotation;
 
 
         // 현재 상태의 충돌 상태 반환
@@ -982,6 +1036,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         }
 
         this.isLimit = false;
+        this.isNeedGridDisplay = false;
         this.targetScaleX = this.target.scale.x;
         this.targetScaleY = this.target.scale.y;
         this.startMousePoint = new PIXI.Point(event.currentMousePoint.x, event.currentMousePoint.y);
@@ -990,8 +1045,6 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         // 스케일 조절 컨트롤이면 충돌시 스케일 값을 미리 구합니다.
         if (this.selectedControl.type !== ToolControlType.MIDDLE_CENTER) {
             this.fitScale = CollisionManager.getFitScale(this.target);
-            console.log('FitScale', this.fitScale);
-            console.log('---------------------------------------------------------');
         }
 
         this.setPivotByTarget(this.target);
@@ -1018,6 +1071,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             return;
         }
 
+        this.isNeedGridDisplay = false;
         this.emit(TransformTool.TRANSFORM_COMPLETE, event);
         this.target.emit(TransformTool.TRANSFORM_COMPLETE, event);
         this.disableCurrentStyleCursor();
@@ -1041,6 +1095,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
 
     /**
      * 타겟의 좌상단 점을 global 좌표로 반환
+     * pivot 변경 시 위치가 바뀌는것을 잡아주기 위해 lt 좌표를 항상 기록합니다.
      * @returns {*}
      */
     get lt()
@@ -1061,25 +1116,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         const transform = this.target.worldTransform.clone();
         const tl = transform.apply(this.c.tl.localPoint);
         const ml = transform.apply(this.c.ml.localPoint);
-        return PointUtil.add(PointUtil.getAddedInterpolate(tl, ml, this.deleteButtonOffsetY), new PIXI.Point(-this.deleteButtonSize, -this.deleteButtonSize));
-    }
-
-
-    /**
-     * NOT USE
-     * 회전 컨트롤이 모든 컨트롤 뒤에 배치되도록 변경되어 사용하지 않습니다.
-     * @returns {*}
-     */
-    get rotateControlPosition()
-    {
-        if (!this.c) {
-            return new PIXI.Point(0, 0);
-        }
-
-        const transform = this.target.worldTransform.clone();
-        const tc = transform.apply(this.c.tc.localPoint);
-        const ro = transform.apply(this.c.ro.localPoint);
-        return PointUtil.getAddedInterpolate(tc, ro, this.rotationLineLength);
+        return PointUtil.add(PointUtil.getAddedInterpolate(tl, ml, this.deleteButtonOffsetY), new PIXI.Point(-deleteButtonSize, -deleteButtonSize));
     }
 
 

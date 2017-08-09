@@ -880,8 +880,15 @@ export default class ToolControl extends PIXI.Sprite
 
     hitTestWithGlobalPoint(globalPoint)
     {
+        let localBounds;
         const local = this.toLocal(globalPoint);
-        const localBounds = this.g.getLocalBounds();
+
+        if (this.type !== ToolControl.DELETE) {
+            localBounds = this.g.getLocalBounds();
+        }
+        else {
+            localBounds = this.getLocalBounds();
+        }
 
         if (local.x >= localBounds.x && local.x <= localBounds.x + localBounds.width &&
             local.y >= localBounds.y && local.y <= localBounds.y + localBounds.height ) {

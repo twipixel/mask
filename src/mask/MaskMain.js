@@ -20,7 +20,7 @@ import KeyCode from './consts/KeyCode';
 
 export default class MaskMain extends PIXI.utils.EventEmitter
 {
-    constructor(renderer, stageLayer, maskLayer, options = {useSnap: true, snapAngle: 5})
+    constructor(renderer, stageLayer, maskLayer, options = {useSnap: true, snapAngle: 5, useDelete: false})
     {
         super();
 
@@ -34,11 +34,11 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         // TODO TEST 코드
         const maskVO = new MaskVO();
         //maskVO.setTestData(0);  //원
-        maskVO.setTestData(1);  //삼각
+        //maskVO.setTestData(1);  //삼각
         //maskVO.setTestData(2);  //둥근사각
         //maskVO.setTestData(3);  //다각
         //maskVO.setTestData(4);  //별1
-        //maskVO.setTestData(5);  //별2
+        maskVO.setTestData(5);  //별2
         //maskVO.setTestData(6);  //둥근별
 
         this.options.maskVO = maskVO;

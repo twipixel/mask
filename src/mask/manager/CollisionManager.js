@@ -133,7 +133,10 @@ export default class CollisionManager
 
         const step = 0.002;
         const scaleRange = 0.3;
-        var fitScale, startScale;
+
+        // 시작부터 부딪혀서 break를 타면 undfined가 나옵니다. 기본값으로 현재 스케일을 적용합니다.
+        let fitScale = target.scale.x;
+        let startScale;
 
         if (isSelectMask) {
             // 마스크는 스케일을 키워가면서 충돌검사를 합니다.
