@@ -213,7 +213,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     /**
      * 변형이후 가운데로 이동시켜 줍니다.
      */
-    moveCenter(event)
+    moveMaskToCenter(event)
     {
         if (event.type === ToolControlType.MIDDLE_CENTER) {
             const target = this.transformTool.target;
@@ -346,7 +346,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     {
         this.transformTool.update();
         this.transformTool.drawCenter();
-        this.moveCenter(event);
+        this.moveMaskToCenter(event);
     }
 
 
