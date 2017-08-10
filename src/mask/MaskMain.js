@@ -184,9 +184,16 @@ export default class MaskMain extends PIXI.utils.EventEmitter
             Size.initialize(this.backgroundImage, viewport);
 
             if (this.backgroundImage) {
+
+                const offsetX = Size.initializedBackgroundImageSize.x - this.backgroundImage.x;
+                const offsetY = Size.initializedBackgroundImageSize.y - this.backgroundImage.y;
+
                 this.backgroundImage.resize();
                 this.backgroundImage.x = Size.initializedBackgroundImageSize.x;
                 this.backgroundImage.y = Size.initializedBackgroundImageSize.y;
+
+                this.mask.x += offsetX;
+                this.mask.y += offsetY;
             }
 
             if (this.dimmedMask) {
