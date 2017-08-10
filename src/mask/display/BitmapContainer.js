@@ -518,6 +518,12 @@ export default class BitmapContainer extends PIXI.Container
     }
 
 
+    /**
+     * 넓이와 높이에 맞는 scale 값을 반환합니다.
+     * @param width
+     * @param height
+     * @returns {{scaleX: *, scaleY: *}}
+     */
     getScale(width = 0, height = 0)
     {
         const prevWidth = this.width;
@@ -535,6 +541,10 @@ export default class BitmapContainer extends PIXI.Container
     }
 
 
+    /**
+     * 충돌검사에 사용하는 Rectangle을 반환합니다.
+     * @returns {CollisionRectangle}
+     */
     get collisionRect()
     {
         return new CollisionRectangle(this.lt, this.rt, this.rb, this.lb);

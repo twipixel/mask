@@ -413,6 +413,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.datGui = DatGui.instance;
         this.datGui.initialize(this.options);
         this.datGui.on(DatGui.CHAGE_MASK, this.onChangeMask.bind(this));
+        this.datGui.on(DatGui.DO_MASK, this.onDoMask.bind(this));
     }
 
 
@@ -455,6 +456,12 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         const maskVO = new MaskVO();
         maskVO.setTestData(maskTestDataIndex);
         this.changeMask(maskVO);
+    }
+
+
+    onDoMask()
+    {
+        //const image = this.dimmedMask.getImage();
     }
 
 

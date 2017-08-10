@@ -34,7 +34,7 @@ export default class DimmedMask extends PIXI.Container
         document.body.appendChild(this.canvas);
 
         // 이미지 smoothed 설정
-        const useSmoothed = false;
+        const useSmoothed = true;
         this.ctx.mozImageSmoothingEnabled = useSmoothed;
         this.ctx.webkitImageSmoothingEnabled = useSmoothed;
         this.ctx.msImageSmoothingEnabled = useSmoothed;
@@ -64,6 +64,9 @@ export default class DimmedMask extends PIXI.Container
     update(ms)
     {
         this.render();
+
+        // TODO 테스트
+        this.getImage();
     }
 
 
@@ -112,7 +115,7 @@ export default class DimmedMask extends PIXI.Container
         // 이미지를 가운데 회전하기 위해 가운데 중심점으로 이동
         this.ctx.translate(-this.backgroundImage.bitmapHalfWidth, -this.backgroundImage.bitmapHalfHeight);
 
-        // 이미지를 좌상단을 0, 0으로 위치 시키기
+        // 이미지 좌상단을 0, 0으로 위치 시키기
         const offset = this.backgroundImage.distanceBetweenLtAndCenter;
         this.ctx.translate(offset.x, offset.y);
 
@@ -219,5 +222,58 @@ export default class DimmedMask extends PIXI.Container
     setMaskImage(maskImage)
     {
         this.maskImage = maskImage;
+    }
+
+
+    getImage()
+    {
+        // 배경 이미지 실제 사이즈
+        const back = this.backgroundImage;
+        const backOriginalSize = back.originalImageSize;
+        const backScaleX = backOriginalSize.width / back.width;
+        const backScaleY = backOriginalSize.height / back.height;
+        const backActualWidth = back.width * backScaleX;
+        const backActualHeight = back.height * backScaleY;
+
+        const mask = this.maskImage;
+        const maskScaleX = mask.originalImageSize.width / mask.width;
+        const maskScaleY = mask.originalImageSize.height / mask.height;
+        const maskActualWidth = mask.width * maskScaleX;
+        const maskActualHeight = mask.height * maskScaleY;
+
+        const backCanvas = document.createElement('canvas');
+        backCanvas.width = backActualWidth;
+        backCanvas.height = backActualHeight;
+        const backCtx = backCanvas.getContext('2d');
+
+
+        const backWorldTransform = back.worldTransform;
+
+        // 회전
+        //backCtx.rotate(back.rotation);
+
+        const offsetX = mask.lt.x - back.lt.x;
+        const offsetY = mask.lt.y - back.lt.y;
+
+        console.log(offsetX, offsetY);
+
+
+        // 중심점 이동
+        //backCtx.translate();
+
+
+
+        //backCtx.drawImage(back.bitmap.imageElement, 0, 0);
+
+        //const imageCanvas = document.createElement('canvas');
+        //imageCanvas.id = 'maskImageCanvas';
+        //imageCanvas.style.top = 0;
+        //imageCanvas.style.left = 0;
+        //imageCanvas.style.position = 'absolute';
+        //document.body.appendChild(imageCanvas);
+        //imageCanvas.width = backActualWidth;
+        //imageCanvas.height = backActualHeight;
+        //const imageCtx = imageCanvas.getContext('2d');
+        //imageCtx.drawImage(backCanvas, 0, 0, maskActualWidth, maskActualHeight, 0, 0, mask.width, mask.height);
     }
 }

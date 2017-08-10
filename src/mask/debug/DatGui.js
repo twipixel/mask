@@ -7,6 +7,7 @@ const singletonEnforcer = Symbol();
 export default class DatGui extends PIXI.utils.EventEmitter
 {
     static get CHAGE_MASK() {return 'changeMask';}
+    static get DO_MASK() {return 'doMask';}
 
 
     constructor(enforcer)
@@ -51,5 +52,12 @@ export default class DatGui extends PIXI.utils.EventEmitter
             this.emit(DatGui.CHAGE_MASK, maskTestDataIndex);
         });
         maskSelect.open();
+
+        const mask = this.mask = gui.addFolder('MASK');
+        const maskControl = mask.add(data, 'doMask');
+        data.on(DatGuiData.DO_MASK, () => {
+           this.emit(DatGui.DO_MASK);
+        });
+        mask.open();
     }
 }

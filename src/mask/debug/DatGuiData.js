@@ -4,8 +4,10 @@ import MaskVO from './../vo/MaskVO';
 var instance = null;
 
 
-export default class DatGuiData
+export default class DatGuiData extends PIXI.utils.EventEmitter
 {
+    static get DO_MASK() {return 'doMask';}
+
     /**
      * 여러 곳에서 객체를 생성해도 싱글턴처럼 한개만 반환하도록 처리
      * @param options 초기값
@@ -13,6 +15,7 @@ export default class DatGuiData
      */
     constructor(options)
     {
+        super();
         if (!instance) {
             instance = this;
             this.initialize(options);
@@ -33,6 +36,12 @@ export default class DatGuiData
          * @type {number}
          */
         this.maskDataIndex = 1;
+    }
+
+
+    doMask()
+    {
+        this.emit(DatGuiData.DO_MASK);
     }
 
 

@@ -48,8 +48,8 @@ export default class Bitmap extends PIXI.Container
     onImageLoadComplete() {
         // 살짝 딜레이를 주지 않으면 랜더링에 문제가 될 수 있습니다.
         setTimeout(() => {
-            this._originalImageWidth = this._image.width;
-            this._originalImageHeight = this._image.height;
+            this._originalImageWidth = this._imageElement.width;
+            this._originalImageHeight = this._imageElement.height;
             this._originalImageSize = new PIXI.Rectangle(0, 0, this.originalImageWidth, this.originalImageHeight);
 
             // leftTop, rightTop, rightBottom, leftBottom, registrationPoint 생성
