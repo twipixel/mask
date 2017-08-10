@@ -222,10 +222,23 @@ export default class MaskMain extends PIXI.utils.EventEmitter
             const offsetX = centerX - this.mask.x;
             const offsetY = centerY - this.mask.y;
 
-            const duration = 0.5;
-            const easing = Quart.easeOut;
+            const duration = 0.3;
+            // Back, Bounc, Circ, Circular, Cubic,
+            // Elastic, Expo, Exponential, Linear,
+            // Physical, Quad, Quadratic, Quart,
+            // Quartic, Quint, Quintic, Sine
 
-            const mask = Be.to(this.mask, {x:centerX, y:centerY}, duration, easing);
+            //const easing = Quart.easeOut;
+            //const easing = Quad.easeOut;
+            //const easing = Quadratic.easeOut;
+            //const easing = Quart.easeOut;
+            //const easing = Quartic.easeOut;
+            //const easing = Quint.easeOut;
+            const maskEasing = Exponential.easeOut;
+            const backEasing = Exponential.easeOut;
+
+            const mask = this.maskTween = Be.to(this.mask, {x:centerX, y:centerY}, duration, maskEasing);
+
             mask.onUpdate = () => {
                 this.transformTool.activeTarget(target);
             };
@@ -234,8 +247,20 @@ export default class MaskMain extends PIXI.utils.EventEmitter
             };
             mask.play();
 
-            const background = Be.to(this.backgroundImage, {x:this.backgroundImage.x + offsetX, y:this.backgroundImage.y + offsetY}, duration, easing);
+            const background = this.backgroundTween = Be.to(this.backgroundImage, {x:this.backgroundImage.x + offsetX, y:this.backgroundImage.y + offsetY}, duration, backEasing);
             background.play();
+        }
+    }
+
+
+    stopMotion()
+    {
+        if (this.maskTween) {
+            this.maskTween.stop();
+        }
+
+        if (this.backgroundTween) {
+            this.backgroundTween.stop();
         }
     }
 
@@ -301,6 +326,8 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
     onStageDown(event)
     {
+        this.stopMotion();
+
         //control 이 클릭 되었으면 리턴
         const isOverControl = this.transformTool.isOverControl;
 
