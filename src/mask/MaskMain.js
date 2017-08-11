@@ -266,6 +266,24 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     }
 
 
+    reset()
+    {
+        this.dimmedMask.reset();
+
+        this.backgroundImage.setPivot(this.backgroundImage.registrationPoint);
+        this.backgroundImage.x = Size.windowCenterX;
+        this.backgroundImage.y = Size.windowCenterY;
+        this.backgroundImage.rotation = 0;
+        this.backgroundImage.scale.x = 0.8;
+        this.backgroundImage.scale.y = 0.8;
+
+        this.mask.x = Size.windowCenterX;
+        this.mask.y = Size.windowCenterY;
+
+        this.transformTool.releaseTarget();
+    }
+
+
     /////////////////////////////////////////////////////////////////////////////
     //
     // Event Functions
@@ -409,6 +427,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.datGui = DatGui.instance;
         this.datGui.initialize(this.options);
         this.datGui.on(DatGui.CHAGE_MASK, this.onChangeMask.bind(this));
+        this.datGui.on(DatGui.RESET, this.onReset.bind(this));
         this.datGui.on(DatGui.SHOW_MASK_REAL_SIZE, this.onShowMaskRealSize.bind(this));
         this.datGui.on(DatGui.SHOW_MASK_VISIBLE_SIZE, this.onShowMaskVisibleSize.bind(this));
     }
@@ -449,9 +468,17 @@ export default class MaskMain extends PIXI.utils.EventEmitter
      */
     onChangeMask(maskTestDataIndex)
     {
+        this.reset();
+
         const maskVO = new MaskVO();
         maskVO.setTestData(maskTestDataIndex);
         this.changeMask(maskVO);
+    }
+
+
+    onReset()
+    {
+        this.reset();
     }
 
 

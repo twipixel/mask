@@ -19,7 +19,6 @@ export default class DimmedMask extends PIXI.Container
         this.maskImage = maskImage;
 
         this.initialize();
-        this.addEvent();
     }
 
 
@@ -50,20 +49,21 @@ export default class DimmedMask extends PIXI.Container
         // TODO 실제 마스크 영역을 출력하기 위한 테스트 상태 변수
         this.isDisplayRealSize = false;
         this.isDisplayVisibleSize = false;
-
-        this.resize();
     }
 
 
-    addEvent()
+    reset()
     {
-        //
-    }
+        this.isDisplayRealSize = false;
+        this.isDisplayVisibleSize = false;
 
+        if (this.backCanvas) {
+            //document.body.removeChild(this.backCanvas);
+            document.body.removeChild(this.maskCanvas);
 
-    resize()
-    {
-
+            this.backCanvas = null;
+            this.maskCanvas = null;
+        }
     }
 
 

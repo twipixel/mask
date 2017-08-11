@@ -6,6 +6,7 @@ const singletonEnforcer = Symbol();
 
 export default class DatGui extends PIXI.utils.EventEmitter
 {
+    static get RESET() {return 'reset';}
     static get CHAGE_MASK() {return 'changeMask';}
     static get SHOW_MASK_REAL_SIZE() {return 'showMaskRealSize';}
     static get SHOW_MASK_VISIBLE_SIZE() {return 'showMaskVisibleSize';}
@@ -56,15 +57,20 @@ export default class DatGui extends PIXI.utils.EventEmitter
 
         const mask = this.mask = gui.addFolder('MASK');
 
+        mask.add(data, 'reset');
         mask.add(data, 'showRealSize');
         mask.add(data, 'showVisibleSize');
 
+        data.on(DatGuiData.RESET, () => {
+            this.emit(DatGui.RESET);
+        });
         data.on(DatGuiData.SHOW_MASK_VISIBLE_SIZE, () => {
            this.emit(DatGui.SHOW_MASK_VISIBLE_SIZE);
         });
         data.on(DatGuiData.SHOW_MASK_REAL_SIZE, () => {
             this.emit(DatGui.SHOW_MASK_REAL_SIZE);
         });
+
         mask.open();
     }
 }
