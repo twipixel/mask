@@ -122,7 +122,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         circleShape.endFill();
         this.rootLayer.addChild(circleShape);
 
-        const maskImage = PIXI.Sprite.fromImage('./../assets/img/mask1.png');
+        const maskImage = PIXI.Sprite.fromImage('./../assets/img/mask-oval.png');
         this.rootLayer.addChild(maskImage);
 
         const backgroundImage = PIXI.Sprite.fromImage('./../assets/img/background0.png');

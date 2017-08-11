@@ -6,7 +6,8 @@ var instance = null;
 
 export default class DatGuiData extends PIXI.utils.EventEmitter
 {
-    static get DO_MASK() {return 'doMask';}
+    static get SHOW_MASK_REAL_SIZE() {return 'showMaskRealSize';}
+    static get SHOW_MASK_VISIBLE_SIZE() {return 'showMaskVisibleSize';}
 
     /**
      * 여러 곳에서 객체를 생성해도 싱글턴처럼 한개만 반환하도록 처리
@@ -39,9 +40,15 @@ export default class DatGuiData extends PIXI.utils.EventEmitter
     }
 
 
-    doMask()
+    showRealSize()
     {
-        this.emit(DatGuiData.DO_MASK);
+        this.emit(DatGuiData.SHOW_MASK_REAL_SIZE);
+    }
+
+
+    showVisibleSize()
+    {
+        this.emit(DatGuiData.SHOW_MASK_VISIBLE_SIZE);
     }
 
 

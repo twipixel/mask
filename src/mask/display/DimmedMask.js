@@ -1,5 +1,6 @@
 import Size from './../utils/Size';
 import Calc from './../utils/Calculator';
+import Echo from './../debug/Echo';
 
 
 export default class DimmedMask extends PIXI.Container
@@ -14,8 +15,6 @@ export default class DimmedMask extends PIXI.Container
     {
         super();
 
-        this.dimmedAlpha = 1;
-        this.dimmedColor = 0x000000;
         this.backgroundImage = backgroundImage;
         this.maskImage = maskImage;
 
@@ -27,6 +26,9 @@ export default class DimmedMask extends PIXI.Container
     initialize()
     {
         this.isStop = false;
+        this.dimmedAlpha = 1;
+        this.dimmedColor = 0x000000;
+
         this.canvas = document.createElement('canvas');
         this.canvas.width = Size.canvasLimitWidth;
         this.canvas.height = Size.canvasLimitHeight;
@@ -44,6 +46,10 @@ export default class DimmedMask extends PIXI.Container
         this.addChild(this.dimmed);
 
         this.rotationPivot = new PIXI.Point(0, 0);
+
+        // TODO 실제 마스크 영역을 출력하기 위한 테스트 상태 변수
+        this.isDisplayRealSize = false;
+        this.isDisplayVisibleSize = false;
 
         this.resize();
     }
@@ -65,8 +71,14 @@ export default class DimmedMask extends PIXI.Container
     {
         this.render();
 
+
         // TODO 테스트
-        this.getImage();
+        if (this.isDisplayRealSize === true ) {
+            this.showMaskRealSize();
+        }
+        else if (this.isDisplayVisibleSize === true) {
+            this.showMaskVisibleSize();
+        }
     }
 
 
@@ -90,6 +102,8 @@ export default class DimmedMask extends PIXI.Container
     stopRender()
     {
         this.isStop = true;
+        this.isDisplayRealSize = false;
+        this.isDisplayVisibleSize = false;
     }
 
 
@@ -225,8 +239,61 @@ export default class DimmedMask extends PIXI.Container
     }
 
 
-    getImage()
+    /**
+     * 결과 보여주기 위한 캔버스 생성
+     */
+    createMaskCanvas()
     {
+        if (!this.backCanvas) {
+
+            // 배경 이미지를 위치 시키기 위한 캔버스
+            const backCanvas = this.backCanvas = document.createElement('canvas');
+            backCanvas.id = 'backCanvas';
+            backCanvas.style.top = '0px';
+            backCanvas.style.left = '0px';
+            backCanvas.style.position = 'absolute';
+            backCanvas.style.position = 'absolute';
+            backCanvas.style.border = 'thin solid #ff3300';
+            backCanvas.style.opacity = 0.5;
+            //document.body.appendChild(backCanvas);
+            this.backCtx = backCanvas.getContext('2d');
+
+            // 실제 마스크 이미지를 그리기 위한 캔버스
+            const maskCanvas = this.maskCanvas = document.createElement('canvas');
+            maskCanvas.id = 'mask';
+            maskCanvas.style.top = '0px';
+            maskCanvas.style.left = '0px';
+            maskCanvas.style.position = 'absolute';
+            maskCanvas.style.border = 'thin solid #ff3300';
+            document.body.appendChild(maskCanvas);
+            this.maskCtx = maskCanvas.getContext('2d');
+        }
+    }
+
+
+
+    /**
+     * 화면에 보이는 사이즈로 마스크를 보여줍니다.
+     *
+     * 표시 단계
+     * 0. 안보이는 캔버스에 마스크 영역만큼 이미지를 위치 시킵니다. (1 ~ 4번 과정)
+     * 1. 중심 회전을 위해 배경 이미지 중점 만큼 뒤로 이동
+     * 2. 중심 회전
+     * 3. 중심에서 마스크 lt 사이즈만큼 이동
+     * 4. 회전해서 발생한 offset 거리만큼 이동
+     * 5. 실제 마스크로 출력할 캔버스에 출력할 사이즈를 조절하서 그립니다.
+     */
+    showMaskVisibleSize()
+    {
+        this.createMaskCanvas();
+
+        const mask = this.maskImage;
+        const maskOriginalSize = mask.originalImageSize;
+        const maskScaleX = maskOriginalSize.width / mask.width;
+        const maskScaleY = maskOriginalSize.height / mask.height;
+        const maskActualWidth = mask.width * maskScaleX;
+        const maskActualHeight = mask.height * maskScaleY;
+
         // 배경 이미지 실제 사이즈
         const back = this.backgroundImage;
         const backOriginalSize = back.originalImageSize;
@@ -235,45 +302,139 @@ export default class DimmedMask extends PIXI.Container
         const backActualWidth = back.width * backScaleX;
         const backActualHeight = back.height * backScaleY;
 
+        const resultMaskWidth = mask.width;
+        const resultMaskHeight = mask.height;
+
+        this.backCanvas.width = back.width;
+        this.backCanvas.height = back.height;
+
+        // 마스크 사이즈가 계속 변화하니까 업데이트에 유의해야합니다.
+        this.maskCanvas.width = resultMaskWidth;
+        this.maskCanvas.height = resultMaskHeight;
+
+        // 마스크 랜더링 시작
+        this.backCtx.save();
+        this.backCtx.clearRect(0, 0, this.backCanvas.width, this.backCanvas.heigh);
+
+        // 1. 중심 회전을 위해 배경 이미지 중점 만큼 뒤로 이동
+        const offsetX = mask.globalPivot.x - back.lt.x;
+        const offsetY = mask.globalPivot.y - back.lt.y;
+
+        this.backCtx.translate(-offsetX, -offsetY);
+
+        // 2. 중심 회전
+        this.backCtx.rotate(back.rotation);
+
+        // 3. 중심에서 마스크 lt 사이즈만큼 이동
+        const maskLt = mask.lt;
+        const maskPivot = mask.globalPivot;
+        const distanceX = maskPivot.x - maskLt.x;
+        const distanceY = maskPivot.y - maskLt.y;
+        this.backCtx.translate(distanceX, distanceY);
+
+        // 4. 회전해서 생긴 offset 만큼 이동시켜주기
+        const rotationLt = Calc.getRotationPointWithPivot(mask.globalPivot, mask.lt, -Calc.toDegrees(back.rotation));
+        const rotationOffsetX = mask.lt.x - rotationLt.x;
+        const rotationOffsetY = mask.lt.y - rotationLt.y;
+        this.backCtx.translate(rotationOffsetX, rotationOffsetY);
+        this.backCtx.drawImage(back.bitmap.imageElement, 0, 0, backActualWidth, backActualHeight, 0, 0, back.width, back.height);
+        this.backCtx.restore();
+
+        // 마스크 그리기
+        this.maskCtx.save();
+        this.maskCtx.clearRect(0, 0, resultMaskWidth, resultMaskHeight);
+
+        // 보이는 사이즈로 출력
+        this.maskCtx.drawImage(this.backCanvas, 0, 0);
+        this.maskCtx.globalCompositeOperation = 'destination-in';
+        this.maskCtx.drawImage(mask.bitmap.imageElement, 0, 0, maskActualWidth, maskActualHeight, 0, 0, resultMaskWidth, resultMaskHeight);
+
+        this.maskCtx.restore();
+    }
+
+
+    /**
+     * 배경 이미지 기준으로 실제 이미지 사이즈로 마스크를 보여줍니다.
+     *
+     * 표시 단계
+     * 0. 안보이는 캔버스에 마스크 영역만큼 이미지를 위치 시킵니다. (1 ~ 4번 과정)
+     * 1. 중심 회전을 위해 배경 이미지 중점 만큼 뒤로 이동
+     * 2. 중심 회전
+     * 3. 중심에서 마스크 lt 사이즈만큼 이동
+     * 4. 회전해서 발생한 offset 거리만큼 이동
+     * 5. 실제 마스크로 출력할 캔버스에 출력할 사이즈를 조절하서 그립니다.
+     *
+     */
+    showMaskRealSize()
+    {
+        this.createMaskCanvas();
+
         const mask = this.maskImage;
-        const maskScaleX = mask.originalImageSize.width / mask.width;
-        const maskScaleY = mask.originalImageSize.height / mask.height;
+        const maskOriginalSize = mask.originalImageSize;
+        const maskScaleX = maskOriginalSize.width / mask.width;
+        const maskScaleY = maskOriginalSize.height / mask.height;
         const maskActualWidth = mask.width * maskScaleX;
         const maskActualHeight = mask.height * maskScaleY;
 
-        const backCanvas = document.createElement('canvas');
-        backCanvas.width = backActualWidth;
-        backCanvas.height = backActualHeight;
-        const backCtx = backCanvas.getContext('2d');
+        // 배경 이미지 실제 사이즈
+        const back = this.backgroundImage;
+        const backOriginalSize = back.originalImageSize;
+        const backScaleX = backOriginalSize.width / back.width;
+        const backScaleY = backOriginalSize.height / back.height;
+        const backActualWidth = back.width * backScaleX;
+        const backActualHeight = back.height * backScaleY;
 
+        const maskActualImageWidth = mask.width * backScaleX;
+        const maskActualImageHeight = mask.height * backScaleY;
 
-        const backWorldTransform = back.worldTransform;
+        const resultMaskWidth = maskActualImageWidth;
+        const resultMaskHeight = maskActualImageHeight;
 
-        // 회전
-        //backCtx.rotate(back.rotation);
+        this.backCanvas.width = backActualWidth;
+        this.backCanvas.height = backActualHeight;
 
-        const offsetX = mask.lt.x - back.lt.x;
-        const offsetY = mask.lt.y - back.lt.y;
+        // 마스크 사이즈가 계속 변화하니까 업데이트에 유의해야합니다.
+        this.maskCanvas.width = resultMaskWidth;
+        this.maskCanvas.height = resultMaskHeight;
 
-        console.log(offsetX, offsetY);
+        // 마스크 랜더링 시작
+        this.backCtx.save();
+        this.backCtx.clearRect(0, 0, backActualWidth, backActualHeight);
 
+        // 1. 중심 회전을 위해 배경 이미지 중점 만큼 뒤로 이동
+        const offsetX = (mask.globalPivot.x - back.lt.x) * backScaleX;
+        const offsetY = (mask.globalPivot.y - back.lt.y) * backScaleY;
 
-        // 중심점 이동
-        //backCtx.translate();
+        this.backCtx.translate(-offsetX, -offsetY);
 
+        // 2. 중심 회전
+        this.backCtx.rotate(back.rotation);
 
+        // 3. 회전해서 발생한 offset 거리만큼 이동
+        const maskLt = mask.lt;
+        const maskPivot = mask.globalPivot;
+        const distanceX = (maskPivot.x - maskLt.x) * backScaleX;
+        const distanceY = (maskPivot.y - maskLt.y) * backScaleY;
+        this.backCtx.translate(distanceX, distanceY);
 
-        //backCtx.drawImage(back.bitmap.imageElement, 0, 0);
+        // 4. 회전해서 생긴 offset 만큼 이동시켜주기
+        const rotationLt = Calc.getRotationPointWithPivot(mask.globalPivot, mask.lt, -Calc.toDegrees(back.rotation));
+        const rotationOffsetX = (mask.lt.x - rotationLt.x) * backScaleX;
+        const rotationOffsetY = (mask.lt.y - rotationLt.y) * backScaleY;
+        this.backCtx.translate(rotationOffsetX, rotationOffsetY);
+        this.backCtx.drawImage(back.bitmap.imageElement, 0, 0);
+        this.backCtx.restore();
 
-        //const imageCanvas = document.createElement('canvas');
-        //imageCanvas.id = 'maskImageCanvas';
-        //imageCanvas.style.top = 0;
-        //imageCanvas.style.left = 0;
-        //imageCanvas.style.position = 'absolute';
-        //document.body.appendChild(imageCanvas);
-        //imageCanvas.width = backActualWidth;
-        //imageCanvas.height = backActualHeight;
-        //const imageCtx = imageCanvas.getContext('2d');
-        //imageCtx.drawImage(backCanvas, 0, 0, maskActualWidth, maskActualHeight, 0, 0, mask.width, mask.height);
+        // 마스크 그리기
+        this.maskCtx.save();
+        this.maskCtx.clearRect(0, 0, resultMaskWidth, resultMaskHeight);
+
+        // 보이는 사이즈로 출력
+        this.maskCtx.drawImage(this.backCanvas, 0, 0);
+        this.maskCtx.globalCompositeOperation = 'destination-in';
+        this.maskCtx.drawImage(mask.bitmap.imageElement, 0, 0, maskActualWidth, maskActualHeight, 0, 0, resultMaskWidth, resultMaskHeight);
+
+        this.maskCtx.restore();
     }
+
 }

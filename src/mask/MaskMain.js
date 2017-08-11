@@ -208,19 +208,13 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         if (this.dimmedMask) {
             this.dimmedMask.update(ms);
         }
-
-        /*if (this.transformTool) {
-         this.transformTool.updateGraphics();
-         this.transformTool.drawCenter();
-         this.transformTool.updatePrevTargetLt();
-         }*/
     }
 
 
     /**
      * 변형이후 가운데로 이동시켜 줍니다.
      */
-    moveMaskToCenter(event)
+    maskMoveToCenter(event)
     {
         if (event.type === ToolControlType.MIDDLE_CENTER) {
             const target = this.transformTool.target;
@@ -293,6 +287,8 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         //this.backgroundImage.bitmapRotation = Calc.toRadians(10);
         this.backgroundImage.x = Size.windowCenterX;
         this.backgroundImage.y = Size.windowCenterY;
+
+        // TODO 테스트 코드
         this.backgroundImage.scale.x = 0.8;
         this.backgroundImage.scale.y = 0.8;
         //this.backgroundImage.alpha = 0.3;
@@ -380,7 +376,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     {
         this.transformTool.update();
         this.transformTool.drawCenter();
-        this.moveMaskToCenter(event);
+        this.maskMoveToCenter(event);
     }
 
 
@@ -413,7 +409,8 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.datGui = DatGui.instance;
         this.datGui.initialize(this.options);
         this.datGui.on(DatGui.CHAGE_MASK, this.onChangeMask.bind(this));
-        this.datGui.on(DatGui.DO_MASK, this.onDoMask.bind(this));
+        this.datGui.on(DatGui.SHOW_MASK_REAL_SIZE, this.onShowMaskRealSize.bind(this));
+        this.datGui.on(DatGui.SHOW_MASK_VISIBLE_SIZE, this.onShowMaskVisibleSize.bind(this));
     }
 
 
@@ -452,16 +449,23 @@ export default class MaskMain extends PIXI.utils.EventEmitter
      */
     onChangeMask(maskTestDataIndex)
     {
-        console.log('onChangeMask(', maskTestDataIndex, ')');
         const maskVO = new MaskVO();
         maskVO.setTestData(maskTestDataIndex);
         this.changeMask(maskVO);
     }
 
 
-    onDoMask()
+    onShowMaskRealSize()
     {
-        //const image = this.dimmedMask.getImage();
+        this.dimmedMask.isDisplayRealSize = true;
+        this.dimmedMask.isDisplayVisibleSize = false;
+    }
+
+
+    onShowMaskVisibleSize()
+    {
+        this.dimmedMask.isDisplayRealSize = false;
+        this.dimmedMask.isDisplayVisibleSize = true;
     }
 
 
