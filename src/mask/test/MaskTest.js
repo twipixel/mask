@@ -294,7 +294,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
         this.dimedContext = this.dimedCanvas.getContext('2d');
         // 이미지 smoothed 설정
-        const useSmoothed = false;
+        const useSmoothed = true;
         this.dimedContext.mozImageSmoothingEnabled = useSmoothed;
         this.dimedContext.webkitImageSmoothingEnabled = useSmoothed;
         this.dimedContext.msImageSmoothingEnabled = useSmoothed;

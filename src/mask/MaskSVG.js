@@ -20,7 +20,7 @@ import BitmapContainer from './display/BitmapContainer';
 
 
 
-export default class MaskMain extends PIXI.utils.EventEmitter
+export default class MaskSVG extends PIXI.utils.EventEmitter
 {
     constructor(renderer, stageLayer, maskLayer, options = {useSnap: true, snapAngle: 5, useDelete: false})
     {

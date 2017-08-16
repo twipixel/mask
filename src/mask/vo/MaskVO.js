@@ -7,13 +7,19 @@ MaskVO
      * @param maxSize 최대 사이즈
      * @param defaultSize 기본 사이즈
      * @param minSize 최소 사이즈
+     * @param thickness 외곽선 두께
+     * @param opacity 외곽선 투명도
+     * @param color 외곽선 색상
      */
-    constructor(url = '', maxSize = -1, defaultSize = -1, minSize = -1)
+    constructor(url = '', maxSize = -1, defaultSize = -1, minSize = -1, thickness = 0, opacity = 1, color = 0xFFFFFF)
     {
         this.url = url;
         this.maxSize = maxSize;
         this.defaultSize = defaultSize;
         this.minSize = minSize;
+        this.thickness = thickness;
+        this.opacity = opacity;
+        this.color = color;
         return this;
     }
 
