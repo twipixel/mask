@@ -1,5 +1,4 @@
 import MaskMain from './mask/MaskMain';
-import MaskSVG from './mask/MaskSVG';
 
 
 // TEST
@@ -47,7 +46,6 @@ function initailize() {
     console.log('----------------------------------------------------------------------');
     //maskMain = new MaskTest(renderer, stageLayer, maskLayer);
     maskMain = new MaskMain(renderer, stageLayer, maskLayer);
-    //maskMain = new MaskSVG(renderer, stageLayer, maskLayer);
 
     updateLoop();
     resizeWindow();
