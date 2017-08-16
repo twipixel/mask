@@ -437,4 +437,47 @@ export default class DimmedMask extends PIXI.Container
         this.maskCtx.restore();
     }
 
+
+    /**
+     * 마스크 연동시 전달해야할 값
+     * maskWidht: 마스크 넓이
+     * maskHeight: 마스크 높이
+     * x: 배경 이미지 x 값
+     * y: 배경 이미지 y 값
+     * offsetX: 마스크 시작 위치 X
+     * offsetY: 마스크 시작 위치 Y
+     * scaleX: 배경 이미지 스케일 X
+     * scaleY: 배경 이미지 스케일 Y
+     * radian: 배경 이미지 회전값
+     */
+    getTransform()
+    {
+        // 전달해야할 값 (maskWidth, maskHeight, offsetX, offsetY, scaleX, scaleY)
+        let maskWidth, maskHeight, x, y, ox, oy, sx, sy, radian;
+
+        const mask = this.maskImage;
+
+        // 배경 이미지 실제 사이즈
+        const back = this.backgroundImage;
+        const backOriginalSize = back.originalImageSize;
+        const backScaleX = backOriginalSize.width / back.width;
+        const backScaleY = backOriginalSize.height / back.height;
+        const maskActualImageWidth = mask.width * backScaleX;
+        const maskActualImageHeight = mask.height * backScaleY;
+        const resultMaskWidth = maskActualImageWidth;
+        const resultMaskHeight = maskActualImageHeight;
+
+        radian = this.backgroundImage.rotation;
+
+        maskWidth = resultMaskWidth;
+        maskHeight = resultMaskHeight;
+        sx = 1;
+        sy = 1;
+        var offset = back.bitmap.image.toLocal(mask.lt);
+
+        console.log('offset', offset);
+
+        console.log('mask[', maskWidth, maskHeight, ']', 'xy[', x, y, ']', 'offset[', ox, oy, ']', 'scale[', sx, sy, ']', 'radian', radian);
+    }
+
 }
