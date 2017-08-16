@@ -215,6 +215,7 @@
 			var re = color_defs[i].re;
 			var processor = color_defs[i].process;
 			var bits = re.exec(color_string);
+			var channels;
 			if (bits) {
 				channels = processor(bits);
 				this.r = channels[0];

@@ -11,14 +11,14 @@
 	'use strict';
 
 	// export as AMD...
-	/*if ( typeof define !== 'undefined' && define.amd ) {
-		define('canvgModule', [ 'rgbcolor', 'stackblur' ], factory );
-	}
+	// if ( typeof define !== 'undefined' && define.amd ) {
+	// 	define('canvgModule', [ 'rgbcolor', 'stackblur' ], factory );
+	// }
 
 	// ...or as browserify
-	else if ( typeof module !== 'undefined' && module.exports ) {
-		module.exports = factory( require( 'rgbcolor' ), require( 'stackblur' ) );
-	}*/
+	if ( typeof module !== 'undefined' && module.exports ) {
+		module.exports = factory( require( './rgbcolor' ), require( './StackBlur' ) );
+	}
 
 	global.canvg = factory( global.RGBColor, global.stackBlur );
 
@@ -526,6 +526,8 @@
 				this.addPoint(p0[0], p0[1]);
 				this.addPoint(p3[0], p3[1]);
 
+				var i;
+
 				for (i=0; i<=1; i++) {
 					var f = function(t) {
 						return Math.pow(1-t, 3) * p0[i]
@@ -594,17 +596,17 @@
 			this.Type.rotate = function(s) {
 				var a = svg.ToNumberArray(s);
 				this.angle = new svg.Property('angle', a[0]);
-				this.maskCenterX = a[1] || 0;
-				this.maskCenterY = a[2] || 0;
+				this.cx = a[1] || 0;
+				this.cy = a[2] || 0;
 				this.apply = function(ctx) {
-					ctx.translate(this.maskCenterX, this.maskCenterY);
+					ctx.translate(this.cx, this.cy);
 					ctx.rotate(this.angle.toRadians());
-					ctx.translate(-this.maskCenterX, -this.maskCenterY);
+					ctx.translate(-this.cx, -this.cy);
 				}
 				this.unapply = function(ctx) {
-					ctx.translate(this.maskCenterX, this.maskCenterY);
+					ctx.translate(this.cx, this.cy);
 					ctx.rotate(-1.0 * this.angle.toRadians());
-					ctx.translate(-this.maskCenterX, -this.maskCenterY);
+					ctx.translate(-this.cx, -this.cy);
 				}
 				this.applyToPoint = function(p) {
 					var a = this.angle.toRadians();
@@ -2279,8 +2281,10 @@
 					return;
 				}
 
-				if (ctx.fillStyle != '') ctx.fillText(svg.compressSpaces(this.getText()), this.x, this.y);
-				if (ctx.strokeStyle != '') ctx.strokeText(svg.compressSpaces(this.getText()), this.x, this.y);
+				// if (ctx.fillStyle != '') ctx.fillText(svg.compressSpaces(this.getText()), this.x, this.y);
+				// if (ctx.strokeStyle != '') ctx.strokeText(svg.compressSpaces(this.getText()), this.x, this.y);
+				if (ctx.fillStyle != '') ctx.fillText(this.getText(), this.x, this.y);
+				if (ctx.strokeStyle != '') ctx.strokeText(this.getText(), this.x, this.y);
 			}
 
 			this.getText = function() {
@@ -2313,7 +2317,9 @@
 					return measure;
 				}
 
-				var textToMeasure = svg.compressSpaces(this.getText());
+
+				// var textToMeasure = svg.compressSpaces(this.getText());
+				var textToMeasure = this.getText();
 				if (!ctx.measureText) return textToMeasure.length * 10;
 
 				ctx.save();
@@ -2331,7 +2337,9 @@
 			this.base = svg.Element.TextElementBase;
 			this.base(node);
 
-			this.text = svg.compressSpaces(node.value || node.text || node.textContent || '');
+			//TODO: canvg에서 텍스트 내용을 whitespace처리 하는 부분을 제외함.
+			// this.text = svg.compressSpaces(node.value || node.text || node.textContent || '');
+			this.text = node.value || node.text || node.textContent || '';
 			this.getText = function() {
 				// if this node has children, then they own the text
 				if (this.children.length > 0) { return ''; }

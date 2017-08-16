@@ -88,4 +88,74 @@ MaskVO
         }
     }
 
+
+
+    /**
+     * 테스트 데이터로 셋팅 합니다.
+     *
+     * 0: 원
+     * 1: 삼각
+     * 2: 둥근사각
+     * 3: 다각
+     * 4: 별1
+     * 5: 별2
+     * 6: 둥근별
+     * @param index
+     */
+    setSVGTestData(index)
+    {
+        index = parseInt(index);
+
+        switch (index) {
+            case 0: // 원
+                this.url = './../assets/svg/mask-oval.svg';
+                this.maxSize = '500x500';
+                this.defaultSize = '300x300';
+                this.minSize = '100x100';
+                break;
+
+            case 1: // 삼각
+            default:
+                this.url = './../assets/svg/mask-triangle.svg';
+                this.maxSize = '530x480';
+                this.defaultSize = '330x300';
+                this.minSize = '120x110';
+                break;
+
+            case 2: // 둥근사각
+                this.url = './../assets/svg/mask-round-squre.svg';
+                this.maxSize = '500x500';
+                this.defaultSize = '300x300';
+                this.minSize = '120x120';
+                break;
+
+            case 3: // 다각
+                this.url = './../assets/svg/mask-polygon.svg';
+                this.maxSize = '520x500';
+                this.defaultSize = '335x320';
+                this.minSize = '130x125';
+                break;
+
+            case 4: // 별1
+                this.url = './../assets/svg/mask-star.svg';
+                this.maxSize = '500x477';
+                this.defaultSize = '325x310';
+                this.minSize = '120x114';
+                break;
+
+            case 5: // 별2
+                this.url = './../assets/svg/mask-star-2.svg';
+                this.maxSize = '500x500';
+                this.defaultSize = '320x320';
+                this.minSize = '100x100';
+                break;
+
+            case 6: // 둥근별
+                this.url = './../assets/img/mask-round-star.svg';
+                this.maxSize = '500x500';
+                this.defaultSize = '335x335';
+                this.minSize = '100x100';
+                break;
+        }
+    }
 }
