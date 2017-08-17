@@ -213,4 +213,49 @@ export default class Calc
     {
         return Math.round(Calc.toDegrees(angle));
     }
+
+
+    /**
+     * Cavnas 의 Matrix 를 Pixi 의 Matrix 로 변환합니다.
+     * @param canvasMatrix
+     * @returns {PIXI.Matrix|*|Matrix}
+     */
+    static convertCanvasMatrixToPixiMatrix(canvasMatrix)
+    {
+        const pixiMatrix = new PIXI.Matrix();
+        pixiMatrix.a = canvasMatrix.m11;
+        pixiMatrix.b = canvasMatrix.m21;
+        pixiMatrix.c = canvasMatrix.m12;
+        pixiMatrix.d = canvasMatrix.m22;
+        pixiMatrix.tx = canvasMatrix.tx;
+        pixiMatrix.ty = canvasMatrix.ty;
+        return pixiMatrix;
+    }
+
+
+    static toLocalPoints(worldTransform, points)
+    {
+        const inversed = {};
+        for(var prop in points){
+            inversed[prop] = worldTransform.applyInverse(points[prop]);
+        }
+        return inversed;
+    };
+
+
+    /**
+     * lt, rt, rb, lb 4개의 포인트로 넓이, 높이를 구합니다.
+     * @param points
+     * @returns {{width: number, height: number}}
+     */
+    static getSizeByPoints(points)
+    {
+        var dx = points.rt.x - points.lt.x;
+        var dy = points.rt.y - points.lt.y;
+        var width = Math.sqrt(dx * dx + dy * dy);
+        dx = points.rt.x - points.rb.x;
+        dy = points.rt.y - points.rb.y;
+        var height = Math.sqrt(dx * dx + dy * dy);
+        return {width:width, height:height};
+    };
 }

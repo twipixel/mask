@@ -3,6 +3,10 @@ import Calc from './../utils/Calculator';
 import Echo from './../debug/Echo';
 
 
+//TODO TEST
+import Mouse from './../utils/Mouse';
+
+
 export default class DimmedMask extends PIXI.Container
 {
     /**
@@ -78,6 +82,11 @@ export default class DimmedMask extends PIXI.Container
         }
         else if (this.isDisplayVisibleSize === true) {
             this.showMaskVisibleSize();
+        }
+
+        // TODO 테스트
+        if (this.isDisplayRealSize || this.isDisplayVisibleSize) {
+            this.getTransform();
         }
     }
 
@@ -452,32 +461,79 @@ export default class DimmedMask extends PIXI.Container
      */
     getTransform()
     {
-        // 전달해야할 값 (maskWidth, maskHeight, offsetX, offsetY, scaleX, scaleY)
-        let maskWidth, maskHeight, x, y, ox, oy, sx, sy, radian;
-
         const mask = this.maskImage;
-
-        // 배경 이미지 실제 사이즈
         const back = this.backgroundImage;
         const backOriginalSize = back.originalImageSize;
         const backScaleX = backOriginalSize.width / back.width;
         const backScaleY = backOriginalSize.height / back.height;
         const maskActualImageWidth = mask.width * backScaleX;
         const maskActualImageHeight = mask.height * backScaleY;
-        const resultMaskWidth = maskActualImageWidth;
-        const resultMaskHeight = maskActualImageHeight;
 
-        radian = this.backgroundImage.rotation;
+        // ** displayObjectUpdateTransform 하지 않으면 offset에 오류가 발생합니다.
+        back.bitmap.displayObjectUpdateTransform();
+        back.bitmap.image.displayObjectUpdateTransform();
 
-        maskWidth = resultMaskWidth;
-        maskHeight = resultMaskHeight;
-        sx = 1;
-        sy = 1;
-        var offset = back.bitmap.image.toLocal(mask.lt);
+        const offset = back.bitmap.image.toLocal(mask.lt);
 
-        console.log('offset', offset);
+        const transform = {
+            maskWidth: maskActualImageWidth,
+            maskHeight: maskActualImageHeight,
+            x: 0,
+            y: 0,
+            offsetX: offset.x,
+            offsetY: offset.y,
+            scaleX: 1,
+            scaleY: 1,
+            radian: back.rotation
+        };
 
-        console.log('mask[', maskWidth, maskHeight, ']', 'xy[', x, y, ']', 'offset[', ox, oy, ']', 'scale[', sx, sy, ']', 'radian', radian);
+        console.log('mask[', maskActualImageWidth, maskActualImageHeight, ']', 'offset[', offset.x, offset.y, ']', 'radian', back.rotation, mask.lt.x * backScaleX, mask.lt.y * backScaleY);
+
+        return transform;
     }
 
+
+    getTransformWithBitmapData(bitmapdata)
+    {
+        const mask = this.maskImage;
+        const back = this.backgroundImage;
+        const maskPoints = mask.points;
+        const canvasMatrix = bitmapdata.worldTransform.matrix;
+        const convertCanvasMatrix = Calc.convertCanvasMatrixToPixiMatrix(canvasMatrix);
+
+        // ** displayObjectUpdateTransform 하지 않으면 offset에 오류가 발생합니다.
+        back.bitmap.displayObjectUpdateTransform();
+        back.bitmap.image.displayObjectUpdateTransform();
+
+        const imageWorldTransform = back.bitmap.image.worldTransform.clone();
+        imageWorldTransform.append(convertCanvasMatrix);
+
+        const inversedPoints = Calc.toLocalPoints(imageWorldTransform, maskPoints);
+        const imageSize = Calc.getSizeByPoints(inversedPoints);
+        const maskWidth = imageSize.width;
+        const maskHeight = imageSize.height;
+
+        var offsetX = Math.round(inversedPoints.lt.x);
+        var offsetY = Math.round(inversedPoints.lt.y);
+        offsetX = (offsetX < 0) ? 0 : offsetX;
+        offsetY = (offsetY < 0) ? 0 : offsetY;
+
+        const w = (maskWidth + 0.5) | 0;
+        const h = (maskHeight + 0.5) | 0;
+
+        const transform = {
+            maskWidth: maskWidth,
+            maskHeight: maskHeight,
+            x: 0,
+            y: 0,
+            offsetX: offsetX,
+            offsetY: offsetY,
+            scaleX: 1,
+            scaleY: 1,
+            radian: back.rotation
+        };
+
+        console.log('mask[', maskWidth, maskHeight, ']', 'offset[', offsetX, offsetY, ']', 'radian', back.rotation);
+        return transform;
+    }
 }

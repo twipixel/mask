@@ -142,6 +142,9 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.createDimmedMask();
         this.createCollisionManager();
         this.addDatGui();
+
+        // TODO 테스트
+        this.dimmedMask.isDisplayVisibleSize = true;
     }
 
 
@@ -194,10 +197,6 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
                 this.mask.x += offsetX;
                 this.mask.y += offsetY;
-            }
-
-            if (this.dimmedMask) {
-                this.dimmedMask.resize();
             }
         }
     }

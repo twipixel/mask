@@ -541,6 +541,17 @@ export default class BitmapContainer extends PIXI.Container
     }
 
 
+    get points()
+    {
+        return {
+            lt: this.lt.clone(),
+            rt: this.rt.clone(),
+            rb: this.rb.clone(),
+            lb: this.lb.clone()
+        };
+    }
+
+
     /**
      * 충돌검사에 사용하는 Rectangle을 반환합니다.
      * @returns {CollisionRectangle}
