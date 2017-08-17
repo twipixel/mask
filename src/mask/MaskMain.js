@@ -144,7 +144,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.addDatGui();
 
         // TODO 테스트
-        this.dimmedMask.isDisplayVisibleSize = true;
+        //this.dimmedMask.isDisplayVisibleSize = true;
     }
 
 

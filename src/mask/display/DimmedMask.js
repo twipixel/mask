@@ -487,8 +487,7 @@ export default class DimmedMask extends PIXI.Container
             radian: back.rotation
         };
 
-        console.log('mask[', maskActualImageWidth, maskActualImageHeight, ']', 'offset[', offset.x, offset.y, ']', 'radian', back.rotation, mask.lt.x * backScaleX, mask.lt.y * backScaleY);
-
+        //console.log('mask[', maskActualImageWidth, maskActualImageHeight, ']', 'offset[', offset.x, offset.y, ']', 'radian', back.rotation, mask.lt.x * backScaleX, mask.lt.y * backScaleY);
         return transform;
     }
 
@@ -510,16 +509,15 @@ export default class DimmedMask extends PIXI.Container
 
         const inversedPoints = Calc.toLocalPoints(imageWorldTransform, maskPoints);
         const imageSize = Calc.getSizeByPoints(inversedPoints);
-        const maskWidth = imageSize.width;
-        const maskHeight = imageSize.height;
+        var maskWidth = imageSize.width;
+        var maskHeight = imageSize.height;
+        maskWidth = (maskWidth + 0.5) | 0;
+        maskHeight = (maskHeight + 0.5) | 0;
 
         var offsetX = Math.round(inversedPoints.lt.x);
         var offsetY = Math.round(inversedPoints.lt.y);
         offsetX = (offsetX < 0) ? 0 : offsetX;
         offsetY = (offsetY < 0) ? 0 : offsetY;
-
-        const w = (maskWidth + 0.5) | 0;
-        const h = (maskHeight + 0.5) | 0;
 
         const transform = {
             maskWidth: maskWidth,
@@ -533,7 +531,7 @@ export default class DimmedMask extends PIXI.Container
             radian: back.rotation
         };
 
-        console.log('mask[', maskWidth, maskHeight, ']', 'offset[', offsetX, offsetY, ']', 'radian', back.rotation);
+        //console.log('mask[', maskWidth, maskHeight, ']', 'offset[', offsetX, offsetY, ']', 'radian', back.rotation);
         return transform;
     }
 }
