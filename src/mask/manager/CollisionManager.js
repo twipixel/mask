@@ -3,6 +3,7 @@ import Painter from './../utils/Painter';
 import CollisionVO from './../vo/CollisionVO';
 import CollisionType from './../consts/CollisionType';
 import Mask from './../display/Mask';
+import MaskVector from './../display/MaskVector';
 import BackgroundImage from './../display/BackgroundImage';
 
 import Echo from './../debug/Echo';
@@ -106,7 +107,7 @@ export default class CollisionManager
         const vo = this.getScaleFirstCollisionVO(mask, back, rotation);
 
         const type = vo.type;
-        const isSelectMask = target instanceof Mask;
+        const isSelectMask = target instanceof Mask || target instanceof MaskVector;
 
         var firstFitScale;
         var target = this.mask;

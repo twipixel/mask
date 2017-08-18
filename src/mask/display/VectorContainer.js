@@ -4,6 +4,7 @@ import Calc from './../utils/Calculator';
 import PointUtil from './../utils/PointUtil';
 import CollisionRectangle from './CollisionRectangle';
 import ShapeFactory from './../factory/ShapeFactory';
+import TransformTool from './../transform/TransformTool';
 
 // TEST
 import Painter from './../utils/Painter';
@@ -20,10 +21,13 @@ export default class VectorContainer extends PIXI.Container
         this._addEvent();
     }
 
+
     _initialize()
     {
         this.vector = new Vector();
         this.addChild(this.vector);
+
+        console.log('### VectorContainer._initialize(), vector', this.vector);
 
         this._vectorHalfWidth = 0;
         this._vectorHalfHeight = 0;
@@ -35,14 +39,16 @@ export default class VectorContainer extends PIXI.Container
     {
         this._vectorLoadCompleteListener = this.onVectorLoadComplete.bind(this);
         this._vectorTextureUpdateListener = this.onVectorTextureUpdateComplete.bind(this);
+        this._vectorTransfromCompleteListener = this.onVectorTransformComplete.bind(this);
+
         this.vector.on(Vector.LOAD_COMPLETE, this._vectorLoadCompleteListener);
         this.vector.on(Vector.TEXTURE_UPDATE, this._vectorTextureUpdateListener);
+        this.on(TransformTool.TRANSFORM_COMPLETE, this._vectorTransfromCompleteListener);
     }
 
 
     load(maskVO)
     {
-        this._maskVO = maskVO;
         const defaultSize = this.parseSize(maskVO.defaultSize);
         this.vector.load(maskVO.url, 0, 0, defaultSize.width, defaultSize.height);
     }
@@ -97,6 +103,10 @@ export default class VectorContainer extends PIXI.Container
             this.vector.off(Vector.TEXTURE_UPDATE, this._vectorTextureUpdateListener);
         }
 
+        if (this._vectorTransfromCompleteListener) {
+            this.vector.off(TransformTool.TRANSFORM_COMPLETE, this._vectorTransfromCompleteListener);
+        }
+
         this.removeChild(this.vector);
         this.vector.destroy();
         this.vector = null;
@@ -132,10 +142,30 @@ export default class VectorContainer extends PIXI.Container
      */
     onVectorTextureUpdateComplete()
     {
+        console.log('3. VectorContainer.onVectorTextureUpdateComplete');
+
         this._vectorHalfWidth = this.vector.width / 2;
         this._vectorHalfHeight = this.vector.height / 2;
         this.vector.x = -(this.vectorHalfWidth);
         this.vector.y = -(this.vectorHalfHeight);
+        this.scale = new PIXI.Point(1, 1);
+
+        this.emit(TransformTool.TEXTURE_UPDATE);
+        console.log('vector[', this.vector.width, this.vector.height, ']');
+    }
+
+
+
+    onVectorTransformComplete(e)
+    {
+        if( e.type !== "middleCenter" ) {
+
+            console.log('1 VectorContainer.onVectorTransformComplete -> this[', this.width, this.height, ']', 'vector[', this.vector.width, this.vector.height, ']');
+
+            //this.scale = new PIXI.Point(1, 1);
+            this.vector.drawSvg(0, 0, this.width, this.height);
+
+        }
     }
 
 
@@ -301,6 +331,8 @@ export default class VectorContainer extends PIXI.Container
      */
     get localLt()
     {
+        console.log('vector', this.vector);
+        console.log('vector.lt', this.vector.lt);
         return this.toLocal(this.vector.lt, this.vector);
     }
 
@@ -574,11 +606,6 @@ export default class VectorContainer extends PIXI.Container
         return new CollisionRectangle(this.lt, this.rt, this.rb, this.lb);
     }
 
-
-    get maskVO()
-    {
-        return this._maskVO;
-    }
 
     /////////////////////////////////////////////////////////////////////////////
     //

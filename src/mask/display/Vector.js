@@ -61,15 +61,11 @@ export default class Vector extends PIXI.Container {
 
     addEvent() {
         this.drawCompleteListener = this.onDrawComplete.bind(this);
-        //this.transformCompleteListener = this.onTransformComplete.bind(this);
-        //this.on(TransformTool.TRANSFORM_COMPLETE, this.transformCompleteListener);
     }
 
 
     removeEvent() {
-        //this.off(TransformTool.TRANSFORM_COMPLETE, this.transformCompleteListener);
         this.drawCompleteListener = null;
-        //this.transformCompleteListener = null;
     }
 
 
@@ -100,6 +96,9 @@ export default class Vector extends PIXI.Container {
 
         this.canvgCanvas.width = width;
         this.canvgCanvas.height = height;
+
+        console.log('Vector.drawSvg(', x, y, width, height, ')');
+
         this.canvgContext.drawSvg(this.url, x, y, width, height, {
             renderCallback: () => {
                 this.drawCompleteListener.call(this);
@@ -132,35 +131,20 @@ export default class Vector extends PIXI.Container {
         this.canvgCanvas = null;
         this.canvgContext = null;
         this.drawCompleteListener = null;
-        //this.transformCompleteListener = null;
 
         super.destroy();
     }
 
 
-    /**
-     * 이동 시에는 다시 canvg에서 다시 안그리도록 처리하고
-     * 대신 updateTransform 하도록 TEXTURE_UPDATE 이벤트를 전달합니다.
-     * 이동하고 회전하는 경우 updateTransform 이 안되어 이상 동작합니다.
-     * @param e
-     */
-    /*onTransformComplete(e) {
-        if( e.type == "middleCenter" ) {
-            this.notifyTextureUpdate();
-        } else {
-            this.drawSvg(0, 0, this.width, this.height);
-        }
-    }*/
-
-
     onDrawComplete() {
-        console.log('onDrawComplete');
+        console.log('2. Vector.onDrawComplete');
 
         if (this.isFirstLoad === true) {
             this.isFirstLoad = false;
             this.createImage();
         } else {
             this.resetScale();
+            this.updatePoints();
             this.notifyTextureUpdate();
         }
 
@@ -173,6 +157,8 @@ export default class Vector extends PIXI.Container {
 
 
     createImage() {
+        console.log('!!!!!!! Vector.creasteImage() !!!!!!!');
+
         this.image = new PIXI.Sprite(new PIXI.Texture.fromCanvas(this.canvgCanvas));
         this.addChild(this.image);
 
@@ -189,7 +175,15 @@ export default class Vector extends PIXI.Container {
         this.addChild(this.lb);
         this.points = [this.lt, this.rt, this.rb, this.lb];
 
+        console.log('lt', this.lt, 'rt', this.rt, 'rb', this.rb, 'lb', this.lb);
         this.emit(Vector.LOAD_COMPLETE, {target: this});
+    }
+
+
+    updatePoints()
+    {
+        this.rt.x = this.rb.x = this.image.width;
+        this.rb.y = this.lb.y = this.image.height;
     }
 
 

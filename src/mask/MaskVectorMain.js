@@ -97,7 +97,7 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
             const mask = this.mask = new MaskVector();
             this._maskReadyListener = this.onMaskReady.bind(this);
             mask.on(MaskVector.READY, this._maskReadyListener);
-            mask.load(maskVO);
+            mask.maskVO = maskVO;
 
             this._maskTransformCompleteListener = this.onMaskTransformComplete.bind(this);
             this.mask.on(TransformTool.TRANSFORM_COMPLETE, this._maskTransformCompleteListener);
@@ -114,6 +114,7 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
             this._maskReadyListener = null;
             this._maskTransformCompleteListener = null;
             this.mask.destroy();
+            this.mask = null;
         }
     }
 
@@ -128,7 +129,7 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
             this.transformTool.releaseTarget();
         }
 
-        this.dimmedMask.stopRender();
+        //this.dimmedMask.stopRender();
         this.removeMask();
         this.createMask(maskVO);
     }
@@ -266,7 +267,7 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
 
     reset()
     {
-        this.dimmedMask.reset();
+        //this.dimmedMask.reset();
 
         this.backgroundImage.setPivot(this.backgroundImage.registrationPoint);
         this.backgroundImage.x = Size.windowCenterX;
@@ -317,8 +318,6 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
         this._backgroundImageTransformCompleteListener = this.onBackgroundImageTransformComplete.bind(this);
         this.backgroundImage.on(TransformTool.TRANSFORM_COMPLETE, this._backgroundImageTransformCompleteListener);
 
-        //this.backgroundImage.visible = false;
-
         // 마스크 생성
         this.createMask(this.options.maskVO);
     }
@@ -326,6 +325,8 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
 
     onMaskReady()
     {
+        console.log('*** onMaskReady! ***', this.mask);
+
         this.mask.x = Size.windowCenterX;
         this.mask.y = Size.windowCenterY;
         //this.mask.alpha = 0.0;
@@ -392,7 +393,8 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
      */
     onMaskTransformComplete(event)
     {
-        console.log('onMaskTransformComplete');
+        console.log('4. MaskVectorMain.onMaskTransformComplete');
+        this.mask.updateTransform();
         this.transformTool.update();
         this.transformTool.drawCenter();
         this.maskMoveToCenter(event);
@@ -472,7 +474,7 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
         this.reset();
 
         const maskVO = new MaskVO();
-        maskVO.setTestData(maskTestDataIndex);
+        maskVO.setSVGTestData(maskTestDataIndex);
         this.changeMask(maskVO);
     }
 

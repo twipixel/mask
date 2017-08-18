@@ -136,7 +136,7 @@ export default class MaskVO
                 break;
 
             case 4: // 별1
-                this.url = './../assets/svg/mask-star.svg';
+                this.url = './../assets/svg/mask-star-1.svg';
                 this.maxSize = '500x477';
                 this.defaultSize = '325x310';
                 this.minSize = '120x114';
@@ -150,7 +150,7 @@ export default class MaskVO
                 break;
 
             case 6: // 둥근별
-                this.url = './../assets/img/mask-round-star.svg';
+                this.url = './../assets/svg/mask-round-star.svg';
                 this.maxSize = '500x500';
                 this.defaultSize = '335x335';
                 this.minSize = '100x100';

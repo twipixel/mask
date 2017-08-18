@@ -7,6 +7,7 @@ import RotationControlType from './RotationControlType';
 import CollisionManager from './../manager/CollisionManager';
 import CollisionType from './../consts/CollisionType';
 import Mask from './../display/Mask';
+import MaskVector from './../display/MaskVector';
 import BackgroundImage from './../display/BackgroundImage';
 import {map, each} from './../utils/lambda';
 
@@ -480,7 +481,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
             scaleX = scaleY;
         }
 
-        const isMaskScaling = this.target instanceof Mask;
+        const isMaskScaling = this.target instanceof Mask || this.target instanceof MaskVector;
 
         // 오차가 약 0.06 정도 발생합니다.
         const collisionVO = CollisionManager.virtualScaleCollisionCheck(scaleX, isMaskScaling, 0);
@@ -537,7 +538,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     move(event)
     {
         const change = event.targetChangeMovement;
-        const isMaskMoving = this.target instanceof Mask;
+        const isMaskMoving = this.target instanceof Mask || this.target instanceof MaskVector;
         var collisionVO = CollisionManager.virtualMoveCollisionCheck(change.x, change.y, isMaskMoving);
         const tx = this.target.x + change.x;
         const ty = this.target.y + change.y;
@@ -575,6 +576,8 @@ export default class TransformTool extends PIXI.utils.EventEmitter
 
     doTransform(event)
     {
+        console.log('doTrasnform', event.target.type);
+
         switch (event.target.type) {
             case ToolControlType.TOP_LEFT:
             case ToolControlType.TOP_RIGHT:
@@ -788,7 +791,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
      */
     setPivotByTarget(target)
     {
-        if (target instanceof Mask) {
+        if (target instanceof Mask || target instanceof  MaskVector) {
             // 마스크이면 마스크의 중앙을 pivot으로 설정
             this.setPivotByControl(this.c.mc);
         }
