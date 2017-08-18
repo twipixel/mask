@@ -331,8 +331,6 @@ export default class VectorContainer extends PIXI.Container
      */
     get localLt()
     {
-        console.log('vector', this.vector);
-        console.log('vector.lt', this.vector.lt);
         return this.toLocal(this.vector.lt, this.vector);
     }
 

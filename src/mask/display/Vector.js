@@ -34,6 +34,8 @@ export default class Vector extends PIXI.Container {
     constructor(url = '', x = 0, y = 0, width = 100, height = 100) {
         super();
 
+        console.log('new Vector()');
+
         this.url = url;
         this.drawX = x;
         this.drawY = y;
@@ -96,8 +98,6 @@ export default class Vector extends PIXI.Container {
 
         this.canvgCanvas.width = width;
         this.canvgCanvas.height = height;
-
-        console.log('Vector.drawSvg(', x, y, width, height, ')');
 
         this.canvgContext.drawSvg(this.url, x, y, width, height, {
             renderCallback: () => {
@@ -175,7 +175,6 @@ export default class Vector extends PIXI.Container {
         this.addChild(this.lb);
         this.points = [this.lt, this.rt, this.rb, this.lb];
 
-        console.log('lt', this.lt, 'rt', this.rt, 'rb', this.rb, 'lb', this.lb);
         this.emit(Vector.LOAD_COMPLETE, {target: this});
     }
 

@@ -229,9 +229,15 @@ export default class DimmedMask extends PIXI.Container
         /**
          * WHY? maskImage.width, maskImage.height 하면 안될까?
          */
-        this.ctx.drawImage(this.maskImage.bitmap.imageElement,
-            //0, 0, this.maskImage.width, this.maskImage.height);
-            0, 0, this.maskImage.scale.x * this.maskImage.bitmapWidth, this.maskImage.scale.y * this.maskImage.bitmapHeight);
+
+        if (this.maskImage.bitmap) {
+            this.ctx.drawImage(this.maskImage.bitmap.imageElement,
+                0, 0, this.maskImage.scale.x * this.maskImage.bitmapWidth, this.maskImage.scale.y * this.maskImage.bitmapHeight);
+        }
+        else {
+            this.ctx.drawImage(this.maskImage.vector.canvgCanvas,
+                0, 0, this.maskImage.width, this.maskImage.height);
+        }
 
         // 이전 상태 복원
         this.ctx.restore();

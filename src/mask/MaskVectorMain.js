@@ -129,7 +129,7 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
             this.transformTool.releaseTarget();
         }
 
-        //this.dimmedMask.stopRender();
+        this.dimmedMask.stopRender();
         this.removeMask();
         this.createMask(maskVO);
     }
@@ -143,7 +143,7 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
         this.isStart = true;
 
         this.addEvent();
-        //this.createDimmedMask();
+        this.createDimmedMask();
         this.createCollisionManager();
         this.addDatGui();
     }
@@ -267,7 +267,7 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
 
     reset()
     {
-        //this.dimmedMask.reset();
+        this.dimmedMask.reset();
 
         this.backgroundImage.setPivot(this.backgroundImage.registrationPoint);
         this.backgroundImage.x = Size.windowCenterX;
@@ -325,13 +325,15 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
 
     onMaskReady()
     {
-        console.log('*** onMaskReady! ***', this.mask);
-
         this.mask.x = Size.windowCenterX;
         this.mask.y = Size.windowCenterY;
-        //this.mask.alpha = 0.0;
-        //this.mask.alpha = 0.1;
-        //this.mask.visible = false;
+
+        /**
+         * mask.visible을 false로 하면 onMaskTransformComplete 시
+         * mask.updateTransform()을 하지만 적용이 안되어서 선택 툴이 업데이트가 제대로 동작하지 않습니다.
+         */
+        this.mask.alpha = 0.001;
+        // this.mask.visible = false;
         this.maskLayer.addChild(this.mask);
 
         // 처음 마스크를 로드한 경우
@@ -339,9 +341,9 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
             this.startApplication();
         }
         else {
-            //this.dimmedMask.setMaskImage(this.mask);
-            //this.dimmedMask.startRender();
-            //CollisionManager.changeMask(this.mask);
+            this.dimmedMask.setMaskImage(this.mask);
+            this.dimmedMask.startRender();
+            CollisionManager.changeMask(this.mask);
         }
     }
 
@@ -394,6 +396,8 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
     onMaskTransformComplete(event)
     {
         console.log('4. MaskVectorMain.onMaskTransformComplete');
+
+        // updateTransform을 하지 않으면 선택툴 영역이 제대로 맞지 않습니다.
         this.mask.updateTransform();
         this.transformTool.update();
         this.transformTool.drawCenter();
