@@ -75,7 +75,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
         // 배경 이미지 생성
         const backgroundImage = this.backgroundImage = new BackgroundImage('./../assets/img/background0.png', viewport);
-        backgroundImage.on(Bitmap.READY, this.onBackgroundImageReady.bind(this));
+        backgroundImage.on(BackgroundImage.READY, this.onBackgroundImageReady.bind(this));
 
         // 변형툴 생성
         this.transformTool = new TransformTool(this.stageLayer, this.maskLayer, this.options);
@@ -93,8 +93,8 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     {
         if (maskVO) {
             const mask = this.mask = new Mask(maskVO);
-            this._imageReadyListener = this.onMaskImageRady.bind(this);
-            mask.on(Bitmap.READY, this._imageReadyListener);
+            this._maskReadyListener = this.onMaskImageRady.bind(this);
+            mask.on(Mask.READY, this._maskReadyListener);
 
             this._maskTransformCompleteListener = this.onMaskTransformComplete.bind(this);
             this.mask.on(TransformTool.TRANSFORM_COMPLETE, this._maskTransformCompleteListener);
@@ -106,9 +106,9 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     {
         if (this.mask) {
             this.maskLayer.removeChild(this.mask);
-            this.mask.off(Bitmap.READY, this._imageReadyListener);
+            this.mask.off(Bitmap.READY, this._maskReadyListener);
             this.mask.off(TransformTool.TRANSFORM_COMPLETE, this._maskTransformCompleteListener);
-            this._imageReadyListener = null;
+            this._maskReadyListener = null;
             this._maskTransformCompleteListener = null;
             this.mask.destroy();
         }
@@ -191,7 +191,6 @@ export default class MaskMain extends PIXI.utils.EventEmitter
                 const offsetX = Size.initializedBackgroundImageSize.x - this.backgroundImage.x;
                 const offsetY = Size.initializedBackgroundImageSize.y - this.backgroundImage.y;
 
-                this.backgroundImage.resize();
                 this.backgroundImage.x = Size.initializedBackgroundImageSize.x;
                 this.backgroundImage.y = Size.initializedBackgroundImageSize.y;
 
@@ -426,6 +425,8 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.datGui = DatGui.instance;
         this.datGui.initialize(this.options);
         this.datGui.on(DatGui.CHAGE_MASK, this.onChangeMask.bind(this));
+        this.datGui.on(DatGui.UNDO, this.onUndo.bind(this));
+        this.datGui.on(DatGui.REDO, this.onRedo.bind(this));
         this.datGui.on(DatGui.RESET, this.onReset.bind(this));
         this.datGui.on(DatGui.SHOW_MASK_REAL_SIZE, this.onShowMaskRealSize.bind(this));
         this.datGui.on(DatGui.SHOW_MASK_VISIBLE_SIZE, this.onShowMaskVisibleSize.bind(this));
@@ -472,6 +473,18 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         const maskVO = new MaskVO();
         maskVO.setTestData(maskTestDataIndex);
         this.changeMask(maskVO);
+    }
+
+
+    onUndo()
+    {
+        console.log('undo');
+    }
+
+
+    onRedo()
+    {
+        console.log('redo');
     }
 
 

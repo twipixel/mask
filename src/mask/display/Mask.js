@@ -4,6 +4,13 @@ import BitmapContainer from './BitmapContainer';
 export default class Mask extends BitmapContainer
 {
     /**
+     * 준비 완료 알림
+     * @returns {string}
+     * @constructor
+     */
+    static get READY() {return 'ready';}
+
+    /**
      *
      * @param maskVO {MaskVO}
      */
@@ -20,6 +27,7 @@ export default class Mask extends BitmapContainer
     onReady()
     {
         this.initialize();
+        this.emit(Mask.READY);
     }
 
 

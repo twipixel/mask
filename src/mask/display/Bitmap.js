@@ -6,10 +6,7 @@ const pointRectSize = 0;
 
 export default class Bitmap extends PIXI.Container
 {
-    static READY()
-    {
-        return 'ready';
-    }
+    static READY() {return 'ready';}
 
     /**
      * 이미지를 로드하고 PIXI.Sprite 로 화면에 표시하고

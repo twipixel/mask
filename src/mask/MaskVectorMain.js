@@ -1,10 +1,10 @@
 import Size from './utils/Size';
 import Calc from './utils/Calculator';
-import SVG from './display/SVG';
 import Mask from './display/Mask';
 import MaskVector from './display/MaskVector';
 import Mouse from './utils/Mouse';
 import Bitmap from './display/Bitmap';
+import Vector from './display/Vector';
 import DimmedMask from './display/DimmedMask';
 import BackgroundImage from './display/BackgroundImage';
 import TransformTool from './transform/TransformTool';
@@ -22,7 +22,7 @@ import BitmapContainer from './display/BitmapContainer';
 
 
 
-export default class MaskSVG extends PIXI.utils.EventEmitter
+export default class MaskVectorMain extends PIXI.utils.EventEmitter
 {
     constructor(renderer, stageLayer, maskLayer, options = {useSnap: true, snapAngle: 5, useDelete: false})
     {
@@ -39,10 +39,10 @@ export default class MaskSVG extends PIXI.utils.EventEmitter
         const maskVO = new MaskVO();
         //maskVO.setSVGTestData(0);  //원
         //maskVO.setSVGTestData(1);  //삼각
-        //maskVO.setSVGTestData(2);  //둥근사각
+        maskVO.setSVGTestData(2);  //둥근사각
         //maskVO.setSVGTestData(3);  //다각
         //maskVO.setSVGTestData(4);  //별1
-        maskVO.setSVGTestData(5);  //별2
+        //maskVO.setSVGTestData(5);  //별2
         //maskVO.setSVGTestData(6);  //둥근별
 
         this.options.maskVO = maskVO;
@@ -77,7 +77,7 @@ export default class MaskSVG extends PIXI.utils.EventEmitter
 
         // 배경 이미지 생성
         const backgroundImage = this.backgroundImage = new BackgroundImage('./../assets/img/background0.png', viewport);
-        backgroundImage.on(Bitmap.READY, this.onBackgroundImageReady.bind(this));
+        backgroundImage.on(BackgroundImage.READY, this.onBackgroundImageReady.bind(this));
 
         // 변형툴 생성
         this.transformTool = new TransformTool(this.stageLayer, this.maskLayer, this.options);
@@ -93,17 +93,14 @@ export default class MaskSVG extends PIXI.utils.EventEmitter
      */
     createMask(maskVO)
     {
-        /*if (maskVO) {
-            const mask = this.mask = new Mask(maskVO);
-            this._imageReadyListener = this.onMaskImageRady.bind(this);
-            mask.on(Bitmap.READY, this._imageReadyListener);
+        if (maskVO) {
+            const mask = this.mask = new MaskVector();
+            this._maskReadyListener = this.onMaskReady.bind(this);
+            mask.on(MaskVector.READY, this._maskReadyListener);
+            mask.load(maskVO);
 
             this._maskTransformCompleteListener = this.onMaskTransformComplete.bind(this);
             this.mask.on(TransformTool.TRANSFORM_COMPLETE, this._maskTransformCompleteListener);
-        }*/
-
-        if (maskVO) {
-            const svg = this.svg = new SVG(maskVO);
         }
     }
 
@@ -112,9 +109,9 @@ export default class MaskSVG extends PIXI.utils.EventEmitter
     {
         if (this.mask) {
             this.maskLayer.removeChild(this.mask);
-            this.mask.off(Bitmap.READY, this._imageReadyListener);
+            this.mask.off(MaskVector.READY, this._maskReadyListener);
             this.mask.off(TransformTool.TRANSFORM_COMPLETE, this._maskTransformCompleteListener);
-            this._imageReadyListener = null;
+            this._maskReadyListener = null;
             this._maskTransformCompleteListener = null;
             this.mask.destroy();
         }
@@ -146,7 +143,7 @@ export default class MaskSVG extends PIXI.utils.EventEmitter
 
         this.addEvent();
         //this.createDimmedMask();
-        //this.createCollisionManager();
+        this.createCollisionManager();
         this.addDatGui();
     }
 
@@ -194,7 +191,6 @@ export default class MaskSVG extends PIXI.utils.EventEmitter
                 const offsetX = Size.initializedBackgroundImageSize.x - this.backgroundImage.x;
                 const offsetY = Size.initializedBackgroundImageSize.y - this.backgroundImage.y;
 
-                this.backgroundImage.resize();
                 this.backgroundImage.x = Size.initializedBackgroundImageSize.x;
                 this.backgroundImage.y = Size.initializedBackgroundImageSize.y;
 
@@ -321,12 +317,14 @@ export default class MaskSVG extends PIXI.utils.EventEmitter
         this._backgroundImageTransformCompleteListener = this.onBackgroundImageTransformComplete.bind(this);
         this.backgroundImage.on(TransformTool.TRANSFORM_COMPLETE, this._backgroundImageTransformCompleteListener);
 
+        //this.backgroundImage.visible = false;
+
         // 마스크 생성
         this.createMask(this.options.maskVO);
     }
 
 
-    onMaskImageRady()
+    onMaskReady()
     {
         this.mask.x = Size.windowCenterX;
         this.mask.y = Size.windowCenterY;
@@ -394,6 +392,7 @@ export default class MaskSVG extends PIXI.utils.EventEmitter
      */
     onMaskTransformComplete(event)
     {
+        console.log('onMaskTransformComplete');
         this.transformTool.update();
         this.transformTool.drawCenter();
         this.maskMoveToCenter(event);

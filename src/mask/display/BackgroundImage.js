@@ -4,6 +4,14 @@ import BitmapContainer from './BitmapContainer';
 
 export default class BackgroundImage extends BitmapContainer
 {
+    /**
+     * 준비 완료 알림
+     * @returns {string}
+     * @constructor
+     */
+    static get READY() {return 'ready';}
+
+
     constructor(url)
     {
         super(url);
@@ -13,6 +21,7 @@ export default class BackgroundImage extends BitmapContainer
     onReady()
     {
         this.initialize();
+        this.emit(BackgroundImage.READY);
     }
 
 

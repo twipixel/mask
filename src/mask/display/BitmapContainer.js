@@ -48,15 +48,6 @@ export default class BitmapContainer extends PIXI.Container
     }
 
 
-    resize()
-    {
-        const w = Size.initializedBackgroundImageSize.width;
-        const y = Size.initializedBackgroundImageSize.height;
-        //this.scale.x = this.width / w;
-        //this.scale.y = this.height / h;
-    }
-
-
     /**
      * 비트맵을 옮겨서 가운데가 중심점입니다.
      */

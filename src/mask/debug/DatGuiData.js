@@ -6,6 +6,8 @@ var instance = null;
 
 export default class DatGuiData extends PIXI.utils.EventEmitter
 {
+    static get UNDO() {return 'undo';}
+    static get REDO() {return 'redo';}
     static get RESET() {return 'reset';}
     static get SHOW_MASK_REAL_SIZE() {return 'showMaskRealSize';}
     static get SHOW_MASK_VISIBLE_SIZE() {return 'showMaskVisibleSize';}
@@ -41,6 +43,16 @@ export default class DatGuiData extends PIXI.utils.EventEmitter
         this.maskDataIndex = 1;
     }
 
+
+    undo()
+    {
+        this.emit(DatGuiData.UNDO);
+    }
+
+    redo()
+    {
+        this.emit(DatGuiData.REDO);
+    }
 
     reset()
     {

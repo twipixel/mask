@@ -1,5 +1,4 @@
-export default class
-MaskVO
+export default class MaskVO
 {
     /**
      * 마스크 설정 정보입니다.
@@ -123,7 +122,7 @@ MaskVO
                 break;
 
             case 2: // 둥근사각
-                this.url = './../assets/svg/mask-round-squre.svg';
+                this.url = './../assets/svg/mask-round-square.svg';
                 this.maxSize = '500x500';
                 this.defaultSize = '300x300';
                 this.minSize = '120x120';
