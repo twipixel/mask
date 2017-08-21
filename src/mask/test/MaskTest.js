@@ -1,3 +1,6 @@
+import Config from './../config/Config';
+
+
 /**
  * 마스크 구현 테스트
  */
@@ -294,11 +297,12 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
         this.dimedContext = this.dimedCanvas.getContext('2d');
         // 이미지 smoothed 설정
-        const useSmoothed = false;
-        this.dimedContext.mozImageSmoothingEnabled = useSmoothed;
-        this.dimedContext.webkitImageSmoothingEnabled = useSmoothed;
-        this.dimedContext.msImageSmoothingEnabled = useSmoothed;
-        this.dimedContext.imageSmoothingEnabled = useSmoothed;
+        const imageSmoothingEnabled = Config.imageSmoothingEnabled;
+        this.ctx.imageSmoothingEnabled = imageSmoothingEnabled;
+        this.ctx.oImageSmoothingEnabled = imageSmoothingEnabled;
+        this.ctx.msImageSmoothingEnabled = imageSmoothingEnabled;
+        this.ctx.mozImageSmoothingEnabled = imageSmoothingEnabled;
+        this.ctx.webkitImageSmoothingEnabled = imageSmoothingEnabled;
 
         const dimed = new PIXI.Sprite(PIXI.Texture.fromCanvas(this.dimedCanvas));
         this.rootLayer.addChild(dimed);

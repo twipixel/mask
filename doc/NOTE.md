@@ -52,10 +52,11 @@
     this.dimedContext = this.dimedCanvas.getContext('2d');
     // 이미지 smoothed 설정
     const useSmoothed = false;
+    this.dimedContext.imageSmoothingEnabled = useSmoothed;
+    this.dimedContext.oImageSmoothingEnabled = useSmoothed;
+    this.dimedContext.msImageSmoothingEnabled = useSmoothed;
     this.dimedContext.mozImageSmoothingEnabled = useSmoothed;
     this.dimedContext.webkitImageSmoothingEnabled = useSmoothed;
-    this.dimedContext.msImageSmoothingEnabled = useSmoothed;
-    this.dimedContext.imageSmoothingEnabled = useSmoothed;
     ```
 
 - Dimed 이미지 캔버스를 텍스쳐로 하는 스프라이트를 준비

@@ -1,3 +1,4 @@
+import Config from './../config/Config';
 import ShapeFactory from './../factory/ShapeFactory';
 
 
@@ -56,6 +57,14 @@ export default class Vector extends PIXI.Container {
         this.canvgCanvas = document.createElement('canvas');
         this.canvgCanvas.id = 'canvgCanvas';
         this.canvgContext = this.canvgCanvas.getContext('2d');
+
+        // 이미지 smoothed 설정
+        const imageSmoothingEnabled = Config.imageSmoothingEnabled;
+        this.canvgContext.imageSmoothingEnabled = imageSmoothingEnabled;
+        this.canvgContext.oImageSmoothingEnabled = imageSmoothingEnabled;
+        this.canvgContext.msImageSmoothingEnabled = imageSmoothingEnabled;
+        this.canvgContext.mozImageSmoothingEnabled = imageSmoothingEnabled;
+        this.canvgContext.webkitImageSmoothingEnabled = imageSmoothingEnabled;
     };
 
 

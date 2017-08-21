@@ -1,6 +1,7 @@
 import Size from './../utils/Size';
 import Calc from './../utils/Calculator';
 import Echo from './../debug/Echo';
+import Config from './../config/Config';
 
 
 //TODO TEST
@@ -39,11 +40,12 @@ export default class DimmedMask extends PIXI.Container
         document.body.appendChild(this.canvas);
 
         // 이미지 smoothed 설정
-        const useSmoothed = true;
-        this.ctx.mozImageSmoothingEnabled = useSmoothed;
-        this.ctx.webkitImageSmoothingEnabled = useSmoothed;
-        this.ctx.msImageSmoothingEnabled = useSmoothed;
-        this.ctx.imageSmoothingEnabled = useSmoothed;
+        const imageSmoothingEnabled = Config.imageSmoothingEnabled;
+        this.ctx.imageSmoothingEnabled = imageSmoothingEnabled;
+        this.ctx.oImageSmoothingEnabled = imageSmoothingEnabled;
+        this.ctx.msImageSmoothingEnabled = imageSmoothingEnabled;
+        this.ctx.mozImageSmoothingEnabled = imageSmoothingEnabled;
+        this.ctx.webkitImageSmoothingEnabled = imageSmoothingEnabled;
 
         this.dimmed = new PIXI.Sprite(PIXI.Texture.fromCanvas(this.canvas));
         this.addChild(this.dimmed);
