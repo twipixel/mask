@@ -34,8 +34,6 @@ export default class Vector extends PIXI.Container {
     constructor(url = '', x = 0, y = 0, width = 100, height = 100) {
         super();
 
-        console.log('new Vector()');
-
         this.url = url;
         this.drawX = x;
         this.drawY = y;
@@ -137,8 +135,6 @@ export default class Vector extends PIXI.Container {
 
 
     onDrawComplete() {
-        console.log('2. Vector.onDrawComplete');
-
         if (this.isFirstLoad === true) {
             this.isFirstLoad = false;
             this.createImage();
@@ -157,8 +153,6 @@ export default class Vector extends PIXI.Container {
 
 
     createImage() {
-        console.log('!!!!!!! Vector.creasteImage() !!!!!!!');
-
         this.image = new PIXI.Sprite(new PIXI.Texture.fromCanvas(this.canvgCanvas));
         this.addChild(this.image);
 

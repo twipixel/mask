@@ -576,8 +576,6 @@ export default class TransformTool extends PIXI.utils.EventEmitter
 
     doTransform(event)
     {
-        console.log('doTrasnform', event.target.type);
-
         switch (event.target.type) {
             case ToolControlType.TOP_LEFT:
             case ToolControlType.TOP_RIGHT:

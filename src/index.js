@@ -41,9 +41,6 @@ function initailize() {
     stage.addChild(maskLayer);
     stage.addChild(stageLayer);
 
-    console.log('----------------------------------------------------------------------');
-    console.log('MaskMain(', renderer, stageLayer, maskLayer, ')');
-    console.log('----------------------------------------------------------------------');
     //maskMain = new MaskTest(renderer, stageLayer, maskLayer);
     //maskMain = new MaskMain(renderer, stageLayer, maskLayer);
     maskMain = new MaskVectorMain(renderer, stageLayer, maskLayer);

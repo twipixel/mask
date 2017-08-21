@@ -27,8 +27,6 @@ export default class VectorContainer extends PIXI.Container
         this.vector = new Vector();
         this.addChild(this.vector);
 
-        console.log('### VectorContainer._initialize(), vector', this.vector);
-
         this._vectorHalfWidth = 0;
         this._vectorHalfHeight = 0;
         this.pivotOffset = new PIXI.Point();
@@ -122,8 +120,6 @@ export default class VectorContainer extends PIXI.Container
      */
     onVectorLoadComplete()
     {
-        console.log('onVectorLoadComplete');
-
         // 가운데 정렬
         this._vectorHalfWidth = this.vector.width / 2;
         this._vectorHalfHeight = this.vector.height / 2;
@@ -142,8 +138,6 @@ export default class VectorContainer extends PIXI.Container
      */
     onVectorTextureUpdateComplete()
     {
-        console.log('3. VectorContainer.onVectorTextureUpdateComplete');
-
         this._vectorHalfWidth = this.vector.width / 2;
         this._vectorHalfHeight = this.vector.height / 2;
         this.vector.x = -(this.vectorHalfWidth);
@@ -151,7 +145,6 @@ export default class VectorContainer extends PIXI.Container
         this.scale = new PIXI.Point(1, 1);
 
         this.emit(TransformTool.TEXTURE_UPDATE);
-        console.log('vector[', this.vector.width, this.vector.height, ']');
     }
 
 
@@ -159,12 +152,8 @@ export default class VectorContainer extends PIXI.Container
     onVectorTransformComplete(e)
     {
         if( e.type !== "middleCenter" ) {
-
-            console.log('1 VectorContainer.onVectorTransformComplete -> this[', this.width, this.height, ']', 'vector[', this.vector.width, this.vector.height, ']');
-
             //this.scale = new PIXI.Point(1, 1);
             this.vector.drawSvg(0, 0, this.width, this.height);
-
         }
     }
 

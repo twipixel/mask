@@ -19,7 +19,6 @@ export default class MaskVector extends VectorContainer
 
     onReady()
     {
-        console.log('MaskVector.onReady');
         this.initialize();
         this.emit(MaskVector.READY);
     }
@@ -102,7 +101,6 @@ export default class MaskVector extends VectorContainer
             const size = value.split('x');
             this.maxSizeX = size[0];
             this.maxSizeY = size[1];
-            console.log('max[', this.maxSizeX, this.maxSizeY, ']');
         }
     }
 
@@ -124,7 +122,6 @@ export default class MaskVector extends VectorContainer
             const size = value.split('x');
             this.defaultSizeX = size[0];
             this.defaultSizeY = size[1];
-            console.log('default[', this.defaultSizeX, this.defaultSizeY, ']');
         }
     }
 
@@ -146,7 +143,6 @@ export default class MaskVector extends VectorContainer
             const size = value.split('x');
             this.minSizeX = size[0];
             this.minSizeY = size[1];
-            console.log('min[', this.minSizeX, this.minSizeY, ']');
         }
     }
 

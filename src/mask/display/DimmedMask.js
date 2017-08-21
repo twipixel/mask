@@ -229,7 +229,6 @@ export default class DimmedMask extends PIXI.Container
         /**
          * WHY? maskImage.width, maskImage.height 하면 안될까?
          */
-
         if (this.maskImage.bitmap) {
             this.ctx.drawImage(this.maskImage.bitmap.imageElement,
                 0, 0, this.maskImage.scale.x * this.maskImage.bitmapWidth, this.maskImage.scale.y * this.maskImage.bitmapHeight);
@@ -493,7 +492,6 @@ export default class DimmedMask extends PIXI.Container
             radian: back.rotation
         };
 
-        //console.log('mask[', maskActualImageWidth, maskActualImageHeight, ']', 'offset[', offset.x, offset.y, ']', 'radian', back.rotation, mask.lt.x * backScaleX, mask.lt.y * backScaleY);
         return transform;
     }
 
@@ -537,7 +535,6 @@ export default class DimmedMask extends PIXI.Container
             radian: back.rotation
         };
 
-        //console.log('mask[', maskWidth, maskHeight, ']', 'offset[', offsetX, offsetY, ']', 'radian', back.rotation);
         return transform;
     }
 }
