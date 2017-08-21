@@ -302,11 +302,25 @@ export default class DimmedMask extends PIXI.Container
         this.createMaskCanvas();
 
         const mask = this.maskImage;
-        const maskOriginalSize = mask.originalImageSize;
-        const maskScaleX = maskOriginalSize.width / mask.width;
-        const maskScaleY = maskOriginalSize.height / mask.height;
-        const maskActualWidth = mask.width * maskScaleX;
-        const maskActualHeight = mask.height * maskScaleY;
+
+        let maskOriginalSize,
+            maskScaleX,
+            maskScaleY,
+            maskActualWidth,
+            maskActualHeight;
+
+        // 마스크 이미지가 비트맵인 경우
+        if (this.maskImage.bitmap) {
+            maskOriginalSize = mask.originalImageSize;
+            maskScaleX = maskOriginalSize.width / mask.width;
+            maskScaleY = maskOriginalSize.height / mask.height;
+            maskActualWidth = mask.width * maskScaleX;
+            maskActualHeight = mask.height * maskScaleY;
+        }
+        else {
+            maskActualWidth = mask.width;
+            maskActualHeight = mask.height;
+        }
 
         // 배경 이미지 실제 사이즈
         const back = this.backgroundImage;
@@ -361,7 +375,13 @@ export default class DimmedMask extends PIXI.Container
         // 보이는 사이즈로 출력
         this.maskCtx.drawImage(this.backCanvas, 0, 0);
         this.maskCtx.globalCompositeOperation = 'destination-in';
-        this.maskCtx.drawImage(mask.bitmap.imageElement, 0, 0, maskActualWidth, maskActualHeight, 0, 0, resultMaskWidth, resultMaskHeight);
+
+        if (this.maskImage.bitmap) {
+            this.maskCtx.drawImage(mask.bitmap.imageElement, 0, 0, maskActualWidth, maskActualHeight, 0, 0, resultMaskWidth, resultMaskHeight);
+        }
+        else {
+            this.maskCtx.drawImage(mask.vector.canvgCanvas, 0, 0, maskActualWidth, maskActualHeight, 0, 0, resultMaskWidth, resultMaskHeight);
+        }
 
         this.maskCtx.restore();
     }
@@ -384,11 +404,25 @@ export default class DimmedMask extends PIXI.Container
         this.createMaskCanvas();
 
         const mask = this.maskImage;
-        const maskOriginalSize = mask.originalImageSize;
-        const maskScaleX = maskOriginalSize.width / mask.width;
-        const maskScaleY = maskOriginalSize.height / mask.height;
-        const maskActualWidth = mask.width * maskScaleX;
-        const maskActualHeight = mask.height * maskScaleY;
+
+        let maskOriginalSize,
+            maskScaleX,
+            maskScaleY,
+            maskActualWidth,
+            maskActualHeight;
+
+        // 마스크 이미지가 비트맵인 경우
+        if (this.maskImage.bitmap) {
+            maskOriginalSize = mask.originalImageSize;
+            maskScaleX = maskOriginalSize.width / mask.width;
+            maskScaleY = maskOriginalSize.height / mask.height;
+            maskActualWidth = mask.width * maskScaleX;
+            maskActualHeight = mask.height * maskScaleY;
+        }
+        else {
+            maskActualWidth = mask.width;
+            maskActualHeight = mask.height;
+        }
 
         // 배경 이미지 실제 사이즈
         const back = this.backgroundImage;
@@ -446,7 +480,13 @@ export default class DimmedMask extends PIXI.Container
         // 보이는 사이즈로 출력
         this.maskCtx.drawImage(this.backCanvas, 0, 0);
         this.maskCtx.globalCompositeOperation = 'destination-in';
-        this.maskCtx.drawImage(mask.bitmap.imageElement, 0, 0, maskActualWidth, maskActualHeight, 0, 0, resultMaskWidth, resultMaskHeight);
+
+        if (this.maskImage.bitmap) {
+            this.maskCtx.drawImage(mask.bitmap.imageElement, 0, 0, maskActualWidth, maskActualHeight, 0, 0, resultMaskWidth, resultMaskHeight);
+        }
+        else {
+            this.maskCtx.drawImage(mask.vector.canvgCanvas, 0, 0, maskActualWidth, maskActualHeight, 0, 0, resultMaskWidth, resultMaskHeight);
+        }
 
         this.maskCtx.restore();
     }
