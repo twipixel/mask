@@ -463,6 +463,8 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         var scaleX = this.targetScaleX;
         var scaleY = this.targetScaleY;
 
+        console.log('!!! scaleMiddle', 'scaleX', scaleX);
+
         const localMousePoint = this.invertTransform.apply(mousePoint);
         const localStartPoint = this.invertTransform.apply(this.startMousePoint);
         const vector = PointUtil.subtract(localMousePoint, localStartPoint);
@@ -482,6 +484,8 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         }
 
         const isMaskScaling = this.target instanceof Mask || this.target instanceof MaskVector;
+
+        console.log('scale result', scaleX);
 
         // 오차가 약 0.06 정도 발생합니다.
         const collisionVO = CollisionManager.virtualScaleCollisionCheck(scaleX, isMaskScaling, 0);
@@ -507,6 +511,8 @@ export default class TransformTool extends PIXI.utils.EventEmitter
 
             const isMinMaxSize = this.target.checkLimitSize();
             this.isLimit = (this.isLimit) ? this.isLimit : isMinMaxSize;
+
+            console.log('type', collisionVO.type, 'scale', scaleX);
         }
         else {
             // scaleX > this.fitScale 조건은 오차 발생으로 덜덜 떨리는 현상을 방지하기 위함입니다.
@@ -1043,12 +1049,15 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         this.isNeedGridDisplay = false;
         this.targetScaleX = this.target.scale.x;
         this.targetScaleY = this.target.scale.y;
+
+        console.log('this.target.ScaleX', this.targetScaleX);
         this.startMousePoint = new PIXI.Point(event.currentMousePoint.x, event.currentMousePoint.y);
         this.selectedControl = event.target;
 
         // 스케일 조절 컨트롤이면 충돌시 스케일 값을 미리 구합니다.
         if (this.selectedControl.type !== ToolControlType.MIDDLE_CENTER) {
             this.fitScale = CollisionManager.getFitScale(this.target);
+            console.log('fitScale', this.fitScale);
         }
 
         this.setPivotByTarget(this.target);

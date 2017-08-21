@@ -78,6 +78,7 @@ export default class CollisionManager
      */
     static virtualScaleCollisionCheck(scale, isMaskScaling = true, space = 0.1)
     {
+        console.log('virtualScaleCollisionCheck(', scale, ')');
         var mask, back, rotation = this.backgroundImage.rotation;
 
         if (isMaskScaling === true) {
@@ -88,6 +89,7 @@ export default class CollisionManager
             back = this.back.getScaledRect(scale);
         }
 
+        console.log('mask', mask, 'back', back, 'scale', scale);
         return this.getFixPosition(mask, back, rotation, space);
     }
 
@@ -135,19 +137,25 @@ export default class CollisionManager
         const step = 0.002;
         const scaleRange = 0.3;
 
-        // 시작부터 부딪혀서 break를 타면 undfined가 나옵니다. 기본값으로 현재 스케일을 적용합니다.
-        let fitScale = target.scale.x;
         let startScale;
+        let fitScale = target.scale.x; // 기본값으로 현재 스케일을 적용
+
+        console.log('firstFitScale', firstFitScale,'offsetX', offsetX, 'offsetY', offsetY, ':::::::: getFitScale');
 
         if (isSelectMask) {
             // 마스크는 스케일을 키워가면서 충돌검사를 합니다.
             startScale = firstFitScale - scaleRange;
 
+            console.log('-> isSelectMask', 'startScale', startScale, 'fitScale', fitScale, 'target.scale.x', target.scale.x);
+
             // 오차를 감안해서 스케일을 더 키워 검사합니다.
             firstFitScale = firstFitScale + 1;
 
+            let count = 0;
+
             for (var i = startScale; i < firstFitScale; i += step) {
                 if (this.virtualScaleCollisionCheck(i, isSelectMask, 0).type !== CollisionType.NONE) {
+                    console.log('count', count++);
                     break;
                 }
                 fitScale = i;
@@ -197,10 +205,13 @@ export default class CollisionManager
         mask.rotate(r);
         backgroundImage.rotate(r);
 
-        //const maskBounds = mask.bounds;
-        //const backBounds = backgroundImage.bounds;
-        //Painter.drawRectByBounds(window.g, maskBounds, true, 1);
-        //Painter.drawRectByBounds(window.g, backBounds, false, 1);
+        // TODO DEBUG
+        const maskBounds = mask.bounds;
+        const backBounds = backgroundImage.bounds;
+        maskBounds.y -= 300;
+        backBounds.y -= 300;
+        Painter.drawRectByBounds(window.g, maskBounds, false, 1);
+        Painter.drawRectByBounds(window.g, backBounds, false, 1);
 
         const ml = mask.left;
         const mr = mask.right;
@@ -225,14 +236,18 @@ export default class CollisionManager
         }
 
         if (mt < bt) {
+            console.log('!!!!!!!!!!!!!!!!! TOP', 'mt', mt, 'bt', bt);
             this.vo.type = CollisionType.TOP;
             this.vo.offsetY = (bt - mt) + space;
         }
 
         if (mb > bb) {
+            console.log('!!!!!!!!!!!!!!!!! BOTTOM', 'mb', mb, 'bb', bb);
             this.vo.type = CollisionType.BOTTOM;
             this.vo.offsetY = (bb - mb) - space;
         }
+
+        console.log('getFixPosition', this.vo);
 
         return this.vo;
     }
