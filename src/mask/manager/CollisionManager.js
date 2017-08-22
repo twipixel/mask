@@ -78,7 +78,6 @@ export default class CollisionManager
      */
     static virtualScaleCollisionCheck(scale, isMaskScaling = true, space = 0.1)
     {
-        console.log('virtualScaleCollisionCheck(', scale, ')');
         var mask, back, rotation = this.backgroundImage.rotation;
 
         if (isMaskScaling === true) {
@@ -89,7 +88,6 @@ export default class CollisionManager
             back = this.back.getScaledRect(scale);
         }
 
-        console.log('mask', mask, 'back', back, 'scale', scale);
         return this.getFixPosition(mask, back, rotation, space);
     }
 
@@ -106,15 +104,15 @@ export default class CollisionManager
         const mask = this.mask.collisionRect;
         const back = this.back.collisionRect;
         const rotation = this.back.rotation;
-        const vo = this.getScaleFirstCollisionVO(mask, back, rotation);
+        const vo = this.getExpectedScaleCollisionVO(mask, back, rotation);
 
         const type = vo.type;
         const isSelectMask = target instanceof Mask || target instanceof MaskVector;
 
-        var firstFitScale;
         var target = this.mask;
         var offsetX = vo.offsetX * 2;
         var offsetY = vo.offsetY * 2;
+        var expectedCollisionScale;
 
         // 타겟이 마스크면 offset 만큼 커지면 되고 타겟이 배경이미지면 offset 만큼 작아지면 된다.
         if (isSelectMask === false) {
@@ -124,38 +122,29 @@ export default class CollisionManager
         }
 
         if (type.indexOf(CollisionType.LEFT) > -1 || type.indexOf(CollisionType.RIGHT) > -1) {
-            firstFitScale = target.getScale(target.width + offsetX, 0).scaleX;
+            expectedCollisionScale = target.getScale(target.width + offsetX, 0).scaleX;
         }
         else {
-            firstFitScale = target.getScale(0, target.height + offsetY).scaleY;
+            expectedCollisionScale = target.getScale(0, target.height + offsetY).scaleY;
         }
 
-        //console.log('----------------------------------------------------------------------------------');
-        //console.log('[' + type.toUpperCase() + ']', 'firstFitScale', firstFitScale, 'offset[', offsetX, ',', offsetY, ']');
-        //console.log('----------------------------------------------------------------------------------');
-
         const step = 0.002;
-        const scaleRange = 0.3;
+
+        // 검색 범위
+        const scaleRange = 1;
 
         let startScale;
         let fitScale = target.scale.x; // 기본값으로 현재 스케일을 적용
 
-        console.log('firstFitScale', firstFitScale,'offsetX', offsetX, 'offsetY', offsetY, ':::::::: getFitScale');
-
         if (isSelectMask) {
             // 마스크는 스케일을 키워가면서 충돌검사를 합니다.
-            startScale = firstFitScale - scaleRange;
-
-            console.log('-> isSelectMask', 'startScale', startScale, 'fitScale', fitScale, 'target.scale.x', target.scale.x);
+            startScale = expectedCollisionScale - scaleRange;
 
             // 오차를 감안해서 스케일을 더 키워 검사합니다.
-            firstFitScale = firstFitScale + 1;
+            expectedCollisionScale = expectedCollisionScale + 1;
 
-            let count = 0;
-
-            for (var i = startScale; i < firstFitScale; i += step) {
+            for (var i = startScale; i < expectedCollisionScale; i += step) {
                 if (this.virtualScaleCollisionCheck(i, isSelectMask, 0).type !== CollisionType.NONE) {
-                    console.log('count', count++);
                     break;
                 }
                 fitScale = i;
@@ -164,12 +153,12 @@ export default class CollisionManager
         }
         else {
             // 배경이미지는 스케일을 줄여가면서 충돌검사를 합니다.
-            startScale = firstFitScale + scaleRange;
+            startScale = expectedCollisionScale + scaleRange;
 
             // 오차를 감안해서 스케일을 더 줄여 검사합니다.
-            firstFitScale = firstFitScale - 1;
+            expectedCollisionScale = expectedCollisionScale - 1;
 
-            for (var i = startScale; i > firstFitScale; i -= step) {
+            for (var i = startScale; i > expectedCollisionScale; i -= step) {
                 if (this.virtualScaleCollisionCheck(i, isSelectMask, 0).type !== CollisionType.NONE) {
                     break;
                 }
@@ -206,12 +195,12 @@ export default class CollisionManager
         backgroundImage.rotate(r);
 
         // TODO DEBUG
-        const maskBounds = mask.bounds;
-        const backBounds = backgroundImage.bounds;
-        maskBounds.y -= 300;
-        backBounds.y -= 300;
-        Painter.drawRectByBounds(window.g, maskBounds, false, 1);
-        Painter.drawRectByBounds(window.g, backBounds, false, 1);
+        //const maskBounds = mask.bounds;
+        //const backBounds = backgroundImage.bounds;
+        //maskBounds.y -= 300;
+        //backBounds.y -= 300;
+        //Painter.drawRectByBounds(window.g, maskBounds, false, 1);
+        //Painter.drawRectByBounds(window.g, backBounds, false, 1);
 
         const ml = mask.left;
         const mr = mask.right;
@@ -236,32 +225,28 @@ export default class CollisionManager
         }
 
         if (mt < bt) {
-            console.log('!!!!!!!!!!!!!!!!! TOP', 'mt', mt, 'bt', bt);
             this.vo.type = CollisionType.TOP;
             this.vo.offsetY = (bt - mt) + space;
         }
 
         if (mb > bb) {
-            console.log('!!!!!!!!!!!!!!!!! BOTTOM', 'mb', mb, 'bb', bb);
             this.vo.type = CollisionType.BOTTOM;
             this.vo.offsetY = (bb - mb) - space;
         }
-
-        console.log('getFixPosition', this.vo);
 
         return this.vo;
     }
 
 
     /**
-     * 마스크와 배경 이미지가 스케일시 최초 부딪히게 되면 면에 대한 offset값을 반환합니다.
+     * 마스크와 배경 이미지가 스케일시 최초 부딪쳐서 발생한 offset값을 예상 반환합니다.
      * @param mask {CollisionRectangle} 마스크의 collisionRectangle
      * @param backgroundImage {CollisionRectangle} 배경이미지의 collisionRectangle
      * @param rotation {Number] backgroundImage 회전값 (라디안)
      * @param space {Number] offset 값에 여백을 주고 싶을때 사용
      * @returns {CollisionVO|*}
      */
-    static getScaleFirstCollisionVO(mask, backgroundImage, rotation, space = 0)
+    static getExpectedScaleCollisionVO(mask, backgroundImage, rotation, space = 0)
     {
         const r = -rotation;
 
