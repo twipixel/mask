@@ -4,7 +4,7 @@ import Config from './../config/Config';
 /**
  * 마스크 구현 테스트
  */
-export default class MaskMain extends PIXI.utils.EventEmitter
+export default class MaskTest extends PIXI.utils.EventEmitter
 {
     constructor(renderer, rootLayer, maskLayer)
     {
@@ -26,6 +26,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
             }
         };
     }
+
 
     /////////////////////////////////////////////////////////////////////////////
     //

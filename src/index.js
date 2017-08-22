@@ -3,6 +3,7 @@ import MaskVectorMain from './mask/MaskVectorMain';
 
 // TEST
 import MaskTest from './mask/test/MaskTest';
+import StrokeTest from './mask/test/StrokeTest';
 
 
 var canvas, renderer, stage, maskMain, stageLayer, maskLayer;
@@ -41,9 +42,18 @@ function initailize() {
     stage.addChild(maskLayer);
     stage.addChild(stageLayer);
 
+
+    // 마스크 기본 테스트
     //maskMain = new MaskTest(renderer, stageLayer, maskLayer);
+
+    // 마스크 비트맵 테스트
     //maskMain = new MaskMain(renderer, stageLayer, maskLayer);
-    maskMain = new MaskVectorMain(renderer, stageLayer, maskLayer);
+
+    // 마스크 벡터 테스트
+    //maskMain = new MaskVectorMain(renderer, stageLayer, maskLayer);
+
+    // 스트로크 테스트
+    maskMain = new StrokeTest(renderer, stageLayer, maskLayer);
 
     updateLoop();
     resizeWindow();

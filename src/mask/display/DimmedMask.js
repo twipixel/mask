@@ -177,6 +177,9 @@ export default class DimmedMask extends PIXI.Container
      */
     drawDimmedBackground()
     {
+        //this.backgroundImage.updateTransform();
+        //this.backgroundImage.displayObjectUpdateTransform();
+
         // 이전 상태 저장
         this.ctx.save();
 
