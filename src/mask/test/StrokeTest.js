@@ -7,13 +7,13 @@ import BackgroundImage from './../display/BackgroundImage';
 import DatGuiStroke from './../debug/DatGuiStroke';
 
 
-//const maskURL = './../../assets/svg/mask-oval.svg';
-//const maskURL = './../../assets/svg/mask-polygon.svg';
-//const maskURL = './../../assets/svg/mask-round-square.svg';
-//const maskURL = './../../assets/svg/mask-round-star.svg';
-//const maskURL = './../../assets/svg/mask-star-1.svg';
-//const maskURL = './../../assets/svg/mask-star-2.svg';
-const maskURL = './../../assets/svg/mask-triangle.svg';
+// const maskURL = './../../assets/svg/mask-oval.svg';
+// const maskURL = './../../assets/svg/mask-polygon.svg';
+// const maskURL = './../../assets/svg/mask-round-square.svg';
+// const maskURL = './../../assets/svg/mask-round-star.svg';
+const maskURL = './../../assets/svg/mask-star-1.svg';
+// const maskURL = './../../assets/svg/mask-star-2.svg';
+// const maskURL = './../../assets/svg/mask-triangle.svg';
 
 
 
@@ -99,7 +99,7 @@ export default class StrokeTest extends PIXI.utils.EventEmitter
         mainPath.style.fill = '#000';
         mainPath.style['stroke-width'] = '0px';
 
-        // 1. 마스크 캔버스
+        // (1) 마스크 캔버스
         const maskCanvas = this.maskCanvas = this.createCanvas(true, 'maskCanvas', '0px', '0px', canvasWidth, canvasHeight);
         const maskContext = maskCanvas.getContext('2d');
         maskContext.drawSvg(svgContainer.innerHTML, maskX, maskY, maskWidth, maskHeight);
@@ -114,13 +114,13 @@ export default class StrokeTest extends PIXI.utils.EventEmitter
         //mainPath.style['fill-opacity'] = 0;
 
 
-        // 2. 스트로크 스타일 입힌 실제 화면
+        // (2) 스트로크 스타일 입힌 실제 화면
         const strokeCanvas = this.strokeCanvas = this.createCanvas(true, 'strokeCanvas', canvasWidth + 'px', '0px', canvasWidth, canvasHeight);
         const strokeContext = strokeCanvas.getContext('2d');
         strokeContext.drawSvg(svgContainer.innerHTML, maskX, maskY, maskWidth, maskHeight);
 
 
-        // 3. 스트로크 적용한 마스크 (가운데 안 뚫린 이미지)
+        // (3) 스트로크 적용한 가운데 막힌 이미지 (배경색 Opacity 1)
         const strokeResultCanvas = this.strokeResultCanvas = this.createCanvas(true, 'strokeResultContext', '0px', canvasHeight + 'px', canvasWidth, canvasHeight);
         const strokeResultContext = strokeResultCanvas.getContext('2d');
         strokeResultContext.drawImage(this.backgroundImage.bitmap.imageElement, 0, 0);
@@ -129,29 +129,27 @@ export default class StrokeTest extends PIXI.utils.EventEmitter
         strokeResultContext.drawImage(maskCanvas, 0, 0);
 
 
-        // 4. 1픽셀 라인만 그리기
-        mainPath.style.fill = '#CDDC39';
-        //mainPath.style.fill = '#EEEEEE';
-        mainPath.style['stroke-width'] = '0px';
+        // (4) 스트로크 적용하고 가운데 뚫린 이미지 (배경색 Opacity 0)
+        mainPath.style['fill-opacity'] = 0;
+        strokeContext.clearRect(0, 0, canvasWidth, canvasHeight);
+        strokeContext.drawSvg(svgContainer.innerHTML, maskX, maskY, maskWidth, maskHeight);
+
+        const strokeOpacityCanvas = this.strokeOpacityCanvas = this.createCanvas(true, 'strokeOpacityCanvas', canvasWidth + 'px', canvasHeight + 'px', canvasWidth, canvasHeight);
+        const strokeOpacityContext = strokeOpacityCanvas.getContext('2d');
+        // strokeOpacityContext.drawImage(this.backgroundImage.bitmap.imageElement, 0, 0);
+        strokeOpacityContext.drawImage(strokeCanvas, 0, 0);
+        strokeOpacityContext.globalCompositeOperation = 'destination-in';
+        strokeOpacityContext.drawImage(maskCanvas, 0, 0);
+
+
+        // stroke를 다시 막아 놓기
         mainPath.style['fill-opacity'] = 1;
-
-        const bgCanvas = this.bgCanvas = this.createCanvas(false, 'bgCanvas', '0px', '0px', canvasWidth, canvasHeight);
-        const bgContext = bgCanvas.getContext('2d');
-        bgContext.drawSvg(svgContainer.innerHTML, 0, 0, maskWidth, maskHeight);
-
-        const cropCanvas = this.cropCanvas = this.createCanvas(false, 'cropCanvas', '0px', '0px', canvasWidth, canvasHeight);
-        const cropContext = cropCanvas.getContext('2d');
-        cropContext.drawSvg(svgContainer.innerHTML, 0, 0, maskWidth - (lineThickness * 2), maskHeight - (lineThickness * 2));
-
-        const singleLineResultCanvas = this.singleLineResultCanvas = this.createCanvas(true, 'singleLineResultCanvas', canvasWidth + 'px', canvasHeight + 'px', canvasWidth, canvasHeight);
-        const singleLineResultContext = singleLineResultCanvas.getContext('2d');
-        singleLineResultContext.drawImage(bgCanvas, maskX, maskY);
-        singleLineResultContext.globalCompositeOperation = 'destination-out';
-        singleLineResultContext.drawImage(cropCanvas, maskX + lineThickness, maskY + lineThickness);
+        strokeContext.clearRect(0, 0, canvasWidth, canvasHeight);
+        strokeContext.drawSvg(svgContainer.innerHTML, maskX, maskY, maskWidth, maskHeight);
 
 
-        // 5. 스트로크색만 남기고 나머지 색 제거하기 (깨끗하게 안지워진다)
-        const colorRemoveCanvas = this.strokeOtherCanvas = this.createCanvas(true, 'strokeOtherCanvas', '0px', (canvasHeight * 2) + 'px', canvasWidth, canvasHeight);
+        // (5) 스트로크색만 남기고 나머지 색 제거하기
+        const colorRemoveCanvas = this.strokeOtherCanvas = this.createCanvas(true, 'strokeOtherCanvas', (canvasWidth * 2) + 'px', canvasHeight + 'px', canvasWidth, canvasHeight);
         const colorRemoveContext = colorRemoveCanvas.getContext('2d');
 
         // black 컬러를 제거
@@ -168,7 +166,31 @@ export default class StrokeTest extends PIXI.utils.EventEmitter
         colorRemoveContext.putImageData(canvasData, 0, 0);
 
 
-        // 6. 두께 만큼 뚫어보자 (도형을 겹쳐서 뚫으면 비율이나 모양이 어긋난다)
+        // (6) - 안 좋은 방법: 1픽셀 라인 그리기 테스트 (도형 겹쳐서 뚫는 방법) - 정확도가 떨어집니다.
+        mainPath.style.fill = '#CDDC39';
+        //mainPath.style.fill = '#EEEEEE';
+        mainPath.style['stroke-width'] = '0px';
+        mainPath.style['fill-opacity'] = 1;
+
+        const bgCanvas = this.bgCanvas = this.createCanvas(false, 'bgCanvas', '0px', '0px', canvasWidth, canvasHeight);
+        const bgContext = bgCanvas.getContext('2d');
+        bgContext.drawSvg(svgContainer.innerHTML, 0, 0, maskWidth, maskHeight);
+
+        const cropCanvas = this.cropCanvas = this.createCanvas(false, 'cropCanvas', '0px', '0px', canvasWidth, canvasHeight);
+        const cropContext = cropCanvas.getContext('2d');
+        cropContext.drawSvg(svgContainer.innerHTML, 0, 0, maskWidth - (lineThickness * 2), maskHeight - (lineThickness * 2));
+
+        const singleLineResultCanvas = this.singleLineResultCanvas = this.createCanvas(true, 'singleLineResultCanvas', '0px', (canvasHeight * 2) + 'px', canvasWidth, canvasHeight);
+        const singleLineResultContext = singleLineResultCanvas.getContext('2d');
+        singleLineResultContext.drawImage(bgCanvas, maskX, maskY);
+        singleLineResultContext.globalCompositeOperation = 'destination-out';
+        singleLineResultContext.drawImage(cropCanvas, maskX + lineThickness, maskY + lineThickness);
+
+
+
+
+
+        // (7) - 안 좋은 방법: 두께 만큼 뚫어보자 (도형을 겹쳐서 뚫으면 비율이나 모양이 어긋난다)
 
         mainPath.style.fill = '#CDDC39';
         mainPath.style['stroke-width'] = '0px';
