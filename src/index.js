@@ -50,10 +50,10 @@ function initailize() {
     //maskMain = new MaskMain(renderer, stageLayer, maskLayer);
 
     // 마스크 벡터 테스트
-    //maskMain = new MaskVectorMain(renderer, stageLayer, maskLayer);
+    maskMain = new MaskVectorMain(renderer, stageLayer, maskLayer);
 
     // 스트로크 테스트
-    maskMain = new StrokeTest(renderer, stageLayer, maskLayer);
+    //maskMain = new StrokeTest(renderer, stageLayer, maskLayer);
 
     updateLoop();
     resizeWindow();
