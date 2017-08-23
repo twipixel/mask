@@ -1,4 +1,5 @@
 import Vector from './../display/Vector';
+import Stroke from './../display/Stroke';
 import MaskVector from './../display/Vector';
 import Calc from './../utils/Calculator';
 import PointUtil from './../utils/PointUtil';
@@ -26,6 +27,9 @@ export default class VectorContainer extends PIXI.Container
     {
         this.vector = new Vector();
         this.addChild(this.vector);
+
+        this.outLine = new Stroke();
+        this.addChild(this.outLine);
 
         this._vectorHalfWidth = 0;
         this._vectorHalfHeight = 0;
