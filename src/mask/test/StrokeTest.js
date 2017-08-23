@@ -42,8 +42,13 @@ export default class StrokeTest extends PIXI.utils.EventEmitter
         document.body.appendChild(this.svgContainer);
 
 
+        //request('./../../assets/svg/mask-oval.svg')
+        //request('./../../assets/svg/mask-polygon.svg')
+        //request('./../../assets/svg/mask-round-square.svg')
+        //request('./../../assets/svg/mask-round-star.svg')
         //request('./../../assets/svg/mask-star-1.svg')
-        request('./../../assets/svg/mask-round-square.svg')
+        request('./../../assets/svg/mask-star-2.svg')
+        //request('./../../assets/svg/mask-triangle.svg')
             .then(responseText => {
                 console.log('responseText', responseText);
 
@@ -60,6 +65,7 @@ export default class StrokeTest extends PIXI.utils.EventEmitter
                 const maskX = stroke / 2;
                 const maskY = stroke / 2;
 
+                this.mainPath.style.fill = '#000';
                 this.mainPath.style['stroke-width'] = '0px';
 
                 const maskCanvas = this.maskCanvas = this.createCanvas(true, 'maskCanvas', '0px', '0px', canvasWidth, canvasHeight);
