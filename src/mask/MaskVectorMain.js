@@ -11,6 +11,7 @@ import TransformTool from './transform/TransformTool';
 import CollisionManager from './manager/CollisionManager';
 import ToolControlType from './transform/ToolControlType';
 import MaskVO from './vo/MaskVO';
+import StrokeVO from './vo/StrokeVO';
 import {clone} from './utils/util';
 
 
@@ -41,7 +42,7 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
         //maskVO.setSVGTestData(1);  //삼각
         maskVO.setSVGTestData(2);  //둥근사각
         //maskVO.setSVGTestData(3);  //다각
-        //maskVO.setSVGTestData(4);  //별1
+        maskVO.setSVGTestData(4);  //별1
         //maskVO.setSVGTestData(5);  //별2
         //maskVO.setSVGTestData(6);  //둥근별
 
