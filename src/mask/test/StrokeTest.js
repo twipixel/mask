@@ -2,11 +2,6 @@ import {request} from './../utils/async';
 import {parseXML} from './../utils/string';
 
 
-const maskWidth = 325;
-const maskHeight = 310;
-const canvasWidth = 500;
-const canvasHeight = 500;
-
 
 export default class StrokeTest extends PIXI.utils.EventEmitter
 {
@@ -55,40 +50,55 @@ export default class StrokeTest extends PIXI.utils.EventEmitter
                 this.svgElement = parseXML(responseText).documentElement;
                 this.svgContainer.appendChild(this.svgElement);
 
-
-
                 this.mainPath = document.querySelector('#npe-mask-core');
 
-
-
-
-                const maskX = (canvasWidth - maskWidth) / 2;
-                const maskY = (canvasHeight - maskHeight) / 2;
-
-                console.log('maskX', maskX, 'maskY', maskY);
-
+                const stroke = 20;
+                const maskWidth = 300;
+                const maskHeight = 300;
+                const canvasWidth = maskWidth + stroke;
+                const canvasHeight = maskHeight + stroke;
+                const maskX = stroke / 2;
+                const maskY = stroke / 2;
 
                 this.mainPath.style['stroke-width'] = '0px';
 
-                const maskCanvas = this.maskCanvas = this.createCanvas('maskCanvas', '0px', '0px', canvasWidth, canvasHeight);
-                document.body.appendChild(maskCanvas);
+                const maskCanvas = this.maskCanvas = this.createCanvas(true, 'maskCanvas', '0px', '0px', canvasWidth, canvasHeight);
                 this.maskContext = maskCanvas.getContext('2d');
                 this.maskContext.drawSvg(this.svgContainer.innerHTML, maskX, maskY, maskWidth, maskHeight);
 
+                const singleLineCanvas = this.singleLineCanvas = this.createCanvas(false, 'singleLineCanvas', canvasWidth + 'px', canvasHeight + 'px', canvasWidth, canvasHeight);
+                this.singleLineContext = singleLineCanvas.getContext('2d');
+                this.singleLineContext.drawSvg(this.svgContainer.innerHTML, maskX + 1, maskY + 1, maskWidth - 2, maskWidth - 2);
 
-                this.mainPath.style['stroke-width'] = '20px';
-                this.mainPath.style.stroke = '#ff3300';
+                this.mainPath.style.stroke = '#CDDC39';
+                this.mainPath.style['stroke-width'] = stroke + 'px';
 
-                const strokeCanvas = this.strokeCanvas = this.createCanvas('strokeCanvas', '500px', '0px', canvasWidth, canvasHeight);
+                const strokeCanvas = this.strokeCanvas = this.createCanvas(true, 'strokeCanvas', canvasWidth + 'px', '0px', canvasWidth, canvasHeight);
                 this.strokeContext = strokeCanvas.getContext('2d');
                 this.strokeContext.drawSvg(this.svgContainer.innerHTML, maskX, maskY, maskWidth, maskHeight);
 
 
-                const mixCanvas = this.mixCanvas = this.createCanvas('mixCanvas', '0px', '500px', canvasWidth, canvasHeight);
-                this.mixContext = mixCanvas.getContext('2d');
-                this.mixContext.drawImage(strokeCanvas, 0, 0);
-                this.mixContext.globalCompositeOperation = 'destination-in';
-                this.mixContext.drawImage(maskCanvas, 0, 0);
+                const strokeResultCanvas = this.strokeResultCanvas = this.createCanvas(true, 'strokeResultContext', '0px', canvasHeight + 'px', canvasWidth, canvasHeight);
+                this.strokeResultContext = strokeResultCanvas.getContext('2d');
+                this.strokeResultContext.drawImage(strokeCanvas, 0, 0);
+                this.strokeResultContext.globalCompositeOperation = 'destination-in';
+                this.strokeResultContext.drawImage(maskCanvas, 0, 0);
+
+
+                const singleLineResultCanvas = this.singleLineResultCanvas = this.createCanvas(true, 'singleLineResultCanvas', canvasWidth + 'px', canvasHeight + 'px', canvasWidth, canvasHeight);
+                this.singleLineResultContext = singleLineResultCanvas.getContext('2d');
+                this.singleLineResultContext.drawImage(strokeCanvas, 0, 0);
+                this.singleLineResultContext.globalCompositeOperation = 'destination-in';
+                this.singleLineResultContext.drawImage(maskCanvas, 0, 0);
+                this.singleLineResultContext.globalCompositeOperation = 'destination-out';
+                this.singleLineResultContext.drawImage(singleLineCanvas, 0, 0);
+
+
+                //this.singleLineContext.drawImage(strokeCanvas, 0, 0);
+                //this.singleLineContext.globalCompositeOperation = 'destination-in';
+                //this.singleLineContext.drawImage(maskCanvas, 0, 0);
+                //this.singleLineContext.globalCompositeOperation = 'destination-out';
+                //this.singleLineContext.drawImage();
 
             })
             .catch(e => {
@@ -97,7 +107,7 @@ export default class StrokeTest extends PIXI.utils.EventEmitter
     }
 
 
-    createCanvas(id = '', left = '0px', top = '0px', width = 500, height = 500, border = 'thin solid #ff3300')
+    createCanvas(appendChild = true, id = '', left = '0px', top = '0px', width = 500, height = 500, border = 'thin solid #ecf0f1')
     {
         const canvas = document.createElement('canvas');
         canvas.id = id;
