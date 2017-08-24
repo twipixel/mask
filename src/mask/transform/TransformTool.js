@@ -31,6 +31,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
     static get TRANSFORM_COMPLETE() {return 'transformComplete';}
     static get SELECT() {return 'select';}
     static get DESELECT() {return 'deselect';}
+    static get CHANGE() {return 'change';}
     /**
      * 사용자가 ToolControls 객체를 사용해 위치, 크기, 회전 등을 조절하고 난 후 마우스를 'UP'했을 때 발생하는 이벤트
      */
@@ -598,6 +599,8 @@ export default class TransformTool extends PIXI.utils.EventEmitter
                 this.move(event);
                 break;
         }
+
+        this.target.emit(TransformTool.CHANGE);
     }
 
 

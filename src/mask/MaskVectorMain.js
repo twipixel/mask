@@ -13,6 +13,7 @@ import ToolControlType from './transform/ToolControlType';
 import MaskVO from './vo/MaskVO';
 import StrokeVO from './vo/StrokeVO';
 import {clone} from './utils/util';
+import Stroke from './display/Stroke';
 
 
 // TEST
@@ -146,6 +147,7 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
         this.addEvent();
         this.createDimmedMask();
         this.createCollisionManager();
+        this.createOutline();
         this.addDatGui();
     }
 
@@ -171,6 +173,32 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
         if (this.mask && this.backgroundImage) {
             CollisionManager.initialize(this.mask, this.backgroundImage);
         }
+    }
+
+
+    createOutline()
+    {
+        console.log('mask[', this.mask.width, this.mask.height, ']');
+        this.outLine = new Stroke(this.mask.maskVO.url, 1, '#EEEEEE', 1, this.mask.width, this.mask.height);
+        this.outLine.x = this.mask.x - (this.mask.width / 2);
+        this.outLine.y = this.mask.y - (this.mask.height / 2);
+        this.maskLayer.addChild(this.outLine);
+
+        this.mask.on(TransformTool.CHANGE, this.onTransformToolChange.bind(this));
+    }
+
+
+    updateOutLine()
+    {
+        this.outLine.update(1, '#EEEEEE', 1, this.mask.width, this.mask.height);
+        this.outLine.x = this.mask.x - (this.mask.width / 2);
+        this.outLine.y = this.mask.y - (this.mask.height / 2);
+    }
+
+
+    onTransformToolChange()
+    {
+        this.updateOutLine();
     }
 
 
@@ -242,9 +270,11 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
 
             mask.onUpdate = () => {
                 this.transformTool.activeTarget(target);
+                this.updateOutLine();
             };
             mask.onComplete = () => {
                 this.transformTool.activeTarget(target);
+                this.updateOutLine();
             };
             mask.play();
 
