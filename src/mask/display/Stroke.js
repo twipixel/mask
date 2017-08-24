@@ -125,6 +125,9 @@ export default class Stroke extends PIXI.Container
         this.resultContext.drawImage(this.strokeContext.canvas, 0, 0);
         this.resultContext.globalCompositeOperation = 'destination-in';
         this.resultContext.drawImage(this.maskContext.canvas, 0, 0);
+
+        // 업데이트 하지 않으면 이전 사이즈만큼만 그려집니다.
+        this.strokeSprite.texture.update();
     }
 
 
