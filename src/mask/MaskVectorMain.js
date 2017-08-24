@@ -196,17 +196,17 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
 
     updateOutLine()
     {
-        this.outLine.update(2, '#EEEEEE', 0.7, this.mask.width, this.mask.height);
-        this.outLine.x = this.mask.x - (this.mask.width / 2);
-        this.outLine.y = this.mask.y - (this.mask.height / 2);
+        if (this.outLine) {
+            this.outLine.update(2, '#EEEEEE', 0.7, this.mask.width, this.mask.height);
+            this.outLine.x = this.mask.x - (this.mask.width / 2);
+            this.outLine.y = this.mask.y - (this.mask.height / 2);
+        }
     }
 
 
     onTransformToolChange()
     {
-        if (this.outLine) {
-            this.updateOutLine();
-        }
+        this.updateOutLine();
     }
 
 
@@ -234,7 +234,13 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
 
                 this.mask.x += offsetX;
                 this.mask.y += offsetY;
+
+                this.updateOutLine();
             }
+        }
+
+        if (this.transformTool) {
+            this.transformTool.releaseTarget();
         }
     }
 
