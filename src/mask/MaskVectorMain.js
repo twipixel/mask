@@ -178,8 +178,7 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
 
     createOutline()
     {
-        console.log('mask[', this.mask.width, this.mask.height, ']');
-        this.outLine = new Stroke(this.mask.maskVO.url, 1, '#EEEEEE', 0.7, this.mask.width, this.mask.height);
+        this.outLine = new Stroke(this.mask.maskVO.url, 2, '#EEEEEE', 0.7, this.mask.width, this.mask.height);
         this.outLine.x = this.mask.x - (this.mask.width / 2);
         this.outLine.y = this.mask.y - (this.mask.height / 2);
         this.stageLayer.addChild(this.outLine);
@@ -190,7 +189,7 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
 
     updateOutLine()
     {
-        this.outLine.update(1, '#EEEEEE', 0.7, this.mask.width, this.mask.height);
+        this.outLine.update(2, '#EEEEEE', 0.7, this.mask.width, this.mask.height);
         this.outLine.x = this.mask.x - (this.mask.width / 2);
         this.outLine.y = this.mask.y - (this.mask.height / 2);
     }
