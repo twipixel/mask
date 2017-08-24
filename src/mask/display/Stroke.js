@@ -28,13 +28,13 @@ export default class Stroke extends PIXI.Container
         document.body.appendChild(svgContainer);
 
         // 도형을 그리는 캔버스 (스트로코 캔버스 마스킹용)
-        this.maskContext = this.createCanvas('maskCanvas');
+        this.maskContext = this.createCanvas('maskCanvas', this.drawWidth, this.drawHeight, true, '0px', '0px');
 
         // 스트로크를 그리는 캔버스
-        this.strokeContext = this.createCanvas('strokeCanvas');
+        this.strokeContext = this.createCanvas('strokeCanvas', this.drawWidth, this.drawHeight, true, '0px', this.drawHeight + 'px');
 
         // 최종 결과 캔버스
-        this.resultContext = this.createCanvas('resultCanvas');
+        this.resultContext = this.createCanvas('resultCanvas', this.drawWidth, this.drawHeight, true, '0px', (this.drawHeight * 2) + 'px');
 
         // 스트로크 텍스쳐 Sprite
         this.strokeSprite = new PIXI.Sprite(new PIXI.Texture.fromCanvas(this.resultContext.canvas));
@@ -77,9 +77,9 @@ export default class Stroke extends PIXI.Container
 
     clear()
     {
-        this.resultContext.clearRect(0, 0, this.resultContext.canvas.width, this.resultContext.canvas.height);
         this.maskContext.clearRect(0, 0, this.maskContext.canvas.width, this.maskContext.canvas.height);
         this.strokeContext.clearRect(0, 0, this.strokeContext.canvas.width, this.strokeContext.canvas.height);
+        this.resultContext.clearRect(0, 0, this.resultContext.canvas.width, this.resultContext.canvas.height);
     }
 
 
@@ -105,6 +105,7 @@ export default class Stroke extends PIXI.Container
         this.resizeCanvas(this.drawWidth, this.drawHeight);
 
         // 배경색 보이게 해서 도형 그리기
+        this.strokeWidth = 0;
         this.fillOpacity = 1;
         this.maskContext.drawSvg(this.svgContainer.innerHTML, 0, 0, this.drawWidth, this.drawHeight);
 
@@ -117,14 +118,17 @@ export default class Stroke extends PIXI.Container
             this.strokeOpacity = this.opacity;
         }
 
+        // 스트로크만 그리기
         this.strokeContext.drawSvg(this.svgContainer.innerHTML, 0, 0, this.drawWidth, this.drawHeight);
+
+        // 도형 사이즈 만큼 잘라내서 스트로크만 남기기
         this.resultContext.drawImage(this.strokeContext.canvas, 0, 0);
         this.resultContext.globalCompositeOperation = 'destination-in';
         this.resultContext.drawImage(this.maskContext.canvas, 0, 0);
     }
 
 
-    createCanvas(id = '', width = 1000, height = 1000, imageSmoothingEnabled = true)
+    createCanvas(id = '', width = 1000, height = 1000, imageSmoothingEnabled = true, left = '0px', top = '0px')
     {
         const canvas = document.createElement('canvas');
         canvas.id = id;
@@ -140,14 +144,12 @@ export default class Stroke extends PIXI.Container
         context.webkitImageSmoothingEnabled = imageSmoothingEnabled;
 
         // IE에서 웹폰트 안보이는 문제 때문에 body에 추가함.
-        //canvas.style.display = "none";
+        canvas.style.display = "none";
         document.body.appendChild(canvas);
 
         // DEBUG CODE
-        //canvas.style.top = (Math.random() * 600) + 'px';
-        //canvas.style.left = (Math.random() * 600) + 'px';
-        //canvas.style.top = 0 + 'px';
-        //canvas.style.left = 325 + 'px';
+        //canvas.style.top = top;
+        //canvas.style.left = left;
         //canvas.style.opacity = 1;
         //canvas.style.border = 'thin solid #ecf0f1';
         //canvas.style.position = 'absolute';
