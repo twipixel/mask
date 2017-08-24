@@ -7,6 +7,9 @@ const svgId = '#npe-mask-core';
 
 export default class Stroke extends PIXI.Container
 {
+    static LOAD_COMPLETE() {return 'loadComplete';}
+
+
     constructor(url, thickness = 0, color = '#EEEEEE', opacity = 1, width = 1000, height = 1000)
     {
         super();
@@ -67,6 +70,7 @@ export default class Stroke extends PIXI.Container
                     this.svg = document.querySelector(svgId);
                     this.update(thickness, color, opacity, width, height);
                     this.addChild(this.strokeSprite);
+                    this.emit(Stroke.LOAD_COMPLETE);
                 })
                 .catch(e => {
                     console.warn('error', e);

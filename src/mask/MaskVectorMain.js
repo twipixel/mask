@@ -41,7 +41,7 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
         const maskVO = new MaskVO();
         //maskVO.setSVGTestData(0);  //원
         //maskVO.setSVGTestData(1);  //삼각
-        maskVO.setSVGTestData(2);  //둥근사각
+        //maskVO.setSVGTestData(2);  //둥근사각
         //maskVO.setSVGTestData(3);  //다각
         maskVO.setSVGTestData(4);  //별1
         //maskVO.setSVGTestData(5);  //별2
@@ -103,6 +103,8 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
 
             this._maskTransformCompleteListener = this.onMaskTransformComplete.bind(this);
             this.mask.on(TransformTool.TRANSFORM_COMPLETE, this._maskTransformCompleteListener);
+
+            this.mask.on(TransformTool.CHANGE, this._transformToolChangeListener);
         }
     }
 
@@ -110,6 +112,10 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
     removeMask()
     {
         if (this.mask) {
+            if (this._transformToolChangeListener) {
+                this.mask.off(TransformTool.CHANGE, this._transformToolChangeListener);
+            }
+
             this.maskLayer.removeChild(this.mask);
             this.mask.off(MaskVector.READY, this._maskReadyListener);
             this.mask.off(TransformTool.TRANSFORM_COMPLETE, this._maskTransformCompleteListener);
@@ -178,12 +184,13 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
 
     createOutline()
     {
+        this._transformToolChangeListener = this.onTransformToolChange.bind(this);
+
         this.outLine = new Stroke(this.mask.maskVO.url, 2, '#EEEEEE', 0.7, this.mask.width, this.mask.height);
+        this.outLine.on(Stroke.LOAD_COMPLETE, this._transformToolChangeListener);
         this.outLine.x = this.mask.x - (this.mask.width / 2);
         this.outLine.y = this.mask.y - (this.mask.height / 2);
         this.maskLayer.addChild(this.outLine);
-
-        this.mask.on(TransformTool.CHANGE, this.onTransformToolChange.bind(this));
     }
 
 
@@ -197,7 +204,9 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
 
     onTransformToolChange()
     {
-        this.updateOutLine();
+        if (this.outLine) {
+            this.updateOutLine();
+        }
     }
 
 
@@ -375,6 +384,7 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
             this.dimmedMask.setMaskImage(this.mask);
             this.dimmedMask.startRender();
             CollisionManager.changeMask(this.mask);
+            this.outLine.load(this.mask.maskVO.url, 2, '#EEEEEE', 0.7, this.mask.width, this.mask.height);
         }
     }
 
