@@ -200,7 +200,7 @@ export default class Stroke extends PIXI.Container
     }
 
 
-    set opactiy(value)
+    set opacity(value)
     {
         this._opacity = value;
         this.textureUpdate();
