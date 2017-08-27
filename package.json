@@ -17,7 +17,6 @@
   "dependencies": {},
   "devDependencies": {
     "babel-core": "^6.24.1",
-    "babel-eslint": "^7.2.3",
     "babel-loader": "^7.0.0",
     "babel-plugin-transform-es2015-destructuring": "^6.23.0",
     "babel-plugin-transform-es2015-for-of": "^6.23.0",
@@ -36,15 +35,11 @@
     "browser-sync": "^2.18.12",
     "browser-sync-webpack-plugin": "^1.1.4",
     "copy-webpack-plugin": "^4.0.1",
+    "core-js": "^2.5.0",
     "electron": "^1.6.11",
-    "eslint": "^3.19.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-node": "^4.2.2",
-    "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-standard": "^3.0.1",
     "expose-loader": "^0.7.3",
     "path": "^0.12.7",
+    "promise-polyfill": "^6.0.2",
     "remove-webpack-plugin": "^1.2.2",
     "webpack": "^2.5.1"
   }
