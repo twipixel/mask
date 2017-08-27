@@ -93,7 +93,7 @@ module.exports = {
 
         //new RemoveWebpackPlugin('dist'),
 
-        new webpack.optimize.CommonsChunkPlugin({ name: 'vendor'/* chunkName= */, filename: 'vendor.bundle.js'/* filename= */}),
+        // new webpack.optimize.CommonsChunkPlugin({ name: 'vendor'/* chunkName= */, filename: 'vendor.bundle.js'/* filename= */}),
 
         new CopyWebpackPlugin([{
                 from: 'src/index.html',
@@ -103,7 +103,7 @@ module.exports = {
                 ignore: [ '*.md']
             }),
 
-        new webpack.optimize.UglifyJsPlugin({
+        /*new webpack.optimize.UglifyJsPlugin({
             minimize: true,
             output: {
                 comments: false
@@ -111,7 +111,7 @@ module.exports = {
             compress: {
                 warnings: false
             }
-        }),
+        }),*/
 
         new BrowserSyncPlugin({
             host: 'localhost',
