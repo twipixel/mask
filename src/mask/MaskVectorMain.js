@@ -509,7 +509,7 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
             this.maskLayer.addChild(backgroundImage);
         });
 
-        const mask = this.mask = new Bitmap('./../assets/img/mask1.png');
+        const mask = this.mask = new Bitmap('./../assets/img/mask-oval.png');
         this.maskLayer.addChild(mask);
     }
 

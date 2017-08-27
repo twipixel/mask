@@ -19,7 +19,7 @@ export default class MaskTest extends PIXI.utils.EventEmitter
         backgroundImage.src = './../assets/img/background0.png';
 
         backgroundImage.onload = () => {
-            maskImage.src = './../assets/img/mask1.png';
+            maskImage.src = './../assets/img/mask-oval.png';
 
             maskImage.onload = () => {
                 this.initialize(backgroundImage, maskImage);
@@ -259,7 +259,7 @@ export default class MaskTest extends PIXI.utils.EventEmitter
         const width = this.canvasWidth;
         const height = this.canvasHeight;
 
-        this.mask = PIXI.Sprite.fromImage('./../assets/img/mask1.png');
+        this.mask = PIXI.Sprite.fromImage('./../assets/img/mask-oval.png');
         this.mask.anchor.set(0.5, 0.5);
 
         const w = this.maskImage.width,
@@ -297,13 +297,25 @@ export default class MaskTest extends PIXI.utils.EventEmitter
         this.dimedCanvas.height = height;
 
         this.dimedContext = this.dimedCanvas.getContext('2d');
+
         // 이미지 smoothed 설정
         const imageSmoothingEnabled = Config.imageSmoothingEnabled;
-        this.ctx.imageSmoothingEnabled = imageSmoothingEnabled;
-        this.ctx.oImageSmoothingEnabled = imageSmoothingEnabled;
-        this.ctx.msImageSmoothingEnabled = imageSmoothingEnabled;
-        this.ctx.mozImageSmoothingEnabled = imageSmoothingEnabled;
-        this.ctx.webkitImageSmoothingEnabled = imageSmoothingEnabled;
+
+        /*if (this.ctx.imageSmoothingEnabled) {
+            this.ctx.imageSmoothingEnabled = imageSmoothingEnabled;
+        }
+        else if (this.ctx.oImageSmoothingEnabled) {
+            this.ctx.oImageSmoothingEnabled = imageSmoothingEnabled;
+        }
+        else if (this.ctx.msImageSmoothingEnabled) {
+            this.ctx.msImageSmoothingEnabled = imageSmoothingEnabled;
+        }
+        else if (this.ctx.mozImageSmoothingEnabled) {
+            this.ctx.mozImageSmoothingEnabled = imageSmoothingEnabled;
+        }
+        else if (this.ctx.webkitImageSmoothingEnabled) {
+            this.ctx.webkitImageSmoothingEnabled = imageSmoothingEnabled;
+        }*/
 
         const dimed = new PIXI.Sprite(PIXI.Texture.fromCanvas(this.dimedCanvas));
         this.rootLayer.addChild(dimed);

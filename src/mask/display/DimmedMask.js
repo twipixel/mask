@@ -31,7 +31,7 @@ export default class DimmedMask extends PIXI.Container
     {
         this.isStop = false;
         this.dimmedAlpha = 1;
-        this.dimmedColor = 0x000000;
+        this.dimmedColor = '#000000';
 
         this.canvas = document.createElement('canvas');
         this.canvas.width = Size.canvasLimitWidth;
