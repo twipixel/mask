@@ -4,7 +4,30 @@ const singletonEnforcer = Symbol();
 
 export default class Config extends PIXI.utils.EventEmitter
 {
-    constructor(enforcer) {
+    //--------------------------------------------------------------------------
+    //
+    //    static
+    //
+    //--------------------------------------------------------------------------
+
+
+    /**
+     * Canvas Context imageSmoothing 설정
+     *
+     * imageSmoothingEnabled
+     * oImageSmoothingEnabled
+     * msImageSmoothingEnabled
+     * mozImageSmoothingEnabled
+     * webkitImageSmoothingEnabled
+     */
+    static get imageSmoothingEnabled()
+    {
+        return true;
+    }
+
+
+    constructor(enforcer)
+    {
         super();
         if (enforcer !== singletonEnforcer) {
             throw new Error('Cannot construct singleton');
