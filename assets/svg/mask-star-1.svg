@@ -1,6 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="325" height="310" viewBox="0 0 325 310">
     <g>
-        <!--<path id='npe-mask-core' fill="#FFF" d="M162.5 257.046L62.07 310l19.18-112.16L0 118.41l112.285-16.364L162.5 0l50.215 102.046L325 118.409l-81.25 79.432L262.93 310z" style='stroke-width:0px; stroke:#ffffff; stroke-opacity:1.0; fill-opacity:0.0;'/>-->
-        <path id='npe-mask-core' fill="#FFF" d="M162.5 257.046L62.07 310l19.18-112.16L0 118.41l112.285-16.364L162.5 0l50.215 102.046L325 118.409l-81.25 79.432L262.93 310z"/>
+        <path id='npe-mask-core' fill="#FFF" d="M162.5 257.046L62.07 310l19.18-112.16L0 118.41l112.285-16.364L162.5 0l50.215 102.046L325 118.409l-81.25 79.432L262.93 310z" style='stroke-width:0px; stroke:#ffffff; stroke-opacity:1.0; fill-opacity:1.0;'/>
     </g>
 </svg>

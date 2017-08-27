@@ -1,6 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="330" height="300" viewBox="0 0 330 300">
     <g>
-        <!--<path id='npe-mask-core' fill="#FFF" d="M165 0l165 300H0z" style='stroke-width:0px; stroke:#ffffff; stroke-opacity:1.0; fill-opacity:0.0;'/>-->
-        <path id='npe-mask-core' fill="#FFF" d="M165 0l165 300H0z"/>
+        <path id='npe-mask-core' fill="#FFF" d="M165 0l165 300H0z" style='stroke-width:0px; stroke:#ffffff; stroke-opacity:1.0; fill-opacity:1.0;'/>
     </g>
 </svg>
