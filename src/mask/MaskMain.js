@@ -10,6 +10,7 @@ import CollisionManager from './manager/CollisionManager';
 import ToolControlType from './transform/ToolControlType';
 import MaskVO from './vo/MaskVO';
 import {clone} from './utils/util';
+import Config from './config/Config';
 
 
 // TEST
@@ -58,6 +59,9 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
     initialize(options)
     {
+        // CheckOS 실행
+        Config.instance;
+
         this.options = options;
 
         // 어플리케이션 시작 여부
@@ -74,7 +78,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         const viewport = this.viewport = Size.windowSize;
 
         // 배경 이미지 생성
-        const backgroundImage = this.backgroundImage = new BackgroundImage('./../assets/img/background0.png', viewport);
+        const backgroundImage = this.backgroundImage = new BackgroundImage(Config.instance.backgroundImageURL, viewport);
         backgroundImage.on(Bitmap.READY, this.onBackgroundImageReady.bind(this));
 
         // 변형툴 생성
@@ -438,7 +442,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
     testBitmap()
     {
-        const backgroundImage = this.backgroundImage = new Bitmap('./../assets/img/background0.png');
+        const backgroundImage = this.backgroundImage = new Bitmap(Config.instance.backgroundImageURL);
         backgroundImage.on(Bitmap.READY, () => {
 
             const viewport = Size.windowSize;

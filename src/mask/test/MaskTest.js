@@ -1,3 +1,6 @@
+import Config from './../config/Config';
+
+
 /**
  * 마스크 구현 테스트
  */
@@ -13,10 +16,10 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
         const backgroundImage = new Image();
         const maskImage = new Image();
-        backgroundImage.src = './../assets/img/background0.png';
+        backgroundImage.src = Config.instance.backgroundImageURL;
 
         backgroundImage.onload = () => {
-            maskImage.src = './../assets/img/mask1.png';
+            maskImage.src = Config.instance.maskBitmapList[0];
 
             maskImage.onload = () => {
                 this.initialize(backgroundImage, maskImage);
@@ -50,7 +53,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.maskImage = maskImage;
         this.backgroundImage = backgroundImage;
 
-        //const sprite = PIXI.Sprite.fromImage('./../assets/img/mask0.png');
+        // const sprite = PIXI.Sprite.fromImage(Config.instance.maskBitmapList[0]);
 
         //this.testPixiShapeMask();
         //this.testGlobalCompositeOperation(backgroundImage, maskImage);
@@ -71,7 +74,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
     testPixiShapeMask()
     {
-        const backgroundImage = PIXI.Sprite.fromImage('./../assets/img/background0.png');
+        const backgroundImage = PIXI.Sprite.fromImage(Config.instance.backgroundImageURL);
         backgroundImage.width = this.canvasWidth;
         backgroundImage.height = this.canvasHeight;
 
@@ -122,10 +125,10 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         circleShape.endFill();
         this.rootLayer.addChild(circleShape);
 
-        const maskImage = PIXI.Sprite.fromImage('./../assets/img/mask-oval.png');
+        const maskImage = PIXI.Sprite.fromImage(Config.instance.maskBitmapList[0]);
         this.rootLayer.addChild(maskImage);
 
-        const backgroundImage = PIXI.Sprite.fromImage('./../assets/img/background0.png');
+        const backgroundImage = PIXI.Sprite.fromImage(Config.instance.backgroundImageURL);
         backgroundImage.width = this.canvasWidth;
         backgroundImage.height = this.canvasHeight;
         this.rootLayer.addChild(backgroundImage);
@@ -152,7 +155,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
     testDrawPolygon()
     {
-        const backgroundImage = PIXI.Sprite.fromImage('./../assets/img/background0.png');
+        const backgroundImage = PIXI.Sprite.fromImage(Config.instance.backgroundImageURL);
         backgroundImage.width = this.canvasWidth;
         backgroundImage.height = this.canvasHeight;
         this.rootLayer.addChild(backgroundImage);
@@ -181,7 +184,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
 
     testDrawStar()
     {
-        const backgroundImage = PIXI.Sprite.fromImage('./../assets/img/background0.png');
+        const backgroundImage = PIXI.Sprite.fromImage(Config.instance.backgroundImageURL);
         backgroundImage.width = this.canvasWidth;
         backgroundImage.height = this.canvasHeight;
         this.rootLayer.addChild(backgroundImage);
@@ -201,7 +204,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
     testCreateStar()
     {
         console.log('createStar');
-        const backgroundImage = PIXI.Sprite.fromImage('./../assets/img/background0.png');
+        const backgroundImage = PIXI.Sprite.fromImage(Config.instance.backgroundImageURL);
         backgroundImage.width = this.canvasWidth;
         backgroundImage.height = this.canvasHeight;
         this.rootLayer.addChild(backgroundImage);
@@ -255,7 +258,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         const width = this.canvasWidth;
         const height = this.canvasHeight;
 
-        this.mask = PIXI.Sprite.fromImage('./../assets/img/mask1.png');
+        this.mask = PIXI.Sprite.fromImage(Config.instance.maskBitmapList[0]);
         this.mask.anchor.set(0.5, 0.5);
 
         const w = this.maskImage.width,
@@ -272,7 +275,7 @@ export default class MaskMain extends PIXI.utils.EventEmitter
         this.maskGraphics.drawCircle(0, 0, 5);
         this.mask.addChild(this.maskGraphics);
 
-        const background = PIXI.Sprite.fromImage('./../assets/img/background0.png');
+        const background = PIXI.Sprite.fromImage(Config.instance.backgroundImageURL);
         background.width = width;
         background.height = height;
 

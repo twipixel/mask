@@ -1,4 +1,5 @@
 import Calc from './Calculator';
+import Config from './../config/Config';
 
 
 const singleton = Symbol();
@@ -19,12 +20,22 @@ export default class Size
 
     static get windowWidth()
     {
-        return window.innerWidth * window.devicePixelRatio;
+        if (Config.instance.macOS) {
+            return window.innerWidth;
+        }
+        else {
+            return window.innerWidth * window.devicePixelRatio;
+        }
     }
 
     static get windowHeight()
     {
-        return window.innerHeight * window.devicePixelRatio;
+        if (Config.instance.macOS) {
+            return window.innerHeight;
+        }
+        else {
+            return window.innerHeight * window.devicePixelRatio;
+        }
     }
 
     static get windowSize()
