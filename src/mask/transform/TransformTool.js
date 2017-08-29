@@ -798,7 +798,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         }
         else {
             // 배경이미지이면 마스크의 중점을 pivot으로 설정
-            this.setPivotByLocalPoint(this.target.backgroundImageLocalPivot);
+            this.setPivotByLocalPoint(CollisionManager.backgroundImageLocalPivot);
         }
     }
 
@@ -973,7 +973,7 @@ export default class TransformTool extends PIXI.utils.EventEmitter
         }
 
         // 스냅기능을 사용하고 이미지가 0, 90, 180, 270도 인 경우
-        if (this.useSnap == true && this.target.isImageRotated === false) {
+        if (this.useSnap == true && CollisionManager.isImageRotated === false) {
             const angle = Calc.toDegrees(rotation);
             const absAngle = Math.round(Math.abs(angle) % 90);
 
