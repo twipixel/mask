@@ -26,14 +26,14 @@ function initailize() {
     // 렌더러의 위치를 정수로 연산될 수 있도록 한다.
     //renderer.roundPixels = true;
 
-    stage = new PIXI.Container(0xE6E9EC);
-    stageLayer = new PIXI.Container(0xE6E9EC);
+    stage = new PIXI.Container();
+    stageLayer = new PIXI.Container();
     /**
      * PhotoEditor.root 와 구조를 맞추기 위헤서 생성
      * @type {PIXI.Container|*}
      */
-    stageLayer.root = new PIXI.Container(0xE6E9EC);
-    maskLayer = new PIXI.Container(0xE6E9EC);
+    stageLayer.root = new PIXI.Container();
+    maskLayer = new PIXI.Container();
 
     // 컨테이너에 scale과 rotation 이 있을 때를 고려해서 만들었습니다
     //maskLayer.scale = {x: 1.2, y: 1.2};
