@@ -12,7 +12,7 @@ export default class Mouse
 
     /**
      * PIXI.Application.renderer
-     * 랜더러에서 interactio 객체를 참조할 수 있어서 사용하려면 렌더러를 셋팅해야 합니다.
+     * 랜더러에서 interaction 객체를 참조할 수 있어서 사용하려면 렌더러를 셋팅해야 합니다.
      * @param value {PIXI.WebGLRenderrer|PIXI.CanvasRenderer}
      */
     static set renderer(value) {

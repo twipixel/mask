@@ -77,7 +77,6 @@ export default class DimmedMask extends PIXI.Container
     {
         this.render();
 
-
         // TODO 테스트
         if (this.isDisplayRealSize === true ) {
             this.showMaskRealSize();

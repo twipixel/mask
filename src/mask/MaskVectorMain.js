@@ -84,6 +84,8 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
         // 변형툴 생성
         this.transformTool = new TransformTool(this.stageLayer, this.maskLayer, this.options);
 
+        this.renderer.on('prerender', this.onPrerender.bind(this));
+
         // 디버그 키 등록
         window.addEventListener('keyup', this.onKeyUp.bind(this));
     }
@@ -167,7 +169,7 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
     createDimmedMask()
     {
         const dimmedMask = this.dimmedMask = new DimmedMask(this.backgroundImage, this.mask);
-        dimmedMask.alpha = 0.82;
+        dimmedMask.alpha = 0.6;
         //dimmedMask.alpha = 0.32;
         dimmedMask.visible = true;
         this.maskLayer.addChild(dimmedMask);
@@ -207,6 +209,14 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
     onTransformToolChange()
     {
         this.updateOutLine();
+    }
+
+
+    onPrerender()
+    {
+        if(this.dimmedMask) {
+            this.dimmedMask.render();
+        }
     }
 
 
