@@ -215,6 +215,7 @@ export default class MaskVectorMain extends PIXI.utils.EventEmitter
     onPrerender()
     {
         if(this.dimmedMask) {
+            this.maskLayer.updateTransform();
             this.dimmedMask.render();
         }
     }
